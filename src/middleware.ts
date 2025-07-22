@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "./lib/auth";
 
 // Rutas que requieren autenticación
-const protectedRoutes = ["/dashboard"];
+const protectedRoutes = ["/dashboard", "/admin"];
 
 // Rutas que redirigen al dashboard si el usuario ya está autenticado
 const authRoutes = ["/login", "/register"];
@@ -33,6 +33,9 @@ export async function middleware(request: NextRequest) {
       response.cookies.delete("auth-token");
       return response;
     }
+
+    // Nota: La verificación de rol de admin se hace en las páginas individuales
+    // para evitar problemas con Prisma en el Edge Runtime del middleware
   }
 
   if (isAuthRoute && token) {
