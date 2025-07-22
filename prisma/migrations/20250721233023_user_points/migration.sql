@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "puntos" INTEGER NOT NULL DEFAULT 0;
