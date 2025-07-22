@@ -1,19 +1,12 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+LISTA DE PASOS PARA INSTALAR O ACTUALIZAR CAMBIOS NUEVOS:
 
-## Getting Started
+1 - npm install
 
-First, run the development server:
+2 - npx prisma generate
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+3 - npx prisma migrate dev (solo si estamos usando base de datos local)
 
+<<<<<<< HEAD
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
@@ -36,3 +29,6 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 xd
+=======
+4 - npm run build (solo para comprobar que la rama construye bien sin conflictos antes de enviar la info a el repo)
+>>>>>>> a52c028d83b46d1aaa73054018986f1ec220371d

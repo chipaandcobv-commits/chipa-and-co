@@ -14,6 +14,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  USER
+  ADMIN
+}
+
 model User {
   id        String   @id @default(uuid())
   name      String
@@ -21,6 +26,102 @@ model User {
   password  String
   avatar    String?
   puntos    Int      @default(0)
+  role      UserRole @default(USER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Relaciones
+  qrScans      QRScan[]
+  rewardClaims RewardClaim[]
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  price       Float
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relaciones
+  orderItems OrderItem[]
+}
+
+model SystemConfig {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Order {
+  id          String    @id @default(uuid())
+  totalAmount Float
+  totalPoints Int
+  qrCode      String    @unique
+  isScanned   Boolean   @default(false)
+  scannedAt   DateTime?
+  scannedBy   String?
+  createdAt   DateTime  @default(now())
+
+  // Relaciones
+  items OrderItem[]
+  scans QRScan[]
+}
+
+model OrderItem {
+  id        String @id @default(uuid())
+  orderId   String
+  productId String
+  quantity  Int
+  unitPrice Float
+  total     Float
+
+  // Relaciones
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model QRScan {
+  id           String   @id @default(uuid())
+  orderId      String
+  userId       String
+  pointsEarned Int
+  createdAt    DateTime @default(now())
+
+  // Relaciones
+  order Order @relation(fields: [orderId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+}
+
+model Reward {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  pointsCost  Int
+  isActive    Boolean  @default(true)
+  imageUrl    String?
+  stock       Int? // null = stock ilimitado
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relaciones
+  claims RewardClaim[]
+}
+
+model RewardClaim {
+  id          String   @id @default(uuid())
+  rewardId    String
+  userId      String
+  pointsSpent Int
+  status      String   @default("PENDING") // PENDING, DELIVERED, CANCELLED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relaciones
+  reward Reward @relation(fields: [rewardId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 }

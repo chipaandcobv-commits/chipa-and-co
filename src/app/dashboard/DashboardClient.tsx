@@ -1,36 +1,92 @@
 "use client";
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Button from "../../components/ui/Button";
 import {
-  LogoutIcon,
-  DashboardIcon,
   UserIcon,
+  DashboardIcon,
+  LogoutIcon,
   HomeIcon,
 } from "../../components/icons/Icons";
-import { TokenPayload } from "../../lib/auth";
 
-interface DashboardClientProps {
-  user: TokenPayload;
+interface User {
+  name: string;
+  email: string;
+  puntos: number;
+  role: string;
 }
 
-export default function DashboardClient({ user }: DashboardClientProps) {
-  const router = useRouter();
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
+interface UserStats {
+  currentPoints: number;
+  totalScans: number;
+  totalClaims: number;
+  totalPointsEarned: number;
+  totalPointsSpent: number;
+}
 
-  const handleLogout = async () => {
-    setIsLoggingOut(true);
+export default function DashboardClient() {
+  const [user, setUser] = useState<User | null>(null);
+  const [stats, setStats] = useState<UserStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const router = useRouter();
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  const fetchUserData = async () => {
     try {
-      await fetch("/api/auth/logout", {
-        method: "POST",
-      });
-      router.push("/login");
-    } catch (error) {
-      console.error("Logout error:", error);
+      const [userResponse, historyResponse] = await Promise.all([
+        fetch("/api/auth/me"),
+        fetch("/api/user/history?type=all&limit=1"),
+      ]);
+
+      const [userData, historyData] = await Promise.all([
+        userResponse.json(),
+        historyResponse.json(),
+      ]);
+
+      if (userData.success) {
+        setUser(userData.user);
+      }
+
+      if (historyData.success) {
+        setStats(historyData.stats);
+      }
+    } catch {
+      setError("Error al cargar datos del usuario");
     } finally {
-      setIsLoggingOut(false);
+      setLoading(false);
     }
   };
+
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      router.push("/login");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white flex items-center justify-center">
+        <div className="text-orange-600">Cargando dashboard...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white flex items-center justify-center">
+        <div className="text-red-600">{error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white">
@@ -39,139 +95,226 @@ export default function DashboardClient({ user }: DashboardClientProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <div className="h-10 w-10 bg-orange-500 rounded-full flex items-center justify-center">
-                <DashboardIcon className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">
-                  App Fidelización
-                </h1>
-                <p className="text-sm text-gray-500">Dashboard</p>
-              </div>
+              <Link
+                href="/"
+                className="flex items-center text-orange-600 hover:text-orange-700"
+              >
+                <HomeIcon className="w-5 h-5 mr-2" />
+                Inicio
+              </Link>
+              <span className="text-gray-300">/</span>
+              <span className="text-gray-700">Dashboard</span>
             </div>
 
             <div className="flex items-center space-x-4">
-              <div className="text-right">
-                <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                <p className="text-xs text-gray-500">{user.email}</p>
-              </div>
-
-              <div className="h-10 w-10 bg-orange-100 rounded-full flex items-center justify-center">
-                <UserIcon className="h-6 w-6 text-orange-600" />
-              </div>
-
+              {user && (
+                <div className="text-sm">
+                  <span className="text-gray-600">Hola, </span>
+                  <span className="font-medium text-gray-900">{user.name}</span>
+                  {user.role === "ADMIN" && (
+                    <Link
+                      href="/admin"
+                      className="ml-3 px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium hover:bg-red-200"
+                    >
+                      Panel Admin
+                    </Link>
+                  )}
+                </div>
+              )}
               <Button
+                onClick={handleLogout}
                 variant="outline"
                 size="sm"
-                onClick={handleLogout}
-                isLoading={isLoggingOut}
+                className="flex items-center"
               >
-                <LogoutIcon className="h-4 w-4" />
-                Salir
+                <LogoutIcon className="w-4 h-4 mr-2" />
+                Cerrar Sesión
               </Button>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
+      {/* Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
-          <div className="text-center">
-            <div className="mx-auto h-20 w-20 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full flex items-center justify-center mb-6">
-              <UserIcon className="h-10 w-10 text-white" />
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            ¡Bienvenido, {user?.name}! 👋
+          </h1>
+          <p className="text-gray-600">
+            Administra tus puntos y descubre increíbles premios.
+          </p>
+        </div>
+
+        {/* Points Card */}
+        <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg shadow-lg p-8 mb-8 text-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold mb-2">Tus Puntos</h2>
+              <p className="text-orange-100">Puntos disponibles para canjear</p>
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              ¡Bienvenido, {user.name}!
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Estás logueado en tu dashboard personal. Aquí podrás gestionar tu
-              perfil, ver tus puntos de fidelización y mucho más.
-            </p>
+            <div className="text-right">
+              <p className="text-5xl font-bold">{user?.puntos || 0}</p>
+              <p className="text-orange-100">💎 puntos</p>
+            </div>
           </div>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-orange-100">
-            <div className="flex items-center">
-              <div className="p-3 rounded-full bg-orange-100">
-                <DashboardIcon className="h-6 w-6 text-orange-600" />
+        {stats && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="bg-white rounded-lg shadow-sm border border-orange-100 p-6">
+              <div className="flex items-center">
+                <div className="text-2xl mr-3">📱</div>
+                <div>
+                  <p className="text-sm font-medium text-gray-600">
+                    QR Escaneados
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {stats.totalScans}
+                  </p>
+                </div>
               </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">
-                  Puntos Totales
-                </p>
-                <p className="text-2xl font-bold text-gray-900">1,250</p>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-sm border border-orange-100 p-6">
+              <div className="flex items-center">
+                <div className="text-2xl mr-3">🎁</div>
+                <div>
+                  <p className="text-sm font-medium text-gray-600">
+                    Premios Canjeados
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {stats.totalClaims}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-sm border border-orange-100 p-6">
+              <div className="flex items-center">
+                <div className="text-2xl mr-3">⚡</div>
+                <div>
+                  <p className="text-sm font-medium text-gray-600">
+                    Total Ganados
+                  </p>
+                  <p className="text-2xl font-bold text-green-600">
+                    {stats.totalPointsEarned}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-sm border border-orange-100 p-6">
+              <div className="flex items-center">
+                <div className="text-2xl mr-3">💸</div>
+                <div>
+                  <p className="text-sm font-medium text-gray-600">
+                    Total Gastados
+                  </p>
+                  <p className="text-2xl font-bold text-orange-600">
+                    {stats.totalPointsSpent}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
+        )}
 
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-orange-100">
-            <div className="flex items-center">
-              <div className="p-3 rounded-full bg-orange-100">
-                <UserIcon className="h-6 w-6 text-orange-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Nivel</p>
-                <p className="text-2xl font-bold text-gray-900">Plata</p>
-              </div>
-            </div>
-          </div>
+        {/* Quick Actions */}
+        <div className="bg-white rounded-lg shadow-sm border border-orange-100 p-6 mb-8">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">
+            Acciones Rápidas
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Link href="/rewards">
+              <Button
+                variant="outline"
+                className="w-full h-24 flex flex-col items-center justify-center hover:bg-orange-50"
+              >
+                <div className="text-3xl mb-2">🎁</div>
+                <span className="font-medium">Ver Premios</span>
+                <span className="text-xs text-gray-500">Canjea tus puntos</span>
+              </Button>
+            </Link>
 
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-orange-100">
-            <div className="flex items-center">
-              <div className="p-3 rounded-full bg-orange-100">
-                <HomeIcon className="h-6 w-6 text-orange-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Visitas</p>
-                <p className="text-2xl font-bold text-gray-900">42</p>
-              </div>
+            <Link href="/ranking">
+              <Button
+                variant="outline"
+                className="w-full h-24 flex flex-col items-center justify-center hover:bg-orange-50"
+              >
+                <div className="text-3xl mb-2">🏆</div>
+                <span className="font-medium">Ranking</span>
+                <span className="text-xs text-gray-500">Ve tu posición</span>
+              </Button>
+            </Link>
+
+            <Link href="/history">
+              <Button
+                variant="outline"
+                className="w-full h-24 flex flex-col items-center justify-center hover:bg-orange-50"
+              >
+                <div className="text-3xl mb-2">📊</div>
+                <span className="font-medium">Mi Historial</span>
+                <span className="text-xs text-gray-500">
+                  Revisa tu actividad
+                </span>
+              </Button>
+            </Link>
+
+            <div className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg">
+              <div className="text-3xl mb-2">📱</div>
+              <span className="font-medium text-gray-700">Escanea QR</span>
+              <span className="text-xs text-gray-500 text-center">
+                Usa la cámara de tu móvil para escanear códigos QR
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <h3 className="text-xl font-semibold text-gray-900 mb-6">
-            Acciones Rápidas
-          </h3>
+        {/* How it works */}
+        <div className="bg-white rounded-lg shadow-sm border border-orange-100 p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">
+            ¿Cómo funciona? 🤔
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">🛒</span>
+              </div>
+              <h3 className="font-medium text-gray-900 mb-2">
+                1. Compra productos
+              </h3>
+              <p className="text-sm text-gray-600">
+                Realiza compras en nuestros establecimientos participantes.
+              </p>
+            </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Button
-              variant="secondary"
-              className="h-20 flex flex-col justify-center"
-            >
-              <UserIcon className="h-6 w-6 mb-2" />
-              Ver Perfil
-            </Button>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">📱</span>
+              </div>
+              <h3 className="font-medium text-gray-900 mb-2">
+                2. Escanea el QR
+              </h3>
+              <p className="text-sm text-gray-600">
+                Escanea el código QR de tu ticket para ganar puntos
+                automáticamente.
+              </p>
+            </div>
 
-            <Button
-              variant="secondary"
-              className="h-20 flex flex-col justify-center"
-            >
-              <DashboardIcon className="h-6 w-6 mb-2" />
-              Historial
-            </Button>
-
-            <Button
-              variant="secondary"
-              className="h-20 flex flex-col justify-center"
-            >
-              <HomeIcon className="h-6 w-6 mb-2" />
-              Recompensas
-            </Button>
-
-            <Button
-              variant="primary"
-              className="h-20 flex flex-col justify-center"
-              onClick={() => router.push("/")}
-            >
-              <HomeIcon className="h-6 w-6 mb-2" />
-              Ir al Inicio
-            </Button>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">🎁</span>
+              </div>
+              <h3 className="font-medium text-gray-900 mb-2">
+                3. Canjea premios
+              </h3>
+              <p className="text-sm text-gray-600">
+                Usa tus puntos para obtener descuentos y premios exclusivos.
+              </p>
+            </div>
           </div>
         </div>
       </main>
