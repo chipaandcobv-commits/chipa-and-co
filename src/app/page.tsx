@@ -1,75 +1,17 @@
 import Link from "next/link";
-import { getCurrentUser } from "../lib/auth";
+import { getCurrentUserFull } from "../lib/auth";
 import Button from "../components/ui/Button";
-import { DashboardIcon, HomeIcon } from "../components/icons/Icons";
+import { DashboardIcon } from "../components/icons/Icons";
 
 export const dynamic = "force-dynamic";
 
-async function AuthHeader() {
-  const currentUser = await getCurrentUser();
-
-  return (
-    <header className="bg-white shadow-sm border-b border-orange-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center space-x-4">
-            <HomeIcon className="w-8 h-8 text-orange-600" />
-            <h1 className="text-xl font-bold text-gray-900">
-              Sistema de Fidelización
-            </h1>
-          </div>
-          <div className="flex items-center space-x-4">
-            {currentUser ? (
-              <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-600">
-                  Hola, <span className="font-medium">{currentUser.name}</span>
-                </span>
-                <Link href="/dashboard">
-                  <Button size="sm" className="flex items-center">
-                    <DashboardIcon className="w-4 h-4 mr-2" />
-                    Dashboard
-                  </Button>
-                </Link>
-                {currentUser.role === "ADMIN" && (
-                  <Link href="/admin">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="flex items-center"
-                    >
-                      ⚙️ Admin
-                    </Button>
-                  </Link>
-                )}
-              </div>
-            ) : (
-              <div className="flex items-center space-x-3">
-                <Link href="/login">
-                  <Button variant="outline" size="sm">
-                    Iniciar Sesión
-                  </Button>
-                </Link>
-                <Link href="/register">
-                  <Button size="sm">Registrarse</Button>
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </header>
-  );
-}
-
 export default async function HomePage() {
-  const currentUser = await getCurrentUser();
+  const currentUser = await getCurrentUserFull();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white">
-      <AuthHeader />
-
       {/* Hero Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
+      <section className="pt-20 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
             Gana puntos con cada compra

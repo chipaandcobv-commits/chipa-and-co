@@ -1,6 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
+import { PrismaClient } from "../generated/prisma";
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET ||
@@ -92,4 +93,40 @@ export async function setAuthCookie(token: string) {
 export async function clearAuthCookie() {
   const cookieStore = await cookies();
   cookieStore.delete("auth-token");
+}
+
+// Get full user data including role and points
+export async function getCurrentUserFull() {
+  try {
+    const currentUser = await getCurrentUser();
+    if (!currentUser) return null;
+
+    const prisma = new PrismaClient();
+
+    const user = await prisma.user.findUnique({
+      where: { id: currentUser.userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        puntos: true,
+        role: true,
+      },
+    });
+
+    await prisma.$disconnect();
+
+    if (!user) return null;
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      points: user.puntos, // Mapear puntos a points para consistencia
+      role: user.role,
+    };
+  } catch (error) {
+    console.error("Error getting current user full data:", error);
+    return null;
+  }
 }
