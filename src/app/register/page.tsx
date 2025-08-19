@@ -144,17 +144,10 @@ export default function RegisterPage() {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Mínimo 8 caracteres"
-                icon={<LockIcon />}
                 error={errors.password}
                 required
               />
-              <button
-                type="button"
-                className="absolute right-3 top-11 text-gray-400 hover:text-gray-600 z-10"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-              </button>
+   
             </div>
 
             <div className="relative">
@@ -165,17 +158,10 @@ export default function RegisterPage() {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 placeholder="Repite tu contraseña"
-                icon={<LockIcon />}
                 error={errors.confirmPassword}
                 required
               />
-              <button
-                type="button"
-                className="absolute right-3 top-11 text-gray-400 hover:text-gray-600 z-10"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              >
-                {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
-              </button>
+
             </div>
 
             <Button

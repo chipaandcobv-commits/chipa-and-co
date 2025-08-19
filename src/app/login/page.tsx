@@ -115,17 +115,10 @@ export default function LoginPage() {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Tu contraseña"
-                icon={<LockIcon />}
                 error={errors.password}
                 required
               />
-              <button
-                type="button"
-                className="absolute right-3 top-11 text-gray-400 hover:text-gray-600 z-10"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-              </button>
+
             </div>
 
             <Button

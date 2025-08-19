@@ -10,6 +10,13 @@ export async function GET() {
     await requireAdmin();
 
     const rewards = await prisma.reward.findMany({
+      include: {
+        _count: {
+          select: {
+            claims: true,
+          },
+        },
+      },
       orderBy: { createdAt: "desc" },
     });
 

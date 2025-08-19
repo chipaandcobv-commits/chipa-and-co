@@ -85,34 +85,7 @@ export default function ConfigManagement() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-orange-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/admin"
-                className="flex items-center text-orange-600 hover:text-orange-700"
-              >
-                <DashboardIcon className="w-5 h-5 mr-2" />
-                Panel Admin
-              </Link>
-              <span className="text-gray-300">/</span>
-              <span className="text-gray-700">Configuración</span>
-            </div>
-            <Button
-              onClick={handleLogout}
-              variant="outline"
-              size="sm"
-              className="flex items-center"
-            >
-              <LogoutIcon className="w-4 h-4 mr-2" />
-              Cerrar Sesión
-            </Button>
-          </div>
-        </div>
-      </header>
-
+     
       {/* Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white rounded-lg shadow-sm border border-orange-100 p-6">

@@ -1,3 +1,4 @@
+
 import { getCurrentUser } from "./auth";
 import { PrismaClient } from "../generated/prisma";
 
@@ -5,9 +6,14 @@ const prisma = new PrismaClient();
 
 // Verificar si el usuario actual es admin
 export async function isCurrentUserAdmin(): Promise<boolean> {
+
+  
   try {
     const currentUser = await getCurrentUser();
-    if (!currentUser) return false;
+    if (!currentUser) {
+       window.location.href = "/login";
+       return false;
+    };
 
     const user = await prisma.user.findUnique({
       where: { id: currentUser.userId },
