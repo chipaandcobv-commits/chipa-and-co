@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import QRCode from "qrcode";
 import Button from "../../../components/ui/Button";
 import Input from "../../../components/ui/Input";
 import { DashboardIcon, LogoutIcon } from "../../../components/icons/Icons";
@@ -23,14 +22,23 @@ interface OrderItem {
   total: number;
 }
 
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  dni: string;
+  puntos: number;
+}
+
 interface Order {
   id: string;
   totalAmount: number;
   totalPoints: number;
-  qrCode: string;
-  isScanned: boolean;
-  scannedAt: Date | null;
+  clientDni: string;
+  isCompleted: boolean;
+  completedAt: Date | null;
   createdAt: Date;
+  client: User;
   items: Array<{
     quantity: number;
     unitPrice: number;
@@ -48,47 +56,20 @@ interface SystemConfig {
 export default function OrdersManagement() {
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
-  const [config, setConfig] = useState<SystemConfig>({ pointsPerPeso: 1000 });
+  const [config, setConfig] = useState<SystemConfig>({ pointsPerPeso: 1 }); // 1 peso = 1 punto por defecto
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
+  const [clientDni, setClientDni] = useState("");
+  const [clientInfo, setClientInfo] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [message, setMessage] = useState("");
-  const [generatedQR, setGeneratedQR] = useState<string | null>(null);
-  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+  const [searchingClient, setSearchingClient] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     fetchData();
   }, []);
-
-  // Generar QR code visual cuando se crea una orden
-  useEffect(() => {
-    if (generatedQR) {
-      generateQRImage();
-    }
-    // generateQRImage is stable, doesn't need dependency
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [generatedQR]);
-
-  const generateQRImage = async () => {
-    if (!generatedQR) return;
-
-    try {
-      const qrUrl = `${window.location.origin}/scan/${generatedQR}`;
-      const dataUrl = await QRCode.toDataURL(qrUrl, {
-        width: 300,
-        margin: 2,
-        color: {
-          dark: "#000000",
-          light: "#FFFFFF",
-        },
-      });
-      setQrDataUrl(dataUrl);
-    } catch (error) {
-      console.error("Error generating QR code:", error);
-    }
-  };
 
   const fetchData = async () => {
     try {
@@ -112,6 +93,34 @@ export default function OrdersManagement() {
       console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const searchClient = async () => {
+    if (!clientDni.trim()) {
+      setMessage("Ingresa el DNI del cliente");
+      return;
+    }
+
+    setSearchingClient(true);
+    setMessage("");
+    setClientInfo(null);
+
+    try {
+      const response = await fetch(`/api/users?dni=${clientDni.trim()}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setClientInfo(data.user);
+        setMessage(`Cliente encontrado: ${data.user.name} (${data.user.puntos} puntos)`);
+      } else {
+        setMessage("Cliente no encontrado con ese DNI");
+      }
+    } catch (error) {
+      console.error("Error searching client:", error);
+      setMessage("Error al buscar cliente");
+    } finally {
+      setSearchingClient(false);
     }
   };
 
@@ -148,17 +157,22 @@ export default function OrdersManagement() {
   };
 
   const updateQuantity = (productId: string, quantity: number) => {
-    if (quantity <= 0) {
-      setOrderItems(orderItems.filter((item) => item.productId !== productId));
-    } else {
-      setOrderItems(
-        orderItems.map((item) =>
-          item.productId === productId
-            ? { ...item, quantity, total: quantity * item.unitPrice }
-            : item
-        )
-      );
-    }
+    // No eliminar el producto si la cantidad es 0, solo actualizar
+    setOrderItems(
+      orderItems.map((item) =>
+        item.productId === productId
+          ? { 
+              ...item, 
+              quantity: Math.max(0, quantity), // No permitir cantidades negativas
+              total: Math.max(0, quantity) * item.unitPrice 
+            }
+          : item
+      )
+    );
+  };
+
+  const removeOrderItem = (productId: string) => {
+    setOrderItems(orderItems.filter((item) => item.productId !== productId));
   };
 
   const getTotalAmount = () => {
@@ -166,12 +180,20 @@ export default function OrdersManagement() {
   };
 
   const getTotalPoints = () => {
-    return Math.floor(getTotalAmount() / config.pointsPerPeso);
+    return Math.floor(getTotalAmount() * config.pointsPerPeso);
   };
 
   const createOrder = async () => {
-    if (orderItems.length === 0) {
-      setMessage("Agrega al menos un producto a la orden");
+    if (!clientInfo) {
+      setMessage("Debes buscar y seleccionar un cliente primero");
+      return;
+    }
+
+    // Filtrar solo productos con cantidad > 0
+    const validItems = orderItems.filter(item => item.quantity > 0);
+    
+    if (validItems.length === 0) {
+      setMessage("Agrega al menos un producto con cantidad mayor a 0");
       return;
     }
 
@@ -185,22 +207,24 @@ export default function OrdersManagement() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          items: orderItems.map((item) => ({
+          items: validItems.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
           })),
+          clientDni: clientInfo.dni,
         }),
       });
 
       const data = await response.json();
 
       if (data.success) {
-        setGeneratedQR(data.order.qrCode);
         setOrderItems([]);
+        setClientDni("");
+        setClientInfo(null);
         setShowCreateForm(false);
         fetchData(); // Refresh orders
-        setMessage("Orden creada exitosamente");
-        setTimeout(() => setMessage(""), 3000);
+        setMessage(data.message || "Orden creada exitosamente");
+        setTimeout(() => setMessage(""), 5000);
       } else {
         setMessage(data.error || "Error al crear orden");
       }
@@ -217,80 +241,6 @@ export default function OrdersManagement() {
       router.push("/login");
     } catch (error) {
       console.error("Error during logout:", error);
-    }
-  };
-
-  const copyQRLink = () => {
-    if (generatedQR) {
-      navigator.clipboard.writeText(
-        `${window.location.origin}/scan/${generatedQR}`
-      );
-      setMessage("Enlace QR copiado al portapapeles");
-      setTimeout(() => setMessage(""), 3000);
-    }
-  };
-
-  const downloadQR = () => {
-    if (qrDataUrl) {
-      const link = document.createElement("a");
-      link.download = `qr-order-${generatedQR}.png`;
-      link.href = qrDataUrl;
-      link.click();
-    }
-  };
-
-  const printQR = () => {
-    if (qrDataUrl) {
-      const printWindow = window.open("", "_blank");
-      if (printWindow) {
-        printWindow.document.write(`
-          <html>
-            <head>
-              <title>QR Code - ${generatedQR}</title>
-              <style>
-                body { 
-                  display: flex; 
-                  flex-direction: column; 
-                  align-items: center; 
-                  justify-content: center; 
-                  height: 100vh; 
-                  margin: 0; 
-                  font-family: Arial, sans-serif;
-                }
-                .qr-container {
-                  text-align: center;
-                  padding: 20px;
-                  border: 2px solid #ccc;
-                  border-radius: 10px;
-                }
-                img { 
-                  max-width: 300px; 
-                  height: auto; 
-                }
-                h2 { 
-                  margin-bottom: 20px;
-                  color: #333;
-                }
-                p {
-                  margin-top: 20px;
-                  font-size: 14px;
-                  color: #666;
-                }
-              </style>
-            </head>
-            <body>
-              <div class="qr-container">
-                <h2>Código QR - Orden</h2>
-                <img src="${qrDataUrl}" alt="QR Code" />
-                <p>Código: ${generatedQR}</p>
-                <p>Escanea para ganar puntos</p>
-              </div>
-            </body>
-          </html>
-        `);
-        printWindow.document.close();
-        printWindow.print();
-      }
     }
   };
 
@@ -316,7 +266,7 @@ export default function OrdersManagement() {
                 <DashboardIcon className="w-5 h-5 mr-2" />
                 Panel Admin
               </Link>
-              <span className="text-gray-300">/</span>
+              <span className="text-gray-400">/</span>
               <span className="text-gray-700">Órdenes</span>
             </div>
             <Button
@@ -337,90 +287,12 @@ export default function OrdersManagement() {
         {message && (
           <div
             className={`mb-6 p-4 rounded-lg ${
-              message.includes("Error")
+              message.includes("Error") || message.includes("no encontrado")
                 ? "bg-red-50 text-red-700 border border-red-200"
                 : "bg-green-50 text-green-700 border border-green-200"
             }`}
           >
             {message}
-          </div>
-        )}
-
-        {/* QR Generated Modal */}
-        {generatedQR && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
-              <h3 className="text-lg font-semibold mb-4 text-center">
-                ¡QR Generado Exitosamente!
-              </h3>
-
-              {/* QR Code Visual */}
-              <div className="text-center mb-6">
-                {qrDataUrl ? (
-                  <div className="bg-white p-4 rounded-lg border-2 border-gray-200 inline-block">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={qrDataUrl}
-                      alt="QR Code"
-                      className="w-64 h-64 mx-auto"
-                    />
-                  </div>
-                ) : (
-                  <div className="w-64 h-64 bg-gray-100 rounded-lg flex items-center justify-center mx-auto">
-                    <div className="text-gray-500">Generando QR...</div>
-                  </div>
-                )}
-              </div>
-
-              {/* QR Info */}
-              <div className="text-center mb-6">
-                <p className="text-sm text-gray-600 mb-2">
-                  Código QR:{" "}
-                  <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
-                    {generatedQR}
-                  </span>
-                </p>
-                <p className="text-xs text-gray-500">
-                  Los clientes pueden escanear este código para ganar puntos
-                </p>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="space-y-2">
-                <Button
-                  onClick={printQR}
-                  className="w-full"
-                  disabled={!qrDataUrl}
-                >
-                  🖨️ Imprimir QR
-                </Button>
-                <Button
-                  onClick={downloadQR}
-                  variant="outline"
-                  className="w-full"
-                  disabled={!qrDataUrl}
-                >
-                  📥 Descargar QR
-                </Button>
-                <Button
-                  onClick={copyQRLink}
-                  variant="outline"
-                  className="w-full"
-                >
-                  📋 Copiar Enlace
-                </Button>
-                <Button
-                  onClick={() => {
-                    setGeneratedQR(null);
-                    setQrDataUrl(null);
-                  }}
-                  variant="outline"
-                  className="w-full"
-                >
-                  ✕ Cerrar
-                </Button>
-              </div>
-            </div>
           </div>
         )}
 
@@ -441,6 +313,46 @@ export default function OrdersManagement() {
 
             {showCreateForm && (
               <div className="space-y-4">
+                {/* Client Search */}
+                <div>
+                  <h3 className="text-lg font-medium mb-3">
+                    Buscar Cliente por DNI
+                  </h3>
+                  <div className="flex space-x-2">
+                    <Input
+                      type="text"
+                      placeholder="Ingresa el DNI del cliente"
+                      value={clientDni}
+                      onChange={(e) => setClientDni(e.target.value)}
+                      className="flex-1"
+                    />
+                    <Button
+                      onClick={searchClient}
+                      isLoading={searchingClient}
+                      disabled={!clientDni.trim()}
+                    >
+                      Buscar
+                    </Button>
+                  </div>
+                  
+                  {clientInfo && (
+                    <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="font-medium text-green-800">{clientInfo.name}</p>
+                          <p className="text-sm text-green-600">{clientInfo.email}</p>
+                          <p className="text-sm text-green-600">DNI: {clientInfo.dni}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-semibold text-green-800">{clientInfo.puntos}</p>
+                          <p className="text-sm text-green-600">puntos actuales</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Product Selection */}
                 <div>
                   <h3 className="text-lg font-medium mb-3">
                     Seleccionar Productos
@@ -498,6 +410,14 @@ export default function OrdersManagement() {
                               <span className="text-sm text-gray-600">
                                 ${item.total.toLocaleString()}
                               </span>
+                              <Button
+                                onClick={() => removeOrderItem(item.productId)}
+                                variant="outline"
+                                size="sm"
+                                className="text-red-600 border-red-300 hover:bg-red-50"
+                              >
+                                ✕
+                              </Button>
                             </div>
                           </div>
                         );
@@ -510,13 +430,17 @@ export default function OrdersManagement() {
                           {getTotalPoints()} puntos
                         </span>
                       </div>
+                      <p className="text-sm text-orange-600 mt-1">
+                        Configuración: {config.pointsPerPeso} peso = {config.pointsPerPeso} punto
+                      </p>
                     </div>
                     <Button
                       onClick={createOrder}
                       isLoading={creating}
                       className="w-full mt-4"
+                      disabled={!clientInfo || getTotalAmount() === 0}
                     >
-                      Crear Orden y Generar QR
+                      Crear Orden y Asignar Puntos
                     </Button>
                   </div>
                 )}
@@ -546,15 +470,17 @@ export default function OrdersManagement() {
                     </div>
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${
-                        order.isScanned
+                        order.isCompleted
                           ? "bg-green-100 text-green-800"
                           : "bg-gray-100 text-gray-800"
                       }`}
                     >
-                      {order.isScanned ? "Escaneado" : "Pendiente"}
+                      {order.isCompleted ? "Completada" : "Pendiente"}
                     </span>
                   </div>
-                  <div className="text-xs text-gray-600 space-y-1">
+                  <div className="text-xs text-gray-700 space-y-1">
+                    <p className="font-medium">Cliente: {order.client.name}</p>
+                    <p className="text-gray-600">DNI: {order.client.dni}</p>
                     {order.items.map((item, index) => (
                       <p key={index}>
                         {item.quantity}x {item.product.name} - $
@@ -563,20 +489,9 @@ export default function OrdersManagement() {
                     ))}
                   </div>
                   <div className="flex justify-between items-center mt-2">
-                    <p className="text-xs text-gray-500">
-                      QR: {order.qrCode} |{" "}
+                    <p className="text-xs text-gray-600">
                       {new Date(order.createdAt).toLocaleDateString()}
                     </p>
-                    <Button
-                      onClick={() => {
-                        setGeneratedQR(order.qrCode);
-                      }}
-                      variant="outline"
-                      size="sm"
-                      className="text-xs"
-                    >
-                      Ver QR
-                    </Button>
                   </div>
                 </div>
               ))}

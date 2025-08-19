@@ -1,20 +1,51 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "../../../generated/prisma";
 
 const prisma = new PrismaClient();
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    // Endpoint público - no requiere autenticación
-    // Para proteger este endpoint, agrega middleware de autenticación
+    const { searchParams } = new URL(request.url);
+    const dni = searchParams.get("dni");
 
-    // Obtener todos los usuarios (sin passwords por seguridad)
+    // Si se proporciona DNI, buscar usuario específico
+    if (dni) {
+      const user = await prisma.user.findUnique({
+        where: { dni: dni.trim() },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          dni: true,
+          avatar: true,
+          puntos: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+
+      if (!user) {
+        return NextResponse.json(
+          { success: false, error: "Usuario no encontrado" },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json({
+        success: true,
+        user,
+      });
+    }
+
+    // Si no se proporciona DNI, obtener todos los usuarios (sin passwords por seguridad)
     const users = await prisma.user.findMany({
       select: {
         id: true,
         name: true,
         email: true,
+        dni: true,
         avatar: true,
+        puntos: true,
         createdAt: true,
         updatedAt: true,
       },

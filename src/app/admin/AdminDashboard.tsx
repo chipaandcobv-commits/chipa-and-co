@@ -13,11 +13,13 @@ interface Analytics {
     totalProducts: number;
     activeProducts: number;
     totalOrders: number;
-    scannedOrders: number;
+    completedOrders: number;
     totalPointsDistributed: number;
     totalPointsSpent: number;
+    totalHistoricPoints: number;
+    totalCurrentPoints: number;
   };
-  scansByDay: Record<string, { total: number; points: number; scans: number }>;
+  ordersByDay: Record<string, { total: number; points: number; orders: number }>;
   topProducts: Array<{
     product: {
       id: string;
@@ -66,14 +68,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
-      router.push("/login");
-    } catch (error) {
-      console.error("Error during logout:", error);
-    }
-  };
+
 
   if (loading) {
     return (
@@ -91,15 +86,15 @@ export default function AdminDashboard() {
     );
   }
 
-  const chartData = analytics
-    ? Object.keys(analytics.scansByDay)
+  const chartData = analytics && analytics.ordersByDay
+    ? Object.keys(analytics.ordersByDay)
         .slice(-7)
         .reduce((acc, date, index) => {
-          const dayData = Object.values(analytics.scansByDay).slice(-7)[index];
+          const dayValues = Object.values(analytics.ordersByDay).slice(-7)[index];
           acc[date] = {
-            total: dayData.total,
-            quantity: dayData.scans,
-            sales: dayData.scans,
+            total: dayValues.total,
+            quantity: dayValues.orders,
+            sales: dayValues.orders,
           };
           return acc;
         }, {} as Record<string, { total: number; quantity: number; sales: number }>)
@@ -107,29 +102,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-orange-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <DashboardIcon className="w-8 h-8 text-orange-600" />
-              <h1 className="text-xl font-semibold text-gray-900">
-                Panel de Administración
-              </h1>
-            </div>
-            <Button
-              onClick={handleLogout}
-              variant="outline"
-              size="sm"
-              className="flex items-center"
-            >
-              <LogoutIcon className="w-4 h-4 mr-2" />
-              Cerrar Sesión
-            </Button>
-          </div>
-        </div>
-      </header>
-
       {/* Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Summary Cards */}
@@ -170,7 +142,7 @@ export default function AdminDashboard() {
                   {analytics?.summary.totalOrders || 0}
                 </p>
                 <p className="text-xs text-gray-500">
-                  {analytics?.summary.scannedOrders || 0} escaneadas
+                  {analytics?.summary.completedOrders || 0} completadas
                 </p>
               </div>
             </div>
@@ -180,12 +152,48 @@ export default function AdminDashboard() {
             <div className="flex items-center">
               <div className="text-2xl mr-3">💎</div>
               <div>
-                <p className="text-sm font-medium text-gray-600">Puntos</p>
+                <p className="text-sm font-medium text-gray-600">Puntos Actuales</p>
                 <p className="text-2xl font-bold text-orange-600">
-                  {analytics?.summary.totalPointsDistributed || 0}
+                  {analytics?.summary.totalCurrentPoints?.toLocaleString() || 0}
                 </p>
                 <p className="text-xs text-gray-500">
                   {analytics?.summary.totalPointsSpent || 0} gastados
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Puntos Históricos */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div className="bg-white rounded-lg shadow-sm border border-green-100 p-6">
+            <div className="flex items-center">
+              <div className="text-2xl mr-3">📈</div>
+              <div>
+                <p className="text-sm font-medium text-gray-600">Puntos Históricos</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {analytics?.summary.totalHistoricPoints?.toLocaleString() || 0}
+                </p>
+                <p className="text-xs text-gray-500">
+                  Total acumulado por todos los usuarios
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm border border-blue-100 p-6">
+            <div className="flex items-center">
+              <div className="text-2xl mr-3">📊</div>
+              <div>
+                <p className="text-sm font-medium text-gray-600">Promedio por Usuario</p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {analytics?.summary.totalUsers 
+                    ? Math.round((analytics?.summary.totalHistoricPoints || 0) / analytics?.summary.totalUsers)
+                    : 0
+                  }
+                </p>
+                <p className="text-xs text-gray-500">
+                  Puntos históricos promedio
                 </p>
               </div>
             </div>
@@ -295,13 +303,23 @@ export default function AdminDashboard() {
               </Button>
             </Link>
 
-            <Link href="/ranking">
+            <Link href="/admin/ranking">
               <Button
                 variant="outline"
                 className="w-full h-20 flex flex-col items-center justify-center"
               >
                 <div className="text-2xl mb-1">🏆</div>
-                <span>Ver Ranking</span>
+                <span>Ranking</span>
+              </Button>
+            </Link>
+
+            <Link href="/admin/validate">
+              <Button
+                variant="outline"
+                className="w-full h-20 flex flex-col items-center justify-center"
+              >
+                <div className="text-2xl mb-1">✅</div>
+                <span>Validar Premios</span>
               </Button>
             </Link>
           </div>

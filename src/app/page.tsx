@@ -17,9 +17,8 @@ export default async function HomePage() {
             Gana puntos con cada compra
             <span className="text-orange-600">💎</span>
           </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Escanea códigos QR, acumula puntos y canjea increíbles premios. ¡Es
-            fácil, rápido y completamente gratuito!
+          <p className="text-xl text-gray-700 mb-8 max-w-3xl mx-auto">
+            Presenta tu DNI al comprar, acumula puntos automáticamente y canjea increíbles premios. ¡Es fácil, rápido y completamente gratuito!
           </p>
 
           {!currentUser ? (
@@ -89,14 +88,13 @@ export default async function HomePage() {
 
             <div className="text-center p-6">
               <div className="w-20 h-20 bg-gradient-to-br from-orange-100 to-orange-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-3xl">📱</span>
+                <span className="text-3xl">💳</span>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                2. Escanea
+                2. Presenta tu DNI
               </h3>
               <p className="text-gray-600">
-                Escanea el código QR de tu ticket para ganar puntos
-                automáticamente.
+                Al momento de la compra, presenta tu DNI para que se te asignen los puntos automáticamente.
               </p>
             </div>
 
@@ -165,7 +163,7 @@ export default async function HomePage() {
                 Fácil de Usar
               </h3>
               <p className="text-sm text-gray-600">
-                Solo escanea y disfruta, sin complicaciones
+                Solo presenta tu DNI y disfruta, sin complicaciones
               </p>
             </div>
           </div>
@@ -229,9 +227,9 @@ export default async function HomePage() {
       <footer className="bg-gray-900 text-white py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
           <h3 className="text-lg font-semibold mb-4">
-            Sistema de Fidelización
+            Chipa&Co - Sistema de Fidelización
           </h3>
-          <p className="text-gray-400 mb-6">
+          <p className="text-gray-300 mb-6">
             La forma más fácil de ganar puntos y obtener premios increíbles.
           </p>
 
@@ -239,25 +237,25 @@ export default async function HomePage() {
             <div className="flex justify-center space-x-6 text-sm">
               <Link
                 href="/dashboard"
-                className="text-gray-400 hover:text-white"
+                className="text-gray-300 hover:text-white"
               >
                 Dashboard
               </Link>
-              <Link href="/rewards" className="text-gray-400 hover:text-white">
+              <Link href="/rewards" className="text-gray-300 hover:text-white">
                 Premios
               </Link>
-              <Link href="/ranking" className="text-gray-400 hover:text-white">
+              <Link href="/ranking" className="text-gray-300 hover:text-white">
                 Ranking
               </Link>
-              <Link href="/history" className="text-gray-400 hover:text-white">
+              <Link href="/history" className="text-gray-300 hover:text-white">
                 Historial
               </Link>
             </div>
           )}
 
-          <div className="mt-8 pt-8 border-t border-gray-800 text-gray-400 text-sm">
+          <div className="mt-8 pt-8 border-t border-gray-800 text-gray-300 text-sm">
             <p>
-              &copy; 2024 Sistema de Fidelización. Todos los derechos
+              &copy; 2024 Chipa&Co. Todos los derechos
               reservados.
             </p>
           </div>

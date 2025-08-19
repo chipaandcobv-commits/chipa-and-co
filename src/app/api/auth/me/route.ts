@@ -23,6 +23,8 @@ export async function GET() {
         name: true,
         email: true,
         puntos: true,
+        puntosHistoricos: true,
+        role: true,
         avatar: true,
         createdAt: true,
         updatedAt: true,

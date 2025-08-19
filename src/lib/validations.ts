@@ -36,9 +36,16 @@ export function validateName(name: string): boolean {
   return name.trim().length >= 2;
 }
 
+export function validateDni(dni: string): boolean {
+  // Validar que el DNI tenga al menos 7 caracteres y solo contenga números y letras
+  const dniRegex = /^[A-Za-z0-9]{7,}$/;
+  return dniRegex.test(dni.trim());
+}
+
 export interface RegisterFormData {
   name: string;
   email: string;
+  dni: string;
   password: string;
   confirmPassword: string;
 }
@@ -56,6 +63,10 @@ export function validateRegisterForm(data: RegisterFormData): {
 
   if (!validateName(data.name)) {
     errors.name = "El nombre debe tener al menos 2 caracteres";
+  }
+
+  if (!validateDni(data.dni)) {
+    errors.dni = "El DNI debe tener al menos 7 caracteres y contener solo números y letras";
   }
 
   if (!validateEmail(data.email)) {

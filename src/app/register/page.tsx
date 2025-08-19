@@ -11,12 +11,15 @@ import {
   EyeIcon,
   EyeOffIcon,
 } from "../../components/icons/Icons";
+import { useAuth } from "../../components/AuthContext";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { checkAuth } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    dni: "",
     password: "",
     confirmPassword: "",
   });
@@ -42,7 +45,13 @@ export default function RegisterPage() {
       const data = await response.json();
 
       if (data.success) {
-        router.push("/dashboard");
+        await checkAuth(); // Actualizar el contexto de autenticación
+        // Redirigir según el rol del usuario (los usuarios nuevos siempre son USER por defecto)
+        if (data.user.role === "ADMIN") {
+          router.push("/admin");
+        } else {
+          router.push("/dashboard");
+        }
       } else {
         setErrors(data.errors || { general: data.error });
       }
@@ -78,7 +87,7 @@ export default function RegisterPage() {
           </div>
           <h2 className="text-3xl font-bold text-gray-900">Crear Cuenta</h2>
           <p className="mt-2 text-sm text-gray-600">
-            Únete a nuestro programa de fidelización
+            Únete al programa de fidelización de Chipa&Co
           </p>
         </div>
 
@@ -100,6 +109,18 @@ export default function RegisterPage() {
               placeholder="Tu nombre completo"
               icon={<UserIcon />}
               error={errors.name}
+              required
+            />
+
+            <Input
+              label="DNI"
+              type="text"
+              name="dni"
+              value={formData.dni}
+              onChange={handleChange}
+              placeholder="Tu número de DNI"
+              icon={<UserIcon />}
+              error={errors.dni}
               required
             />
 
@@ -129,7 +150,7 @@ export default function RegisterPage() {
               />
               <button
                 type="button"
-                className="absolute right-3 top-11 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-11 text-gray-400 hover:text-gray-600 z-10"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOffIcon /> : <EyeIcon />}
@@ -150,7 +171,7 @@ export default function RegisterPage() {
               />
               <button
                 type="button"
-                className="absolute right-3 top-11 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-11 text-gray-400 hover:text-gray-600 z-10"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
                 {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}

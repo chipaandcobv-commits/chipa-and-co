@@ -4,11 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Button from "../../components/ui/Button";
-import {
-  DashboardIcon,
-  HomeIcon,
-  LogoutIcon,
-} from "../../components/icons/Icons";
+
 
 interface HistoryItem {
   type: "scan" | "claim";
@@ -36,7 +32,7 @@ export default function HistoryPage() {
   const [stats, setStats] = useState<UserStats | null>(null);
   const [user, setUser] = useState<UserInfo | null>(null);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<"all" | "scans" | "claims">("all");
+  const [filter, setFilter] = useState<"all" | "scans" | "claims">("claims");
   const router = useRouter();
 
   useEffect(() => {
@@ -55,9 +51,12 @@ export default function HistoryPage() {
         userRes.json(),
       ]);
 
-      if (historyData.success) {
+      if (historyData.success && Array.isArray(historyData.history)) {
         setHistory(historyData.history);
         setStats(historyData.stats);
+      } else {
+        setHistory([]);
+        setStats(null);
       }
 
       if (userData.success) {
@@ -65,19 +64,14 @@ export default function HistoryPage() {
       }
     } catch (error) {
       console.error("Error fetching data:", error);
+      setHistory([]);
+      setStats(null);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
-      router.push("/login");
-    } catch (error) {
-      console.error("Error during logout:", error);
-    }
-  };
+
 
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleString("es-ES", {
@@ -107,150 +101,23 @@ export default function HistoryPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-orange-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/"
-                className="flex items-center text-orange-600 hover:text-orange-700"
-              >
-                <HomeIcon className="w-5 h-5 mr-2" />
-                Inicio
-              </Link>
-              <span className="text-gray-300">/</span>
-              <Link
-                href="/dashboard"
-                className="flex items-center text-orange-600 hover:text-orange-700"
-              >
-                <DashboardIcon className="w-5 h-5 mr-2" />
-                Dashboard
-              </Link>
-              <span className="text-gray-300">/</span>
-              <span className="text-gray-700">Historial</span>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              {user && (
-                <div className="text-sm">
-                  <span className="text-gray-600">Hola, </span>
-                  <span className="font-medium text-gray-900">{user.name}</span>
-                  <span className="ml-3 px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-xs font-medium">
-                    💎 {user.puntos} puntos
-                  </span>
-                </div>
-              )}
-              <Button
-                onClick={handleLogout}
-                variant="outline"
-                size="sm"
-                className="flex items-center"
-              >
-                <LogoutIcon className="w-4 h-4 mr-2" />
-                Cerrar Sesión
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            📊 Mi Historial
+            🎁 Mis Premios Canjeados
           </h1>
           <p className="text-gray-600">
-            Revisa todas tus actividades de puntos y canjes.
+            Revisa todos los premios que has canjeado con tus puntos.
           </p>
         </div>
 
-        {/* Stats Cards */}
-        {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-lg shadow-sm border border-orange-100 p-6">
-              <div className="flex items-center">
-                <div className="text-2xl mr-3">💎</div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Puntos Actuales
-                  </p>
-                  <p className="text-2xl font-bold text-orange-600">
-                    {stats.currentPoints}
-                  </p>
-                </div>
-              </div>
-            </div>
 
-            <div className="bg-white rounded-lg shadow-sm border border-orange-100 p-6">
-              <div className="flex items-center">
-                <div className="text-2xl mr-3">📱</div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    QR Escaneados
-                  </p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {stats.totalScans}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-sm border border-orange-100 p-6">
-              <div className="flex items-center">
-                <div className="text-2xl mr-3">🎁</div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Premios Canjeados
-                  </p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {stats.totalClaims}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-sm border border-orange-100 p-6">
-              <div className="flex items-center">
-                <div className="text-2xl mr-3">⚡</div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Total Ganados
-                  </p>
-                  <p className="text-2xl font-bold text-green-600">
-                    {stats.totalPointsEarned}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Filter Tabs */}
         <div className="bg-white rounded-lg shadow-sm border border-orange-100 mb-8">
           <div className="border-b border-gray-200">
             <nav className="flex">
-              <button
-                onClick={() => setFilter("all")}
-                className={`px-6 py-3 text-sm font-medium border-b-2 ${
-                  filter === "all"
-                    ? "border-orange-500 text-orange-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700"
-                }`}
-              >
-                Todas las actividades
-              </button>
-              <button
-                onClick={() => setFilter("scans")}
-                className={`px-6 py-3 text-sm font-medium border-b-2 ${
-                  filter === "scans"
-                    ? "border-orange-500 text-orange-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700"
-                }`}
-              >
-                QR Escaneados
-              </button>
               <button
                 onClick={() => setFilter("claims")}
                 className={`px-6 py-3 text-sm font-medium border-b-2 ${
@@ -261,12 +128,23 @@ export default function HistoryPage() {
               >
                 Premios Canjeados
               </button>
+
+              <button
+                onClick={() => setFilter("all")}
+                className={`px-6 py-3 text-sm font-medium border-b-2 ${
+                  filter === "all"
+                    ? "border-orange-500 text-orange-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                Todos los Premios
+              </button>
             </nav>
           </div>
 
           {/* History List */}
           <div className="divide-y divide-gray-200">
-            {history.map((item) => (
+            {Array.isArray(history) && history.map((item) => (
               <div
                 key={`${item.type}-${item.id}`}
                 className="p-6 hover:bg-gray-50"
@@ -278,7 +156,7 @@ export default function HistoryPage() {
                       <div className="flex items-center space-x-2 mb-1">
                         <h3 className="font-medium text-gray-900">
                           {item.type === "scan"
-                            ? "QR Escaneado"
+                            ? "Compra Registrada"
                             : "Premio Canjeado"}
                         </h3>
                         <span
@@ -292,7 +170,7 @@ export default function HistoryPage() {
                       </div>
 
                       {item.type === "scan" && item.details && (
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm text-gray-700">
                           <p>Orden: {item.details.orderId}</p>
                           <p>
                             Total: ${item.details.totalAmount?.toLocaleString()}
@@ -315,7 +193,7 @@ export default function HistoryPage() {
                       )}
 
                       {item.type === "claim" && item.details && (
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm text-gray-700">
                           <p className="font-medium">{item.details.reward}</p>
                           {item.details.description && (
                             <p>{item.details.description}</p>
@@ -335,7 +213,7 @@ export default function HistoryPage() {
                       )}
                     </div>
                   </div>
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-gray-600">
                     {formatDate(item.date)}
                   </div>
                 </div>
@@ -343,28 +221,18 @@ export default function HistoryPage() {
             ))}
           </div>
 
-          {history.length === 0 && (
-            <div className="text-center py-12">
-              <div className="text-6xl mb-4">📊</div>
-              <h3 className="text-xl font-medium text-gray-900 mb-2">
-                {filter === "all" && "No tienes actividad aún"}
-                {filter === "scans" && "No has escaneado QR aún"}
-                {filter === "claims" && "No has canjeado premios aún"}
-              </h3>
-              <p className="text-gray-600 mb-4">
-                {filter === "all" &&
-                  "¡Comienza escaneando tu primer código QR!"}
-                {filter === "scans" &&
-                  "¡Escanea códigos QR de tus compras para ganar puntos!"}
-                {filter === "claims" &&
-                  "¡Ve a la sección de premios para canjear tus puntos!"}
-              </p>
+          {(!Array.isArray(history) || history.length === 0) && (
+                          <div className="text-center py-12">
+                <div className="text-6xl mb-4">🎁</div>
+                <h3 className="text-xl font-medium text-gray-900 mb-2">
+                  No has canjeado premios aún
+                </h3>
+                <p className="text-gray-700 mb-4">
+                  ¡Ve a la sección de premios para canjear tus puntos!
+                </p>
               <div className="flex justify-center space-x-4">
                 <Link href="/rewards">
                   <Button variant="outline">Ver Premios</Button>
-                </Link>
-                <Link href="/ranking">
-                  <Button variant="outline">Ver Ranking</Button>
                 </Link>
               </div>
             </div>

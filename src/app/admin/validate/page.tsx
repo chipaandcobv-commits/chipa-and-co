@@ -1,15 +1,15 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser } from "../../lib/auth";
-import RankingPage from "./RankingPage";
+import { getCurrentUser } from "../../../lib/auth";
+import ValidateRewards from "./ValidateRewards";
 
 export const dynamic = "force-dynamic";
 
-export default async function UserRankingPage() {
+export default async function AdminValidatePage() {
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {
     redirect("/login");
   }
 
-  return <RankingPage />;
+  return <ValidateRewards />;
 }

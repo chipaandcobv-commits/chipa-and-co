@@ -22,11 +22,12 @@ export async function GET(request: NextRequest) {
       select: {
         id: true,
         name: true,
+        dni: true,
         puntos: true,
         createdAt: true,
         _count: {
           select: {
-            qrScans: true,
+            orders: true,
             rewardClaims: true,
           },
         },
@@ -50,7 +51,7 @@ export async function GET(request: NextRequest) {
     const usersWithRank = users.map((user, index) => ({
       ...user,
       rank: skip + index + 1,
-      scansCount: user._count.qrScans,
+      ordersCount: user._count.orders,
       claimsCount: user._count.rewardClaims,
     }));
 

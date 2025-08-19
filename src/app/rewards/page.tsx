@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "../../lib/auth";
 import RewardsPage from "./RewardsPage";
+import AdminRedirect from "../../components/AdminRedirect";
 
 export const dynamic = "force-dynamic";
 
@@ -11,5 +12,9 @@ export default async function UserRewardsPage() {
     redirect("/login");
   }
 
-  return <RewardsPage />;
+  return (
+    <AdminRedirect>
+      <RewardsPage />
+    </AdminRedirect>
+  );
 }

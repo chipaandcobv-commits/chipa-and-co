@@ -18,16 +18,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { name, email, password } = data;
+    const { name, email, dni, password } = data;
 
-    // Verificar si el usuario ya existe
-    const existingUser = await prisma.user.findUnique({
+    // Verificar si el usuario ya existe por email
+    const existingUserByEmail = await prisma.user.findUnique({
       where: { email },
     });
 
-    if (existingUser) {
+    if (existingUserByEmail) {
       return NextResponse.json(
         { success: false, errors: { email: "Este email ya está registrado" } },
+        { status: 400 }
+      );
+    }
+
+    // Verificar si el usuario ya existe por DNI
+    const existingUserByDni = await prisma.user.findUnique({
+      where: { dni },
+    });
+
+    if (existingUserByDni) {
+      return NextResponse.json(
+        { success: false, errors: { dni: "Este DNI ya está registrado" } },
         { status: 400 }
       );
     }
@@ -40,6 +52,7 @@ export async function POST(request: NextRequest) {
       data: {
         name,
         email,
+        dni,
         password: hashedPassword,
       },
     });
@@ -60,6 +73,8 @@ export async function POST(request: NextRequest) {
         id: user.id,
         name: user.name,
         email: user.email,
+        dni: user.dni,
+        role: user.role,
         createdAt: user.createdAt,
       },
     });

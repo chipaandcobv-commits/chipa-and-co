@@ -4,22 +4,18 @@ import { getCurrentUser } from "../../../../lib/auth";
 
 const prisma = new PrismaClient();
 
-interface ScanData {
+interface OrderData {
   id: string;
-  pointsEarned: number;
+  totalPoints: number;
+  totalAmount: number;
   createdAt: Date;
-  order: {
-    id: string;
-    qrCode: string;
-    totalAmount: number;
-    items: Array<{
-      product: {
-        name: string;
-      };
-      quantity: number;
-      total: number;
-    }>;
-  };
+  items: Array<{
+    product: {
+      name: string;
+    };
+    quantity: number;
+    total: number;
+  }>;
 }
 
 interface ClaimData {
@@ -49,34 +45,32 @@ export async function GET(request: NextRequest) {
     }
 
     const url = new URL(request.url);
-    const type = url.searchParams.get("type"); // 'scans', 'claims', or 'all'
+    const type = url.searchParams.get("type"); // 'orders', 'claims', or 'all'
     const limit = url.searchParams.get("limit");
 
     const pageSize = limit ? parseInt(limit) : 20;
 
-    let scans: ScanData[] = [];
+    let orders: OrderData[] = [];
     let claims: ClaimData[] = [];
 
-    // Obtener escaneos de QR si se solicita
-    if (type === "scans" || type === "all" || !type) {
-      scans = await prisma.qRScan.findMany({
+    // Obtener órdenes si se solicita
+    if (type === "orders" || type === "all" || !type) {
+      const ordersData = await prisma.order.findMany({
         where: {
-          userId: currentUser.userId,
+          clientDni: String(currentUser.dni || ""),
         },
         include: {
-          order: {
+          items: {
             include: {
-              items: {
-                include: {
-                  product: true,
-                },
-              },
+              product: true,
             },
           },
         },
         orderBy: { createdAt: "desc" },
-        take: type === "scans" ? pageSize : Math.floor(pageSize / 2),
+        take: type === "orders" ? pageSize : Math.floor(pageSize / 2),
       });
+
+      orders = ordersData as unknown as OrderData[];
     }
 
     // Obtener canjes de premios si se solicita
@@ -95,7 +89,7 @@ export async function GET(request: NextRequest) {
 
     // Combinar y ordenar por fecha si se solicita todo
     let combinedHistory: Array<{
-      type: "scan" | "claim";
+      type: "order" | "claim";
       id: string;
       date: Date;
       points: number;
@@ -103,16 +97,15 @@ export async function GET(request: NextRequest) {
     }> = [];
 
     if (type === "all" || !type) {
-      const scanHistory = scans.map((scan) => ({
-        type: "scan" as const,
-        id: scan.id,
-        date: scan.createdAt,
-        points: scan.pointsEarned,
+      const orderHistory = orders.map((order) => ({
+        type: "order" as const,
+        id: order.id,
+        date: order.createdAt,
+        points: order.totalPoints,
         details: {
-          orderId: scan.order.id,
-          qrCode: scan.order.qrCode,
-          totalAmount: scan.order.totalAmount,
-          items: scan.order.items.map((item) => ({
+          orderId: order.id,
+          totalAmount: order.totalAmount,
+          items: order.items.map((item) => ({
             product: item.product.name,
             quantity: item.quantity,
             total: item.total,
@@ -132,7 +125,7 @@ export async function GET(request: NextRequest) {
         },
       }));
 
-      combinedHistory = [...scanHistory, ...claimHistory]
+      combinedHistory = [...orderHistory, ...claimHistory]
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
         .slice(0, pageSize);
     }
@@ -144,16 +137,16 @@ export async function GET(request: NextRequest) {
         puntos: true,
         _count: {
           select: {
-            qrScans: true,
+            orders: true,
             rewardClaims: true,
           },
         },
       },
     });
 
-    const totalPointsEarned = await prisma.qRScan.aggregate({
-      where: { userId: currentUser.userId },
-      _sum: { pointsEarned: true },
+    const totalPointsEarned = await prisma.order.aggregate({
+      where: { clientDni: String(currentUser.dni || "") },
+      _sum: { totalPoints: true },
     });
 
     const totalPointsSpent = await prisma.rewardClaim.aggregate({
@@ -161,21 +154,58 @@ export async function GET(request: NextRequest) {
       _sum: { pointsSpent: true },
     });
 
+    // Preparar la respuesta según el tipo solicitado
+    let historyResponse: Array<{
+      type: "order" | "claim";
+      id: string;
+      date: Date;
+      points: number;
+      details: any;
+    }>;
+    
+    if (type === "all" || !type) {
+      historyResponse = combinedHistory;
+    } else if (type === "orders") {
+      historyResponse = orders.map((order) => ({
+        type: "order" as const,
+        id: order.id,
+        date: order.createdAt,
+        points: order.totalPoints,
+        details: {
+          orderId: order.id,
+          totalAmount: order.totalAmount,
+          items: order.items.map((item) => ({
+            product: item.product.name,
+            quantity: item.quantity,
+            total: item.total,
+          })),
+        },
+      }));
+    } else if (type === "claims") {
+      historyResponse = claims.map((claim) => ({
+        type: "claim" as const,
+        id: claim.id,
+        date: claim.createdAt,
+        points: -claim.pointsSpent, // Negativo porque son puntos gastados
+        details: {
+          reward: claim.reward.name,
+          description: claim.reward.description,
+          status: claim.status,
+        },
+      }));
+    } else {
+      historyResponse = [];
+    }
+
     return NextResponse.json({
       success: true,
-      history:
-        type === "all" || !type
-          ? combinedHistory
-          : {
-              scans: type === "scans" ? scans : [],
-              claims: type === "claims" ? claims : [],
-            },
+      history: historyResponse,
       stats: {
         currentPoints: userStats?.puntos || 0,
-        totalScans: userStats?._count.qrScans || 0,
+        totalOrders: userStats?._count.orders || 0,
         totalClaims: userStats?._count.rewardClaims || 0,
-        totalPointsEarned: totalPointsEarned._sum.pointsEarned || 0,
-        totalPointsSpent: totalPointsSpent._sum.pointsSpent || 0,
+        totalPointsEarned: totalPointsEarned._sum?.totalPoints || 0,
+        totalPointsSpent: totalPointsSpent._sum?.pointsSpent || 0,
       },
     });
   } catch (error) {

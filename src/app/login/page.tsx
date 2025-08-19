@@ -10,9 +10,11 @@ import {
   EyeIcon,
   EyeOffIcon,
 } from "../../components/icons/Icons";
+import { useAuth } from "../../components/AuthContext";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { checkAuth } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -38,7 +40,13 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (data.success) {
-        router.push("/dashboard");
+        await checkAuth(); // Actualizar el contexto de autenticación
+        // Redirigir según el rol del usuario
+        if (data.user.role === "ADMIN") {
+          router.push("/admin");
+        } else {
+          router.push("/dashboard");
+        }
       } else {
         setErrors(data.errors || { general: data.error });
       }
@@ -74,7 +82,7 @@ export default function LoginPage() {
           </div>
           <h2 className="text-3xl font-bold text-gray-900">Iniciar Sesión</h2>
           <p className="mt-2 text-sm text-gray-600">
-            Accede a tu cuenta de fidelización
+            Accede a tu cuenta de Chipa&Co
           </p>
         </div>
 
@@ -113,7 +121,7 @@ export default function LoginPage() {
               />
               <button
                 type="button"
-                className="absolute right-3 top-11 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-11 text-gray-400 hover:text-gray-600 z-10"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOffIcon /> : <EyeIcon />}

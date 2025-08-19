@@ -23,6 +23,7 @@ async function createAdmin() {
     const adminData = {
       name: "Administrador",
       email: "admin@app-fidelizacion.com",
+      dni: "ADMIN001",
       password: "Admin123456", // Cambia esta contraseña
     };
 
@@ -34,6 +35,7 @@ async function createAdmin() {
       data: {
         name: adminData.name,
         email: adminData.email,
+        dni: adminData.dni,
         password: hashedPassword,
         role: "ADMIN",
       },
@@ -41,6 +43,7 @@ async function createAdmin() {
         id: true,
         name: true,
         email: true,
+        dni: true,
         role: true,
         createdAt: true,
       },
@@ -51,6 +54,7 @@ async function createAdmin() {
     console.log(`   ID: ${admin.id}`);
     console.log(`   Nombre: ${admin.name}`);
     console.log(`   Email: ${admin.email}`);
+    console.log(`   DNI: ${admin.dni}`);
     console.log(`   Contraseña: ${adminData.password}`);
     console.log("");
     console.log("🔐 IMPORTANTE: Cambia la contraseña después del primer login");

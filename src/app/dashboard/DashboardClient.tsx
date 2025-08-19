@@ -8,13 +8,14 @@ import Button from "../../components/ui/Button";
 interface User {
   name: string;
   email: string;
+  dni: string;
   puntos: number;
   role: string;
 }
 
 interface UserStats {
   currentPoints: number;
-  totalScans: number;
+  totalOrders: number;
   totalClaims: number;
   totalPointsEarned: number;
   totalPointsSpent: number;
@@ -94,6 +95,11 @@ export default function DashboardClient() {
           <p className="text-gray-600">
             Administra tus puntos y descubre increíbles premios.
           </p>
+          {user?.dni && (
+            <p className="text-sm text-gray-500 mt-1">
+              DNI: {user.dni}
+            </p>
+          )}
         </div>
 
         {/* Points Card */}
@@ -112,16 +118,16 @@ export default function DashboardClient() {
 
         {/* Stats Cards */}
         {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div className="bg-white rounded-lg shadow-sm border border-orange-100 p-6">
               <div className="flex items-center">
-                <div className="text-2xl mr-3">📱</div>
+                <div className="text-2xl mr-3">🛒</div>
                 <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    QR Escaneados
+                  <p className="text-sm font-medium text-gray-700">
+                    Órdenes Realizadas
                   </p>
                   <p className="text-2xl font-bold text-gray-900">
-                    {stats.totalScans}
+                    {stats.totalOrders}
                   </p>
                 </div>
               </div>
@@ -131,7 +137,7 @@ export default function DashboardClient() {
               <div className="flex items-center">
                 <div className="text-2xl mr-3">🎁</div>
                 <div>
-                  <p className="text-sm font-medium text-gray-600">
+                  <p className="text-sm font-medium text-gray-700">
                     Premios Canjeados
                   </p>
                   <p className="text-2xl font-bold text-gray-900">
@@ -141,33 +147,9 @@ export default function DashboardClient() {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm border border-orange-100 p-6">
-              <div className="flex items-center">
-                <div className="text-2xl mr-3">⚡</div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Total Ganados
-                  </p>
-                  <p className="text-2xl font-bold text-green-600">
-                    {stats.totalPointsEarned}
-                  </p>
-                </div>
-              </div>
-            </div>
 
-            <div className="bg-white rounded-lg shadow-sm border border-orange-100 p-6">
-              <div className="flex items-center">
-                <div className="text-2xl mr-3">💸</div>
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Total Gastados
-                  </p>
-                  <p className="text-2xl font-bold text-orange-600">
-                    {stats.totalPointsSpent}
-                  </p>
-                </div>
-              </div>
-            </div>
+
+
           </div>
         )}
 
@@ -176,7 +158,7 @@ export default function DashboardClient() {
           <h2 className="text-xl font-semibold text-gray-900 mb-6">
             Acciones Rápidas
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Link href="/rewards">
               <Button
                 variant="outline"
@@ -188,37 +170,18 @@ export default function DashboardClient() {
               </Button>
             </Link>
 
-            <Link href="/ranking">
-              <Button
-                variant="outline"
-                className="w-full h-24 flex flex-col items-center justify-center hover:bg-orange-50"
-              >
-                <div className="text-3xl mb-2">🏆</div>
-                <span className="font-medium">Ranking</span>
-                <span className="text-xs text-gray-500">Ve tu posición</span>
-              </Button>
-            </Link>
-
             <Link href="/history">
               <Button
                 variant="outline"
                 className="w-full h-24 flex flex-col items-center justify-center hover:bg-orange-50"
               >
-                <div className="text-3xl mb-2">📊</div>
-                <span className="font-medium">Mi Historial</span>
+                <div className="text-3xl mb-2">📋</div>
+                <span className="font-medium">Mis Premios</span>
                 <span className="text-xs text-gray-500">
-                  Revisa tu actividad
+                  Premios canjeados
                 </span>
               </Button>
             </Link>
-
-            <div className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg">
-              <div className="text-3xl mb-2">📱</div>
-              <span className="font-medium text-gray-700">Escanea QR</span>
-              <span className="text-xs text-gray-500 text-center">
-                Usa la cámara de tu móvil para escanear códigos QR
-              </span>
-            </div>
           </div>
         </div>
 
@@ -242,14 +205,13 @@ export default function DashboardClient() {
 
             <div className="text-center">
               <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">📱</span>
+                <span className="text-2xl">💳</span>
               </div>
               <h3 className="font-medium text-gray-900 mb-2">
-                2. Escanea el QR
+                2. Presenta tu DNI
               </h3>
               <p className="text-sm text-gray-600">
-                Escanea el código QR de tu ticket para ganar puntos
-                automáticamente.
+                Al momento de la compra, presenta tu DNI para que se te asignen los puntos automáticamente.
               </p>
             </div>
 

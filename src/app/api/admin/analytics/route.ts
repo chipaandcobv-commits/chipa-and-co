@@ -25,7 +25,16 @@ export async function GET(request: NextRequest) {
       where: { isActive: true },
     });
 
-    // Órdenes y escaneos en el período
+    // Estadísticas de puntos
+    const pointsStats = await prisma.user.aggregate({
+      where: { role: "USER" },
+      _sum: {
+        puntos: true,
+        puntosHistoricos: true,
+      },
+    });
+
+    // Órdenes en el período
     const orders = await prisma.order.findMany({
       where: {
         createdAt: {
@@ -38,35 +47,29 @@ export async function GET(request: NextRequest) {
             product: true,
           },
         },
-        scans: true,
-      },
-    });
-
-    // Escaneos por día en el período
-    const scans = await prisma.qRScan.findMany({
-      where: {
-        createdAt: {
-          gte: startDate,
+        client: {
+          select: {
+            id: true,
+            name: true,
+            dni: true,
+          },
         },
       },
-      include: {
-        order: true,
-      },
     });
 
-    // Agrupar por día
-    const scansByDay = scans.reduce(
+    // Agrupar órdenes por día
+    const ordersByDay = orders.reduce(
       (
-        acc: Record<string, { total: number; points: number; scans: number }>,
-        scan
+        acc: Record<string, { total: number; points: number; orders: number }>,
+        order
       ) => {
-        const day = scan.createdAt.toISOString().split("T")[0];
+        const day = order.createdAt.toISOString().split("T")[0];
         if (!acc[day]) {
-          acc[day] = { total: 0, points: 0, scans: 0 };
+          acc[day] = { total: 0, points: 0, orders: 0 };
         }
-        acc[day].total += scan.order.totalAmount;
-        acc[day].points += scan.pointsEarned;
-        acc[day].scans += 1;
+        acc[day].total += order.totalAmount;
+        acc[day].points += order.totalPoints;
+        acc[day].orders += 1;
         return acc;
       },
       {}
@@ -112,7 +115,7 @@ export async function GET(request: NextRequest) {
 
     // Proyecciones simples (basadas en tendencia del período)
     const dailyAverage =
-      Object.values(scansByDay).reduce((acc, day) => acc + day.total, 0) /
+      Object.values(ordersByDay).reduce((acc, day) => acc + day.total, 0) /
       periodDays;
     const projections = {
       nextWeek: dailyAverage * 7,
@@ -132,14 +135,18 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const totalPointsDistributed = scans.reduce(
-      (acc, scan) => acc + scan.pointsEarned,
+    const totalPointsDistributed = orders.reduce(
+      (acc, order) => acc + order.totalPoints,
       0
     );
     const totalPointsSpent = rewardClaims.reduce(
       (acc, claim) => acc + claim.pointsSpent,
       0
     );
+
+    // Usar estadísticas de puntos históricos
+    const totalHistoricPoints = pointsStats._sum.puntosHistoricos || 0;
+    const totalCurrentPoints = pointsStats._sum.puntos || 0;
 
     return NextResponse.json({
       success: true,
@@ -149,11 +156,13 @@ export async function GET(request: NextRequest) {
           totalProducts,
           activeProducts,
           totalOrders: orders.length,
-          scannedOrders: orders.filter((order) => order.isScanned).length,
+          completedOrders: orders.filter((order) => order.isCompleted).length,
           totalPointsDistributed,
           totalPointsSpent,
+          totalHistoricPoints,
+          totalCurrentPoints,
         },
-        scansByDay,
+        ordersByDay,
         topProducts,
         projections,
         rewardStats: {

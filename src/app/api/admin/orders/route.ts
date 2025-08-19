@@ -16,15 +16,12 @@ export async function GET() {
             product: true,
           },
         },
-        scans: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-              },
-            },
+        client: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            dni: true,
           },
         },
       },
@@ -52,13 +49,13 @@ export async function GET() {
   }
 }
 
-// POST - Crear nuevo pedido con QR
+// POST - Crear nuevo pedido con DNI del cliente
 export async function POST(request: NextRequest) {
   try {
     await requireAdmin();
 
     const data = await request.json();
-    const { items } = data; // [{ productId, quantity }]
+    const { items, clientDni } = data; // [{ productId, quantity }], clientDni
 
     // Validaciones
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -68,16 +65,40 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!clientDni || typeof clientDni !== "string" || clientDni.trim() === "") {
+      return NextResponse.json(
+        { success: false, error: "El DNI del cliente es requerido" },
+        { status: 400 }
+      );
+    }
+
+    // Verificar que el cliente existe
+    const client = await prisma.user.findUnique({
+      where: { dni: clientDni.trim() },
+    });
+
+    if (!client) {
+      return NextResponse.json(
+        { success: false, error: "Cliente no encontrado con el DNI proporcionado" },
+        { status: 404 }
+      );
+    }
+
     // Obtener configuración de puntos
     const pointsConfig = await prisma.systemConfig.findUnique({
       where: { key: "pointsPerPeso" },
     });
 
-    const pointsPerPeso = pointsConfig ? parseFloat(pointsConfig.value) : 0.001;
+    const pointsPerPeso = pointsConfig ? parseFloat(pointsConfig.value) : 1; // 1 peso = 1 punto por defecto
 
     // Validar y calcular productos
     let totalAmount = 0;
-    const orderItems = [];
+    const orderItems: Array<{
+      productId: string;
+      quantity: number;
+      unitPrice: number;
+      total: number;
+    }> = [];
 
     for (const item of items) {
       const { productId, quantity } = item;
@@ -117,35 +138,56 @@ export async function POST(request: NextRequest) {
     // Calcular puntos totales
     const totalPoints = Math.floor(totalAmount * pointsPerPeso);
 
-    // Generar código QR único
-    const qrCode = generateQRCode();
-
-    // Crear pedido
-    const order = await prisma.order.create({
-      data: {
-        totalAmount,
-        totalPoints,
-        qrCode,
-        items: {
-          create: orderItems,
-        },
-      },
-      include: {
-        items: {
-          include: {
-            product: true,
+    // Usar transacción para asegurar consistencia
+    const result = await prisma.$transaction(async (tx) => {
+      // Crear pedido
+      const order = await tx.order.create({
+        data: {
+          totalAmount,
+          totalPoints,
+          clientDni: clientDni.trim(),
+          items: {
+            create: orderItems,
           },
         },
-      },
+        include: {
+          items: {
+            include: {
+              product: true,
+            },
+          },
+          client: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              dni: true,
+            },
+          },
+        },
+      });
+
+      // Actualizar puntos del cliente
+      const updatedClient = await tx.user.update({
+        where: { dni: clientDni.trim() },
+        data: {
+          puntos: {
+            increment: totalPoints,
+          },
+          puntosHistoricos: {
+            increment: totalPoints,
+          },
+        },
+      });
+
+      return { order, updatedClient };
     });
 
     return NextResponse.json({
       success: true,
-      order,
-      qrCode,
-      qrUrl: `${
-        process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-      }/scan/${qrCode}`,
+      order: result.order,
+      client: result.updatedClient,
+      message: `Orden creada exitosamente. ${totalPoints} puntos agregados al cliente ${result.updatedClient.name}`,
     });
   } catch (error: any) {
     console.error("Create order error:", error);
@@ -162,14 +204,4 @@ export async function POST(request: NextRequest) {
   } finally {
     await prisma.$disconnect();
   }
-}
-
-function generateQRCode(): string {
-  // Generar código QR único de 12 caracteres
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let result = "";
-  for (let i = 0; i < 12; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
 }

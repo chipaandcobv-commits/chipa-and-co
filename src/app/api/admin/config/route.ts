@@ -13,9 +13,9 @@ export async function GET() {
 
     // Configuración por defecto si no existe
     const defaultConfigs = {
-      pointsPerPeso: "0.001", // 1000 pesos = 1 punto
-      systemName: "Sistema de Fidelización",
-      welcomeMessage: "¡Bienvenido! Escanea códigos QR para ganar puntos.",
+      pointsPerPeso: "1", // 1 peso = 1 punto por defecto
+      systemName: "Chipa&Co - Sistema de Fidelización",
+      welcomeMessage: "¡Bienvenido a Chipa&Co! Presenta tu DNI para ganar puntos.",
     };
 
     const configMap: Record<string, string> = {};
@@ -122,7 +122,7 @@ export async function PUT(request: NextRequest) {
 
 function getConfigDescription(key: string): string {
   const descriptions: Record<string, string> = {
-    pointsPerPeso: "Cantidad de puntos que se otorgan por cada peso gastado",
+    pointsPerPeso: "Cantidad de puntos que se otorgan por cada peso gastado (1 = 1 peso = 1 punto)",
     systemName: "Nombre del sistema de fidelización",
     welcomeMessage: "Mensaje de bienvenida para usuarios",
   };

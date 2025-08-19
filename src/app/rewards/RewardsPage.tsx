@@ -4,11 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Button from "../../components/ui/Button";
-import {
-  DashboardIcon,
-  HomeIcon,
-  LogoutIcon,
-} from "../../components/icons/Icons";
+
 
 interface Reward {
   id: string;
@@ -92,14 +88,7 @@ export default function RewardsPage() {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
-      router.push("/login");
-    } catch (error) {
-      console.error("Error during logout:", error);
-    }
-  };
+
 
   const canClaimReward = (reward: Reward) => {
     if (!user) return false;
@@ -118,54 +107,6 @@ export default function RewardsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-orange-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/"
-                className="flex items-center text-orange-600 hover:text-orange-700"
-              >
-                <HomeIcon className="w-5 h-5 mr-2" />
-                Inicio
-              </Link>
-              <span className="text-gray-300">/</span>
-              <Link
-                href="/dashboard"
-                className="flex items-center text-orange-600 hover:text-orange-700"
-              >
-                <DashboardIcon className="w-5 h-5 mr-2" />
-                Dashboard
-              </Link>
-              <span className="text-gray-300">/</span>
-              <span className="text-gray-700">Premios</span>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              {user && (
-                <div className="text-sm">
-                  <span className="text-gray-600">Hola, </span>
-                  <span className="font-medium text-gray-900">{user.name}</span>
-                  <span className="ml-3 px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-xs font-medium">
-                    💎 {user.puntos} puntos
-                  </span>
-                </div>
-              )}
-              <Button
-                onClick={handleLogout}
-                variant="outline"
-                size="sm"
-                className="flex items-center"
-              >
-                <LogoutIcon className="w-4 h-4 mr-2" />
-                Cerrar Sesión
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
@@ -223,12 +164,12 @@ export default function RewardsPage() {
                 </div>
 
                 {reward.description && (
-                  <p className="text-gray-600 text-sm mb-4">
+                  <p className="text-gray-700 text-sm mb-4">
                     {reward.description}
                   </p>
                 )}
 
-                <div className="flex justify-between items-center text-sm text-gray-500 mb-4">
+                <div className="flex justify-between items-center text-sm text-gray-600 mb-4">
                   <span>
                     Stock: {reward.stock === null ? "Ilimitado" : reward.stock}
                   </span>
@@ -283,15 +224,12 @@ export default function RewardsPage() {
             ¿Necesitas más puntos?
           </h2>
           <p className="text-gray-600 mb-4">
-            Escanea códigos QR de tus compras para ganar puntos y poder canjear
+            Presenta tu DNI al realizar compras para ganar puntos y poder canjear
             estos increíbles premios.
           </p>
           <div className="flex space-x-4">
             <Link href="/dashboard">
               <Button variant="outline">Ver mi historial</Button>
-            </Link>
-            <Link href="/ranking">
-              <Button variant="outline">Ver ranking</Button>
             </Link>
           </div>
         </div>

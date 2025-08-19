@@ -48,7 +48,7 @@ export default function ConfigManagement() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(config),
+        body: JSON.stringify({ configs: config }),
       });
 
       const data = await response.json();
@@ -120,7 +120,7 @@ export default function ConfigManagement() {
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
               Configuración del Sistema
             </h1>
-            <p className="text-gray-600">
+            <p className="text-gray-700">
               Gestiona la configuración general del sistema de puntos
             </p>
           </div>
@@ -140,11 +140,11 @@ export default function ConfigManagement() {
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Equivalencia Puntos por Peso
+                Puntos por Peso
               </label>
               <p className="text-sm text-gray-500 mb-3">
-                Define cuántos pesos equivalen a 1 punto. Por ejemplo: si pones
-                1000, cada $1000 de compra = 1 punto.
+                Define cuántos puntos se otorgan por cada peso gastado. 
+                <strong> Configuración actual: {config.pointsPerPeso} peso = {config.pointsPerPeso} punto</strong>
               </p>
               <Input
                 type="number"
@@ -155,12 +155,12 @@ export default function ConfigManagement() {
                     pointsPerPeso: parseFloat(e.target.value) || 1,
                   })
                 }
-                placeholder="1000"
-                min="1"
-                step="1"
+                placeholder="1"
+                min="0.01"
+                step="0.01"
               />
-              <p className="text-xs text-gray-400 mt-1">
-                Actual: $1 peso = {(1 / config.pointsPerPeso).toFixed(4)} puntos
+              <p className="text-xs text-gray-500 mt-1">
+                Actual: $1 peso = {config.pointsPerPeso} punto(s)
               </p>
             </div>
 
@@ -178,18 +178,20 @@ export default function ConfigManagement() {
           {/* Preview */}
           <div className="mt-8 p-4 bg-orange-50 rounded-lg">
             <h3 className="font-medium text-gray-900 mb-2">Vista Previa</h3>
-            <div className="text-sm text-gray-600 space-y-1">
+            <div className="text-sm text-gray-700 space-y-1">
               <p>
-                • Una compra de $1,000 ={" "}
-                {Math.round(1000 / config.pointsPerPeso)} punto(s)
+                • Una compra de $1,000 = {Math.round(1000 * config.pointsPerPeso)} punto(s)
               </p>
               <p>
-                • Una compra de $5,000 ={" "}
-                {Math.round(5000 / config.pointsPerPeso)} punto(s)
+                • Una compra de $5,000 = {Math.round(5000 * config.pointsPerPeso)} punto(s)
               </p>
               <p>
-                • Una compra de $10,000 ={" "}
-                {Math.round(10000 / config.pointsPerPeso)} punto(s)
+                • Una compra de $10,000 = {Math.round(10000 * config.pointsPerPeso)} punto(s)
+              </p>
+            </div>
+            <div className="mt-3 p-3 bg-white rounded border border-orange-200">
+              <p className="text-sm text-orange-700 font-medium">
+                💡 Configuración de Puntos: Define la relación entre pesos gastados y puntos otorgados
               </p>
             </div>
           </div>

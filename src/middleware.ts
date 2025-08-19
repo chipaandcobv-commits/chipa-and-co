@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "./lib/auth";
 
 // Rutas que requieren autenticación
-const protectedRoutes = ["/dashboard", "/admin"];
+const protectedRoutes = ["/dashboard", "/admin", "/rewards", "/ranking", "/history"];
+
+// Rutas específicas para usuarios (no admin)
+const userOnlyRoutes = ["/dashboard", "/rewards", "/ranking", "/history"];
 
 // Rutas que redirigen al dashboard si el usuario ya está autenticado
 const authRoutes = ["/login", "/register"];
@@ -34,8 +37,13 @@ export async function middleware(request: NextRequest) {
       return response;
     }
 
-    // Nota: La verificación de rol de admin se hace en las páginas individuales
-    // para evitar problemas con Prisma en el Edge Runtime del middleware
+    // Verificar si es un admin intentando acceder a rutas de usuario
+    const isUserOnlyRoute = userOnlyRoutes.some((route) =>
+      pathname.startsWith(route)
+    );
+    
+    // Nota: No podemos verificar el rol aquí porque necesitaríamos Prisma
+    // La redirección se manejará en el cliente después del login
   }
 
   if (isAuthRoute && token) {

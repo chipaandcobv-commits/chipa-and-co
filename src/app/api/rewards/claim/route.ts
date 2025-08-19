@@ -73,13 +73,14 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      // Descontar puntos del usuario
+      // Descontar puntos del usuario (solo puntos actuales, no históricos)
       const updatedUser = await tx.user.update({
         where: { id: currentUser.userId },
         data: {
           puntos: {
             decrement: reward.pointsCost,
           },
+          // Los puntos históricos no se afectan al canjear premios
         },
       });
 

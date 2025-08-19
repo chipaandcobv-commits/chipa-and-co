@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await request.json();
-    const { name, email, password, secretKey } = data;
+    const { name, email, dni, password, secretKey } = data;
 
     // Verificar clave secreta (puedes cambiar esto por algo más seguro)
     if (
@@ -34,9 +34,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Validaciones
-    if (!name || !email || !password) {
+    if (!name || !email || !dni || !password) {
       return NextResponse.json(
-        { success: false, error: "Nombre, email y contraseña son requeridos" },
+        { success: false, error: "Nombre, email, DNI y contraseña son requeridos" },
         { status: 400 }
       );
     }
@@ -52,13 +52,25 @@ export async function POST(request: NextRequest) {
     }
 
     // Verificar si el email ya existe
-    const existingUser = await prisma.user.findUnique({
+    const existingUserByEmail = await prisma.user.findUnique({
       where: { email },
     });
 
-    if (existingUser) {
+    if (existingUserByEmail) {
       return NextResponse.json(
         { success: false, error: "Este email ya está registrado" },
+        { status: 400 }
+      );
+    }
+
+    // Verificar si el DNI ya existe
+    const existingUserByDni = await prisma.user.findUnique({
+      where: { dni },
+    });
+
+    if (existingUserByDni) {
+      return NextResponse.json(
+        { success: false, error: "Este DNI ya está registrado" },
         { status: 400 }
       );
     }
@@ -70,6 +82,7 @@ export async function POST(request: NextRequest) {
       data: {
         name,
         email,
+        dni,
         password: hashedPassword,
         role: "ADMIN",
       },
@@ -77,6 +90,7 @@ export async function POST(request: NextRequest) {
         id: true,
         name: true,
         email: true,
+        dni: true,
         role: true,
         createdAt: true,
       },

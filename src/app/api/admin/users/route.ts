@@ -23,6 +23,7 @@ export async function GET(request: NextRequest) {
       where.OR = [
         { name: { contains: search, mode: "insensitive" } },
         { email: { contains: search, mode: "insensitive" } },
+        { dni: { contains: search, mode: "insensitive" } },
       ];
     }
 
@@ -32,13 +33,14 @@ export async function GET(request: NextRequest) {
         id: true,
         name: true,
         email: true,
+        dni: true,
         role: true,
         puntos: true,
         createdAt: true,
         updatedAt: true,
         _count: {
           select: {
-            qrScans: true,
+            orders: true,
             rewardClaims: true,
           },
         },
@@ -110,6 +112,7 @@ export async function PATCH(request: NextRequest) {
         id: true,
         name: true,
         email: true,
+        dni: true,
         role: true,
         puntos: true,
         createdAt: true,

@@ -10,13 +10,6 @@ export async function GET() {
     await requireAdmin();
 
     const rewards = await prisma.reward.findMany({
-      include: {
-        _count: {
-          select: {
-            claims: true,
-          },
-        },
-      },
       orderBy: { createdAt: "desc" },
     });
 
@@ -49,7 +42,6 @@ export async function POST(request: NextRequest) {
     const data = await request.json();
     const { name, description, pointsCost, stock, imageUrl } = data;
 
-    // Validaciones
     if (!name || !pointsCost) {
       return NextResponse.json(
         { success: false, error: "Nombre y costo en puntos son requeridos" },
@@ -57,32 +49,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (pointsCost <= 0) {
-      return NextResponse.json(
-        { success: false, error: "El costo en puntos debe ser mayor a 0" },
-        { status: 400 }
-      );
-    }
-
-    if (stock !== null && stock !== undefined && stock < 0) {
-      return NextResponse.json(
-        { success: false, error: "El stock no puede ser negativo" },
-        { status: 400 }
-      );
-    }
-
     const reward = await prisma.reward.create({
       data: {
         name,
-        description: description || null,
+        description,
         pointsCost: parseInt(pointsCost),
-        stock: stock !== null && stock !== undefined ? parseInt(stock) : null,
-        imageUrl: imageUrl || null,
+        stock: stock ? parseInt(stock) : null,
+        imageUrl,
+        isActive: true,
       },
     });
 
     return NextResponse.json({
       success: true,
+      message: "Premio creado exitosamente",
       reward,
     });
   } catch (error: any) {

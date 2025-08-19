@@ -21,6 +21,7 @@ export async function GET() {
         pointsCost: true,
         imageUrl: true,
         stock: true,
+        isActive: true,
         _count: {
           select: {
             claims: true,
@@ -29,6 +30,8 @@ export async function GET() {
       },
       orderBy: { pointsCost: "asc" },
     });
+
+
 
     return NextResponse.json({
       success: true,

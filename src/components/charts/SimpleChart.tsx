@@ -105,7 +105,7 @@ export default function SimpleChart({ data }: SimpleChartProps) {
                   x={x}
                   y={chartHeight + padding + 20}
                   textAnchor="middle"
-                  className="text-xs fill-gray-600"
+                  className="text-xs fill-gray-700"
                   transform={`rotate(-45 ${x} ${chartHeight + padding + 20})`}
                 >
                   {new Date(date).toLocaleDateString("es-ES", {
@@ -137,7 +137,7 @@ export default function SimpleChart({ data }: SimpleChartProps) {
                   x={padding - 10}
                   y={y + 4}
                   textAnchor="end"
-                  className="text-xs fill-gray-600"
+                  className="text-xs fill-gray-700"
                 >
                   ${value.toFixed(0)}
                 </text>
@@ -149,7 +149,7 @@ export default function SimpleChart({ data }: SimpleChartProps) {
 
       {/* Legend */}
       <div className="mt-4 flex justify-center">
-        <div className="flex items-center space-x-4 text-sm text-gray-600">
+        <div className="flex items-center space-x-4 text-sm text-gray-700">
           <div className="flex items-center">
             <div className="w-3 h-3 bg-orange-500 rounded-full mr-2"></div>
             Ventas diarias ($)

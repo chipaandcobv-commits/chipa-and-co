@@ -9,8 +9,9 @@ interface User {
   id: string;
   name: string;
   email: string;
+  dni: string;
   role: "USER" | "ADMIN";
-  points: number;
+  puntos: number;
 }
 
 interface NavbarProps {
@@ -105,10 +106,10 @@ export default function Navbar({ user }: NavbarProps) {
                 <div className="absolute inset-0 bg-orange-200 rounded-full scale-0 group-hover:scale-125 transition-transform duration-200 opacity-20"></div>
               </div>
               <span className="text-xl font-bold text-gray-900 hidden sm:block">
-                Sistema de Fidelización
+                Chipa&Co
               </span>
               <span className="text-lg font-bold text-gray-900 sm:hidden">
-                Fidelización
+                Chipa&Co
               </span>
             </Link>
 
@@ -175,7 +176,7 @@ export default function Navbar({ user }: NavbarProps) {
                       {user.name}
                     </p>
                     <p className="text-xs text-orange-600 font-semibold">
-                      {user.points} puntos
+                      {user.puntos} puntos
                     </p>
                   </div>
                   <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
@@ -262,8 +263,9 @@ export default function Navbar({ user }: NavbarProps) {
                   <div>
                     <p className="font-semibold text-gray-900">{user.name}</p>
                     <p className="text-sm text-orange-600 font-medium">
-                      {user.points} puntos
+                      {user.puntos} puntos
                     </p>
+                    <p className="text-xs text-gray-500">DNI: {user.dni}</p>
                     {user.role === "ADMIN" && (
                       <span className="inline-block mt-1 px-2 py-1 text-xs font-medium bg-orange-100 text-orange-800 rounded-full">
                         Administrador
@@ -274,7 +276,7 @@ export default function Navbar({ user }: NavbarProps) {
               ) : (
                 <div className="text-center">
                   <HomeIcon className="w-12 h-12 text-orange-600 mx-auto mb-2" />
-                  <p className="font-semibold text-gray-900">Bienvenido</p>
+                  <p className="font-semibold text-gray-900">Bienvenido a Chipa&Co</p>
                 </div>
               )}
             </div>
@@ -285,7 +287,7 @@ export default function Navbar({ user }: NavbarProps) {
                 <>
                   <div className="px-6 mb-6">
                     <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                      Navegación
+                      Accesos Directos
                     </h3>
                     <div className="space-y-2">
                       {navigationItems.map((item) => (
@@ -322,6 +324,19 @@ export default function Navbar({ user }: NavbarProps) {
                       </div>
                     </div>
                   )}
+
+                  <div className="px-6 mb-6">
+                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                      Mi Cuenta
+                    </h3>
+                    <div className="space-y-2">
+                      <div className="p-3 rounded-lg bg-gray-50">
+                        <p className="text-sm text-gray-600">Email: {user.email}</p>
+                        <p className="text-sm text-gray-600">DNI: {user.dni}</p>
+                        <p className="text-sm text-gray-600">Puntos: {user.puntos}</p>
+                      </div>
+                    </div>
+                  </div>
                 </>
               ) : (
                 <div className="px-6">
