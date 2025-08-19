@@ -7,8 +7,8 @@ import Button from "../../../components/ui/Button";
 import {
   CheckIcon,
   XIcon,
-  ClockIcon,
 } from "../../../components/icons/Icons";
+import { DiamondIcon } from "lucide-react";
 
 interface RewardClaim {
   id: string;
@@ -270,7 +270,7 @@ export default function ValidateRewards() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="text-sm font-medium text-orange-600">
-                        💎 {claim.pointsSpent}
+                        <DiamondIcon/>{claim.pointsSpent}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

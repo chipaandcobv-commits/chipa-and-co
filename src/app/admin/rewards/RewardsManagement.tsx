@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { DashboardIcon, LogoutIcon } from "../../../components/icons/Icons";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import { DiamondIcon } from "lucide-react";
 
 interface Reward {
   id: string;
@@ -328,7 +329,7 @@ export default function RewardsManagement() {
 
                     <div className="text-sm text-gray-600 space-y-1">
                       <p>
-                        💎 <strong>{reward.pointsCost}</strong> puntos
+                        💎<strong>{reward.pointsCost}</strong> puntos
                       </p>
                       <p>
                         📦 Stock:{" "}
