@@ -156,7 +156,6 @@ export async function GET(request: NextRequest) {
           totalProducts,
           activeProducts,
           totalOrders: orders.length,
-          completedOrders: orders.filter((order) => order.isCompleted).length,
           totalPointsDistributed,
           totalPointsSpent,
           totalHistoricPoints,

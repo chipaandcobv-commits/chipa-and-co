@@ -10,21 +10,19 @@ interface Product {
   id: string;
   name: string;
   price: number;
-  stock: number;
   description?: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  totalSales: number;
   _count: {
-    sales: number;
-    stockMovements: number;
+    orderItems: number;
   };
 }
 
 interface ProductForm {
   name: string;
   price: string;
-  stock: string;
   description: string;
 }
 
@@ -42,7 +40,6 @@ export default function ProductsManagement() {
   const [form, setForm] = useState<ProductForm>({
     name: "",
     price: "",
-    stock: "",
     description: "",
   });
   const [errors, setErrors] = useState<Partial<ProductForm>>({});
@@ -81,11 +78,7 @@ export default function ProductsManagement() {
       newErrors.price = "El precio debe ser un número válido mayor a 0";
     }
 
-    if (!form.stock.trim()) {
-      newErrors.stock = "El stock es requerido";
-    } else if (isNaN(Number(form.stock)) || Number(form.stock) < 0) {
-      newErrors.stock = "El stock debe ser un número válido mayor o igual a 0";
-    }
+
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -112,7 +105,6 @@ export default function ProductsManagement() {
         body: JSON.stringify({
           name: form.name,
           price: parseFloat(form.price),
-          stock: parseInt(form.stock),
           description: form.description || null,
         }),
       });
@@ -136,7 +128,6 @@ export default function ProductsManagement() {
     setForm({
       name: product.name,
       price: product.price.toString(),
-      stock: product.stock.toString(),
       description: product.description || "",
     });
     setShowForm(true);
@@ -169,7 +160,6 @@ export default function ProductsManagement() {
     setForm({
       name: "",
       price: "",
-      stock: "",
       description: "",
     });
     setErrors({});
@@ -229,26 +219,14 @@ export default function ProductsManagement() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input
-                  label="Stock inicial"
-                  type="number"
-                  min="0"
-                  value={form.stock}
-                  onChange={(e) => setForm({ ...form, stock: e.target.value })}
-                  error={errors.stock}
-                  required
-                />
-
-                <Input
-                  label="Descripción (opcional)"
-                  value={form.description}
-                  onChange={(e) =>
-                    setForm({ ...form, description: e.target.value })
-                  }
-                  error={errors.description}
-                />
-              </div>
+              <Input
+                label="Descripción (opcional)"
+                value={form.description}
+                onChange={(e) =>
+                  setForm({ ...form, description: e.target.value })
+                }
+                error={errors.description}
+              />
 
               <div className="flex space-x-4">
                 <Button
@@ -297,13 +275,10 @@ export default function ProductsManagement() {
                       Precio
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Stock
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Estado
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Ventas
+                      Total Ventas
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Fecha Creación
@@ -333,17 +308,6 @@ export default function ProductsManagement() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
-                          className={`text-sm font-medium ${
-                            product.stock < 10
-                              ? "text-red-600"
-                              : "text-gray-900"
-                          }`}
-                        >
-                          {product.stock} unidades
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
                           className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                             product.isActive
                               ? "bg-green-100 text-green-800"
@@ -354,7 +318,7 @@ export default function ProductsManagement() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {product._count.sales}
+                        ${product.totalSales.toFixed(2)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {new Date(product.createdAt).toLocaleDateString(

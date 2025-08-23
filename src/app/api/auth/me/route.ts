@@ -22,6 +22,7 @@ export async function GET() {
         id: true,
         name: true,
         email: true,
+        dni: true,
         puntos: true,
         puntosHistoricos: true,
         role: true,

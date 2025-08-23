@@ -49,8 +49,6 @@ model Order {
   totalAmount Float
   totalPoints Int
   clientDni   String
-  isCompleted Boolean     @default(false)
-  completedAt DateTime?
   createdAt   DateTime    @default(now())
   items       OrderItem[]
   client      User        @relation(fields: [clientDni], references: [dni], onDelete: Cascade)

@@ -175,7 +175,7 @@ export default function DashboardClient() {
                 variant="outline"
                 className="w-full h-24 flex flex-col items-center justify-center hover:bg-orange-50"
               >
-                <div className="text-3xl mb-2">📋</div>
+                <div className="text-3xl mb-2">🎉</div>
                 <span className="font-medium">Mis Premios</span>
                 <span className="text-xs text-gray-500">
                   Premios canjeados

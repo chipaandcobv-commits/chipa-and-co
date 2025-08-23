@@ -4,7 +4,7 @@ import Button from "./ui/Button";
 import { UserIcon, DashboardIcon, LogoutIcon } from "./icons/Icons";
 import { useAuth } from "./AuthContext";
 import { useRouter } from "next/navigation";
-import { Gift } from "lucide-react";
+import { Gift, BadgeCheck, Trophy, User, ShoppingCart, Package, Settings, PartyPopper } from "lucide-react";
 
 export default function AuthHeader() {
   const { user, loading, logout } = useAuth();
@@ -24,7 +24,7 @@ export default function AuthHeader() {
               <UserIcon className="h-6 w-6 text-white" />
             </div>
             <h1 className="text-xl font-semibold text-gray-900">
-              App Fidelización
+              Chipa&Co
             </h1>
           </div>
 
@@ -44,63 +44,76 @@ export default function AuthHeader() {
                           <Link href="/admin">
                             <Button variant="primary" size="sm">
                               <DashboardIcon className="h-4 w-4" />
-                              Panel Admin
+                              Inicio
                             </Button>
                           </Link>
                         
                           <Link href="/admin/users">
                             <Button variant="outline" size="sm">
-                              👥 Usuarios
+                              <User className="text-orange-500" /> Usuarios
                             </Button>
                           </Link>
                           <Link href="/admin/orders">
                             <Button variant="outline" size="sm">
-                              📋 Órdenes
+                              <ShoppingCart className="text-red-500" /> Órdenes
                             </Button>
                           </Link>
                           <Link href="/admin/products">
                             <Button variant="outline" size="sm">
-                              📦 Productos
+                              <Package className="text-brown-500" /> Productos
                             </Button>
                           </Link>
                           <Link href="/admin/ranking">
                             <Button variant="outline" size="sm">
-                              🏆 Ranking
+                              <Trophy className="text-yellow-500" /> Ranking
                             </Button>
                           </Link>
                           <Link href="/admin/validate">
                             <Button variant="outline" size="sm">
-                              ✅ Validar
+                              <BadgeCheck className="text-green-500" /> Validar
                             </Button>
                           </Link>
                           <Link href="/admin/config">
                             <Button variant="outline" size="sm">
-                              ⚙️ Config
+                              <Settings className="text-gray-500" /> Config
                             </Button>
                           </Link>
                         </>
                       )
                     }
 
-                   <Link href={` ${user.role === "ADMIN" ? "/admin/rewards" : "/rewards"}` }  >
-                     <Button variant="outline" size="sm">
-                     <Gift className={` ${user.role === "ADMIN" ? "text-blue-500" : user.role === "USER" ? "text-red-500" : "text-gray-500"}`} /> Premios
-                     </Button>
-                   </Link>
+                   
 
+                   <div className="flex  items-center space-x-2">
                    {
                     user.role === "USER" && (
-                      <div>
+                      <>
+                        <Link href="/dashboard">
+                            <Button variant="primary" size="sm">
+                              <DashboardIcon className="h-4 w-4" />
+                              Inicio
+                            </Button>
+                          </Link>
                         <Link href="/history">
                           <Button variant="outline" size="sm">
-                            📋 Mis Premios
+                            <PartyPopper className="text-yellow-500" /> Mis Premios
                           </Button>
                         </Link>
-                      </div>
+                        <Link href="/profile">
+                          <Button variant="outline" size="sm">
+                            <Settings className="text-gray-500" /> Perfil
+                          </Button>
+                        </Link>
+                      </>
                     )
                    }
                  </div>
-                
+                 <Link href={` ${user.role === "ADMIN" ? "/admin/rewards" : "/rewards"}` }  >
+                     <Button variant="outline" size="sm">
+                     <Gift className={"text-red-500"} /> Premios
+                     </Button>
+                   </Link>
+                 </div>
 
                 {/* Logout button for all users */}
                 <Button

@@ -325,34 +325,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Projections */}
-        {analytics?.projections && (
-          <div className="mt-8 bg-white rounded-lg shadow-sm border border-orange-100 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              Proyecciones
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <p className="text-sm text-gray-600">Próxima semana</p>
-                <p className="text-2xl font-bold text-orange-600">
-                  ${analytics.projections.nextWeek.toLocaleString()}
-                </p>
-              </div>
-              <div className="text-center">
-                <p className="text-sm text-gray-600">Próximo mes</p>
-                <p className="text-2xl font-bold text-orange-600">
-                  ${analytics.projections.nextMonth.toLocaleString()}
-                </p>
-              </div>
-              <div className="text-center">
-                <p className="text-sm text-gray-600">Próximo trimestre</p>
-                <p className="text-2xl font-bold text-orange-600">
-                  ${analytics.projections.nextQuarter.toLocaleString()}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
       </main>
     </div>
   );

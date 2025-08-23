@@ -130,3 +130,35 @@ export async function getCurrentUserFull() {
     return null;
   }
 }
+
+// Require authentication - throws error if not authenticated
+export async function requireAuth() {
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    throw new Error("No autorizado");
+  }
+
+  const prisma = new PrismaClient();
+  
+  const user = await prisma.user.findUnique({
+    where: { id: currentUser.userId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      dni: true,
+      puntos: true,
+      puntosHistoricos: true,
+      role: true,
+      avatar: true,
+    },
+  });
+
+  await prisma.$disconnect();
+
+  if (!user) {
+    throw new Error("Usuario no encontrado");
+  }
+
+  return user;
+}

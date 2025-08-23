@@ -4,16 +4,18 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   icon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, icon, className = "", ...props }, ref) => {
+  ({ label, error, icon, rightIcon, className = "", ...props }, ref) => {
     const inputClasses = `
     w-full px-4 py-3 text-gray-900 bg-white border border-gray-300 rounded-lg
     focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent
     transition-all duration-200
     ${error ? "border-red-500 focus:ring-red-500" : ""}
-    ${icon ? "pl-12 pr-4" : "px-4"}
+    ${icon ? "pl-12" : "pl-4"}
+    ${rightIcon ? "pr-12" : "pr-4"}
     ${className}
   `;
 
@@ -30,7 +32,16 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               {icon}
             </div>
           )}
-          <input ref={ref} className={inputClasses} {...props} />
+          <input 
+            ref={ref} 
+            className={inputClasses} 
+            {...props} 
+          />
+          {rightIcon && (
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+              {rightIcon}
+            </div>
+          )}
         </div>
         {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
       </div>

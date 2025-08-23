@@ -32,17 +32,23 @@ export default function HistoryPage() {
   const [stats, setStats] = useState<UserStats | null>(null);
   const [user, setUser] = useState<UserInfo | null>(null);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<"all" | "scans" | "claims">("claims");
   const router = useRouter();
 
   useEffect(() => {
     fetchData();
-  }, [filter]);
+    
+    // Actualizar automáticamente cada 30 segundos para ver cambios de estado
+    const interval = setInterval(() => {
+      fetchData();
+    }, 30000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   const fetchData = async () => {
     try {
       const [historyRes, userRes] = await Promise.all([
-        fetch(`/api/user/history?type=${filter}&limit=50`),
+        fetch(`/api/user/history?type=claims&limit=50`),
         fetch("/api/auth/me"),
       ]);
 
@@ -84,7 +90,7 @@ export default function HistoryPage() {
   };
 
   const getActivityIcon = (type: string) => {
-    return type === "scan" ? "📱" : "🎁";
+    return "🎁";
   };
 
   const getActivityColor = (points: number) => {
@@ -103,44 +109,29 @@ export default function HistoryPage() {
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white">
       {/* Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            🎁 Mis Premios Canjeados
-          </h1>
-          <p className="text-gray-600">
-            Revisa todos los premios que has canjeado con tus puntos.
-          </p>
+        <div className="mb-8 flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              🎁 Mis Premios Canjeados
+            </h1>
+            <p className="text-gray-600">
+              Revisa todos los premios que has canjeado con tus puntos.
+            </p>
+          </div>
+          <button
+            onClick={fetchData}
+            disabled={loading}
+            className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+          >
+            <span>🔄</span>
+            <span>Actualizar</span>
+          </button>
         </div>
 
 
 
-        {/* Filter Tabs */}
+        {/* Content Card */}
         <div className="bg-white rounded-lg shadow-sm border border-orange-100 mb-8">
-          <div className="border-b border-gray-200">
-            <nav className="flex">
-              <button
-                onClick={() => setFilter("claims")}
-                className={`px-6 py-3 text-sm font-medium border-b-2 ${
-                  filter === "claims"
-                    ? "border-orange-500 text-orange-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700"
-                }`}
-              >
-                Premios Canjeados
-              </button>
-
-              <button
-                onClick={() => setFilter("all")}
-                className={`px-6 py-3 text-sm font-medium border-b-2 ${
-                  filter === "all"
-                    ? "border-orange-500 text-orange-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700"
-                }`}
-              >
-                Todos los Premios
-              </button>
-            </nav>
-          </div>
 
           {/* History List */}
           <div className="divide-y divide-gray-200">
@@ -155,9 +146,7 @@ export default function HistoryPage() {
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-1">
                         <h3 className="font-medium text-gray-900">
-                          {item.type === "scan"
-                            ? "Compra Registrada"
-                            : "Premio Canjeado"}
+                          Premio Canjeado
                         </h3>
                         <span
                           className={`font-bold ${getActivityColor(
@@ -169,30 +158,7 @@ export default function HistoryPage() {
                         </span>
                       </div>
 
-                      {item.type === "scan" && item.details && (
-                        <div className="text-sm text-gray-700">
-                          <p>Orden: {item.details.orderId}</p>
-                          <p>
-                            Total: ${item.details.totalAmount?.toLocaleString()}
-                          </p>
-                          {item.details.items && (
-                            <div className="mt-1">
-                              {item.details.items.map(
-                                (orderItem: any, index: number) => (
-                                  <span
-                                    key={index}
-                                    className="inline-block mr-2 text-xs bg-gray-100 px-2 py-1 rounded"
-                                  >
-                                    {orderItem.quantity}x {orderItem.product}
-                                  </span>
-                                )
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {item.type === "claim" && item.details && (
+                      {item.details && (
                         <div className="text-sm text-gray-700">
                           <p className="font-medium">{item.details.reward}</p>
                           {item.details.description && (
@@ -200,13 +166,17 @@ export default function HistoryPage() {
                           )}
                           <span
                             className={`inline-block mt-1 px-2 py-1 rounded-full text-xs ${
-                              item.details.status === "COMPLETED"
+                              item.details.status === "APPROVED"
                                 ? "bg-green-100 text-green-800"
+                                : item.details.status === "REJECTED"
+                                ? "bg-red-100 text-red-800"
                                 : "bg-yellow-100 text-yellow-800"
                             }`}
                           >
-                            {item.details.status === "COMPLETED"
-                              ? "Completado"
+                            {item.details.status === "APPROVED"
+                              ? "Aprobado"
+                              : item.details.status === "REJECTED"
+                              ? "Rechazado"
                               : "Pendiente"}
                           </span>
                         </div>

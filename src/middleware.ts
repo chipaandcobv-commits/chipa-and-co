@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "./lib/auth";
 
 // Rutas que requieren autenticación
-const protectedRoutes = ["/dashboard", "/admin", "/rewards", "/ranking", "/history"];
+const protectedRoutes = ["/dashboard", "/admin", "/rewards", "/ranking", "/history", "/profile"];
 
 // Rutas específicas para usuarios (no admin)
-const userOnlyRoutes = ["/dashboard", "/rewards", "/ranking", "/history"];
+const userOnlyRoutes = ["/dashboard", "/rewards", "/ranking", "/history", "/profile"];
 
 // Rutas que redirigen al dashboard si el usuario ya está autenticado
 const authRoutes = ["/login", "/register"];

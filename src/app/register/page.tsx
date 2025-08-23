@@ -136,33 +136,45 @@ export default function RegisterPage() {
               required
             />
 
-            <div className="relative">
-              <Input
-                label="Contraseña"
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Mínimo 8 caracteres"
-                error={errors.password}
-                required
-              />
-   
-            </div>
+            <Input
+              label="Contraseña"
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Mínimo 8 caracteres"
+              error={errors.password}
+              required
+              rightIcon={
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
+                </button>
+              }
+            />
 
-            <div className="relative">
-              <Input
-                label="Confirmar contraseña"
-                type={showConfirmPassword ? "text" : "password"}
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                placeholder="Repite tu contraseña"
-                error={errors.confirmPassword}
-                required
-              />
-
-            </div>
+            <Input
+              label="Confirmar contraseña"
+              type={showConfirmPassword ? "text" : "password"}
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              placeholder="Repite tu contraseña"
+              error={errors.confirmPassword}
+              required
+              rightIcon={
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  {showConfirmPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
+                </button>
+              }
+            />
 
             <Button
               type="submit"

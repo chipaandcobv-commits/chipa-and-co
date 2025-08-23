@@ -74,8 +74,6 @@ model Order {
   totalAmount  Float
   totalPoints  Int
   clientDni    String                              // DNI del cliente
-  isCompleted  Boolean     @default(false)
-  completedAt  DateTime?
   createdAt    DateTime    @default(now())
   
   // Relaciones
@@ -116,7 +114,7 @@ model RewardClaim {
   rewardId    String
   userId      String
   pointsSpent Int
-  status      String    @default("PENDING")      // PENDING, APPROVED, REJECTED, COMPLETED
+  status      String    @default("PENDING")      // PENDING, APPROVED, REJECTED
   notes       String?                           // Notas de validación del admin
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -167,9 +165,9 @@ enum Role {
 ### 🔍 Flujo de Validación de Premios (Administrador):
 1. **Admin ve pendientes** → GET `/api/admin/rewards/validate`
 2. **Revisa detalles** → Usuario, premio, puntos gastados, fecha
-3. **Decisión** → Botones "Aprobar", "Rechazar", "Completar"
+3. **Decisión** → Botones "Aprobar", "Rechazar"
 4. **Actualización** → PATCH `/api/admin/rewards/validate` con nuevo status y notas
-5. **Estados finales** → APPROVED (validado), REJECTED (rechazado), COMPLETED (entregado)
+5. **Estados finales** → APPROVED (aprobado), REJECTED (rechazado)
 
 ---
 
@@ -426,7 +424,7 @@ NODE_ENV="development|production"
 
 ### Caso 3: Admin Valida Premio
 1. RewardClaim en PENDING → Admin ve en lista
-2. Admin decide: APPROVED/REJECTED/COMPLETED
+2. Admin decide: APPROVED/REJECTED
 3. Usuario ve estado actualizado en tiempo real
 
 ---

@@ -5,6 +5,7 @@ interface User {
   id: string;
   name: string;
   email: string;
+  dni: string;
   puntos: number;
   puntosHistoricos: number;
   role: "USER" | "ADMIN";

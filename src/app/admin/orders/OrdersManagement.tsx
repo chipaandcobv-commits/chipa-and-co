@@ -35,8 +35,6 @@ interface Order {
   totalAmount: number;
   totalPoints: number;
   clientDni: string;
-  isCompleted: boolean;
-  completedAt: Date | null;
   createdAt: Date;
   client: User;
   items: Array<{
@@ -435,21 +433,15 @@ export default function OrdersManagement() {
                 >
                   <div className="flex justify-between items-start mb-2">
                     <div>
-                      <p className="font-medium">
+                      <p className="font-medium text-green-600">
                         ${order.totalAmount.toLocaleString()}
                       </p>
                       <p className="text-sm text-orange-600">
                         {order.totalPoints} puntos
                       </p>
                     </div>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${
-                        order.isCompleted
-                          ? "bg-green-100 text-green-800"
-                          : "bg-gray-100 text-gray-800"
-                      }`}
-                    >
-                      {order.isCompleted ? "Completada" : "Pendiente"}
+                    <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
+                      Completada
                     </span>
                   </div>
                   <div className="text-xs text-gray-700 space-y-1">

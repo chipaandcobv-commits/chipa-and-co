@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "../../../../generated/prisma";
-import { getCurrentUser } from "../../../../lib/auth";
+import { requireAuth } from "../../../../lib/auth";
 
 const prisma = new PrismaClient();
 
@@ -32,17 +32,7 @@ interface ClaimData {
 // GET - Obtener historial del usuario
 export async function GET(request: NextRequest) {
   try {
-    const currentUser = await getCurrentUser();
-
-    if (!currentUser) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Debes estar autenticado para ver tu historial",
-        },
-        { status: 401 }
-      );
-    }
+    const currentUser = await requireAuth();
 
     const url = new URL(request.url);
     const type = url.searchParams.get("type"); // 'orders', 'claims', or 'all'
@@ -57,7 +47,7 @@ export async function GET(request: NextRequest) {
     if (type === "orders" || type === "all" || !type) {
       const ordersData = await prisma.order.findMany({
         where: {
-          clientDni: String(currentUser.dni || ""),
+          clientDni: currentUser.dni,
         },
         include: {
           items: {
@@ -77,7 +67,7 @@ export async function GET(request: NextRequest) {
     if (type === "claims" || type === "all" || !type) {
       claims = await prisma.rewardClaim.findMany({
         where: {
-          userId: currentUser.userId,
+          userId: currentUser.id,
         },
         include: {
           reward: true,
@@ -132,7 +122,7 @@ export async function GET(request: NextRequest) {
 
     // Estadísticas del usuario
     const userStats = await prisma.user.findUnique({
-      where: { id: currentUser.userId },
+      where: { id: currentUser.id },
       select: {
         puntos: true,
         _count: {
@@ -145,12 +135,12 @@ export async function GET(request: NextRequest) {
     });
 
     const totalPointsEarned = await prisma.order.aggregate({
-      where: { clientDni: String(currentUser.dni || "") },
+      where: { clientDni: currentUser.dni },
       _sum: { totalPoints: true },
     });
 
     const totalPointsSpent = await prisma.rewardClaim.aggregate({
-      where: { userId: currentUser.userId },
+      where: { userId: currentUser.id },
       _sum: { pointsSpent: true },
     });
 

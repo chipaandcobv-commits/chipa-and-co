@@ -28,7 +28,6 @@ interface ValidationStats {
   total: number;
   approved: number;
   rejected: number;
-  completed: number;
 }
 
 export default function ValidateRewards() {
@@ -101,8 +100,6 @@ export default function ValidateRewards() {
         return "bg-green-100 text-green-800";
       case "REJECTED":
         return "bg-red-100 text-red-800";
-      case "COMPLETED":
-        return "bg-blue-100 text-blue-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
@@ -116,8 +113,6 @@ export default function ValidateRewards() {
         return "Aprobado";
       case "REJECTED":
         return "Rechazado";
-      case "COMPLETED":
-        return "Completado";
       default:
         return status;
     }
@@ -152,7 +147,7 @@ export default function ValidateRewards() {
 
         {/* Stats Cards */}
         {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div className="bg-white rounded-lg shadow-sm border border-orange-100 p-6">
               <div className="flex items-center">
                 <div className="text-2xl mr-3">⏳</div>
@@ -189,17 +184,7 @@ export default function ValidateRewards() {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm border border-orange-100 p-6">
-              <div className="flex items-center">
-                <div className="text-2xl mr-3">🎉</div>
-                <div>
-                  <p className="text-sm font-medium text-gray-700">Completados</p>
-                  <p className="text-2xl font-bold text-blue-600">
-                    {stats.completed}
-                  </p>
-                </div>
-              </div>
-            </div>
+
 
             <div className="bg-white rounded-lg shadow-sm border border-orange-100 p-6">
               <div className="flex items-center">
@@ -270,7 +255,7 @@ export default function ValidateRewards() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="text-sm font-medium text-orange-600">
-                        <DiamondIcon/>{claim.pointsSpent}
+                        {'💎' + claim.pointsSpent}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validar que el estado sea válido
-    const validStatuses = ["PENDING", "APPROVED", "REJECTED", "COMPLETED"];
+    const validStatuses = ["PENDING", "APPROVED", "REJECTED"];
     if (!validStatuses.includes(status)) {
       return NextResponse.json(
         { success: false, error: "Estado inválido" },
@@ -111,7 +111,6 @@ export async function GET() {
       total: await prisma.rewardClaim.count(),
       approved: await prisma.rewardClaim.count({ where: { status: "APPROVED" } }),
       rejected: await prisma.rewardClaim.count({ where: { status: "REJECTED" } }),
-      completed: await prisma.rewardClaim.count({ where: { status: "COMPLETED" } }),
     };
 
     return NextResponse.json({

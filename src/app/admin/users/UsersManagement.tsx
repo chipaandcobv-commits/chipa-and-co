@@ -11,12 +11,14 @@ interface User {
   id: string;
   name: string;
   email: string;
+  dni: string;
   role: "USER" | "ADMIN";
   puntos: number;
   createdAt: string;
   updatedAt: string;
   _count: {
-    transactions: number;
+    orders: number;
+    rewardClaims: number;
   };
 }
 
@@ -95,7 +97,8 @@ export default function UsersManagement() {
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase());
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.dni.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = roleFilter === "ALL" || user.role === roleFilter;
     return matchesSearch && matchesRole;
   });
@@ -119,7 +122,7 @@ export default function UsersManagement() {
             <div>
               <Input
                 label="Buscar usuarios"
-                placeholder="Nombre o email..."
+                placeholder="Nombre, email o DNI..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && handleSearch()}
@@ -169,13 +172,16 @@ export default function UsersManagement() {
                       Usuario
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      DNI
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Rol
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Puntos
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Transacciones
+                      Órdenes / Premios
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Fecha de Registro
@@ -203,6 +209,9 @@ export default function UsersManagement() {
                           </div>
                         </div>
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {user.dni}
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
@@ -215,10 +224,13 @@ export default function UsersManagement() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {user.puntos}
+                        {user.puntos} pts
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {user._count.transactions}
+                        <div className="text-xs">
+                          <div>{user._count.orders} órdenes</div>
+                          <div>{user._count.rewardClaims} premios</div>
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {new Date(user.createdAt).toLocaleDateString("es-ES")}

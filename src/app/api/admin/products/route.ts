@@ -12,6 +12,11 @@ export async function GET() {
     const products = await prisma.product.findMany({
       orderBy: { createdAt: "desc" },
       include: {
+        orderItems: {
+          select: {
+            total: true,
+          },
+        },
         _count: {
           select: {
             orderItems: true,
@@ -20,9 +25,15 @@ export async function GET() {
       },
     });
 
+    // Calcular el total de ventas para cada producto
+    const productsWithSales = products.map(product => ({
+      ...product,
+      totalSales: product.orderItems.reduce((sum, item) => sum + item.total, 0),
+    }));
+
     return NextResponse.json({
       success: true,
-      products,
+      products: productsWithSales,
     });
   } catch (error: any) {
     console.error("Get products error:", error);
