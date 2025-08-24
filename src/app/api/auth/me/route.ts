@@ -8,16 +8,16 @@ export async function GET() {
   try {
     const currentUser = await getCurrentUser();
 
-    // if (!currentUser) {
-    //   return NextResponse.json(
-    //     { success: false, error: "No autenticado" },
-    //     { status: 401 }
-    //   );
-    // }
+    if (!currentUser) {
+      return NextResponse.json(
+        { success: false, error: "No autenticado" },
+        { status: 401 }
+      );
+    }
 
     // Obtener datos actualizados del usuario
     const user = await prisma.user.findUnique({
-      where: { id: currentUser?.userId },
+      where: { id: currentUser.userId },
       select: {
         id: true,
         name: true,
@@ -26,7 +26,6 @@ export async function GET() {
         puntos: true,
         puntosHistoricos: true,
         role: true,
-        avatar: true,
         createdAt: true,
         updatedAt: true,
       },

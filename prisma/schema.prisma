@@ -13,7 +13,6 @@ model User {
   name         String
   email        String        @unique
   dni          String        @unique
-  avatar       String?
   createdAt    DateTime      @default(now())
   password     String
   updatedAt    DateTime      @updatedAt
@@ -84,7 +83,6 @@ model RewardClaim {
   userId      String
   pointsSpent Int
   status      String   @default("PENDING")
-  notes       String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   reward      Reward   @relation(fields: [rewardId], references: [id])

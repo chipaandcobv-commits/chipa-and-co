@@ -18,7 +18,6 @@ interface RewardClaim {
   userEmail: string;
   pointsSpent: number;
   status: string;
-  notes: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -61,7 +60,7 @@ export default function ValidateRewards() {
     }
   };
 
-  const validateClaim = async (claimId: string, status: string, notes?: string) => {
+  const validateClaim = async (claimId: string, status: string) => {
     setValidating(claimId);
     setMessage("");
 
@@ -71,7 +70,7 @@ export default function ValidateRewards() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ claimId, status, notes }),
+        body: JSON.stringify({ claimId, status }),
       });
 
       const data = await response.json();

@@ -9,7 +9,6 @@ interface User {
   puntos: number;
   puntosHistoricos: number;
   role: "USER" | "ADMIN";
-  avatar?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -35,13 +34,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (data.success) {
           setUser(data.user);
         } else {
+          console.log("❌ Auth check failed - no success:", data.error);
           setUser(null);
         }
       } else {
+        console.log("❌ Auth check failed - response not ok:", response.status);
         setUser(null);
       }
     } catch (error) {
-      console.error("Auth check failed:", error);
+      console.error("❌ Auth check failed:", error);
       setUser(null);
     } finally {
       setLoading(false);

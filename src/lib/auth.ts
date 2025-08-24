@@ -140,25 +140,37 @@ export async function requireAuth() {
 
   const prisma = new PrismaClient();
   
-  const user = await prisma.user.findUnique({
-    where: { id: currentUser.userId },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      dni: true,
-      puntos: true,
-      puntosHistoricos: true,
-      role: true,
-      avatar: true,
-    },
-  });
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: currentUser.userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        dni: true,
+        puntos: true,
+        puntosHistoricos: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
 
-  await prisma.$disconnect();
+    if (!user) {
+      console.error(`❌ Usuario no encontrado en BD. Token userId: ${currentUser.userId}`);
+      console.error(`❌ Token info: ${currentUser.name} (${currentUser.email})`);
+      
+      // Limpiar el token inválido
+      await clearAuthCookie();
+      
+      throw new Error("Usuario no encontrado - sesión inválida");
+    }
 
-  if (!user) {
-    throw new Error("Usuario no encontrado");
+    return user;
+  } catch (error) {
+    await prisma.$disconnect();
+    throw error;
+  } finally {
+    await prisma.$disconnect();
   }
-
-  return user;
 }

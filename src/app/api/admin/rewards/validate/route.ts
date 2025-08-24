@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     await requireAdmin();
 
     const data = await request.json();
-    const { claimId, status, notes } = data;
+    const { claimId, status } = data;
 
     if (!claimId || !status) {
       return NextResponse.json(
@@ -33,7 +33,6 @@ export async function POST(request: NextRequest) {
       where: { id: claimId },
       data: {
         status,
-        notes: notes || null,
         updatedAt: new Date(),
       },
       include: {
@@ -59,7 +58,6 @@ export async function POST(request: NextRequest) {
         userDni: updatedClaim.user.dni,
         pointsSpent: updatedClaim.pointsSpent,
         status: updatedClaim.status,
-        notes: updatedClaim.notes,
         createdAt: updatedClaim.createdAt,
         updatedAt: updatedClaim.updatedAt,
       },
@@ -123,7 +121,6 @@ export async function GET() {
         userEmail: claim.user.email,
         pointsSpent: claim.pointsSpent,
         status: claim.status,
-        notes: claim.notes,
         createdAt: claim.createdAt,
         updatedAt: claim.updatedAt,
       })),

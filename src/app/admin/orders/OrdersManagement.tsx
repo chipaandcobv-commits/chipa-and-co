@@ -287,7 +287,7 @@ export default function OrdersManagement() {
               <div className="space-y-4">
                 {/* Client Search */}
                 <div>
-                  <h3 className="text-lg font-medium mb-3">
+                  <h3 className="text-lg font-medium mb-3 text-gray-900">
                     Buscar Cliente por DNI
                   </h3>
                   <div className="flex space-x-2">
@@ -326,14 +326,14 @@ export default function OrdersManagement() {
 
                 {/* Product Selection */}
                 <div>
-                  <h3 className="text-lg font-medium mb-3">
+                  <h3 className="text-lg font-medium mb-3 text-gray-900">
                     Seleccionar Productos
                   </h3>
                   <div className="grid grid-cols-1 gap-3">
                     {products.map((product) => (
                       <div
                         key={product.id}
-                        className="flex justify-between items-center p-3 border border-gray-200 rounded-lg"
+                        className="flex justify-between items-center p-3 border border-gray-200 rounded-lg text-gray-700"
                       >
                         <div>
                           <h4 className="font-medium">{product.name}</h4>
@@ -354,8 +354,8 @@ export default function OrdersManagement() {
 
                 {orderItems.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-medium mb-3">Orden Actual</h3>
-                    <div className="space-y-2">
+                    <h3 className="text-lg font-medium mb-3 text-gray-900">Orden Actual</h3>
+                    <div className="space-y-2 text-gray-700">
                       {orderItems.map((item) => {
                         const product = products.find(
                           (p) => p.id === item.productId
@@ -363,7 +363,7 @@ export default function OrdersManagement() {
                         return (
                           <div
                             key={item.productId}
-                            className="flex justify-between items-center p-2 bg-gray-50 rounded"
+                            className="flex justify-between items-center p-2 bg-gray-50 rounded text-gray-700"
                           >
                             <span className="font-medium">{product?.name}</span>
                             <div className="flex items-center space-x-2">
@@ -396,15 +396,12 @@ export default function OrdersManagement() {
                       })}
                     </div>
                     <div className="mt-4 p-4 bg-orange-50 rounded-lg">
-                      <div className="flex justify-between items-center text-lg font-semibold">
+                      <div className="flex justify-between items-center text-lg font-semibold text-gray-700">
                         <span>Total: ${getTotalAmount().toLocaleString()}</span>
                         <span className="text-orange-600">
                           {getTotalPoints()} puntos
                         </span>
                       </div>
-                      <p className="text-sm text-orange-600 mt-1">
-                        Configuración: {config.pointsPerPeso} peso = {config.pointsPerPeso} punto
-                      </p>
                     </div>
                     <Button
                       onClick={createOrder}

@@ -32,7 +32,10 @@ interface ClaimData {
 // GET - Obtener historial del usuario
 export async function GET(request: NextRequest) {
   try {
+    console.log("🔍 Iniciando request de history...");
+    
     const currentUser = await requireAuth();
+    console.log(`✅ Usuario autenticado: ${currentUser.name} (${currentUser.email})`);
 
     const url = new URL(request.url);
     const type = url.searchParams.get("type"); // 'orders', 'claims', or 'all'
@@ -45,6 +48,7 @@ export async function GET(request: NextRequest) {
 
     // Obtener órdenes si se solicita
     if (type === "orders" || type === "all" || !type) {
+      console.log(`🔍 Buscando órdenes para DNI: ${currentUser.dni}`);
       const ordersData = await prisma.order.findMany({
         where: {
           clientDni: currentUser.dni,
@@ -61,10 +65,12 @@ export async function GET(request: NextRequest) {
       });
 
       orders = ordersData as unknown as OrderData[];
+      console.log(`✅ Encontradas ${orders.length} órdenes`);
     }
 
     // Obtener canjes de premios si se solicita
     if (type === "claims" || type === "all" || !type) {
+      console.log(`🔍 Buscando canjes para usuario ID: ${currentUser.id}`);
       claims = await prisma.rewardClaim.findMany({
         where: {
           userId: currentUser.id,
@@ -75,6 +81,7 @@ export async function GET(request: NextRequest) {
         orderBy: { createdAt: "desc" },
         take: type === "claims" ? pageSize : Math.floor(pageSize / 2),
       });
+      console.log(`✅ Encontrados ${claims.length} canjes`);
     }
 
     // Combinar y ordenar por fecha si se solicita todo
@@ -187,6 +194,8 @@ export async function GET(request: NextRequest) {
       historyResponse = [];
     }
 
+    console.log(`✅ History request completado exitosamente`);
+
     return NextResponse.json({
       success: true,
       history: historyResponse,
@@ -198,10 +207,19 @@ export async function GET(request: NextRequest) {
         totalPointsSpent: totalPointsSpent._sum?.pointsSpent || 0,
       },
     });
-  } catch (error) {
-    console.error("Get user history error:", error);
+  } catch (error: any) {
+    console.error("❌ Get user history error:", error);
+    console.error("❌ Error details:", {
+      message: error.message,
+      stack: error.stack,
+    });
+    
     return NextResponse.json(
-      { success: false, error: "Error interno del servidor" },
+      { 
+        success: false, 
+        error: error.message || "Error interno del servidor",
+        details: process.env.NODE_ENV === "development" ? error.stack : undefined
+      },
       { status: 500 }
     );
   } finally {

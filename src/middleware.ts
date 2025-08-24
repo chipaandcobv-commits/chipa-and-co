@@ -25,32 +25,40 @@ export async function middleware(request: NextRequest) {
   if (isProtectedRoute) {
     // Si no hay token, redirigir a login
     if (!token) {
-      return NextResponse.redirect(new URL("/login", request.url));
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(loginUrl);
     }
 
-    // Verificar si el token es válido
-    const user = await verifyToken(token);
-    if (!user) {
-      // Token inválido, limpiar cookie y redirigir a login
+    try {
+      // Verificar si el token es válido
+      const user = await verifyToken(token);
+      if (!user) {
+        // Token inválido, limpiar cookie y redirigir a login
+        const response = NextResponse.redirect(new URL("/login", request.url));
+        response.cookies.delete("auth-token");
+        return response;
+      }
+    } catch (error) {
+      // Error al verificar token, limpiar cookie y redirigir a login
       const response = NextResponse.redirect(new URL("/login", request.url));
       response.cookies.delete("auth-token");
       return response;
     }
-
-    // Verificar si es un admin intentando acceder a rutas de usuario
-    const isUserOnlyRoute = userOnlyRoutes.some((route) =>
-      pathname.startsWith(route)
-    );
-    
-    // Nota: No podemos verificar el rol aquí porque necesitaríamos Prisma
-    // La redirección se manejará en el cliente después del login
   }
 
   if (isAuthRoute && token) {
     // Si está autenticado y trata de acceder a login/register, redirigir al dashboard
-    const user = await verifyToken(token);
-    if (user) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+    try {
+      const user = await verifyToken(token);
+      if (user) {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
+    } catch (error) {
+      // Token inválido, limpiar cookie
+      const response = NextResponse.next();
+      response.cookies.delete("auth-token");
+      return response;
     }
   }
 

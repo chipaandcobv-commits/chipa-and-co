@@ -55,7 +55,6 @@ export async function PUT(request: NextRequest) {
         puntos: true,
         puntosHistoricos: true,
         role: true,
-        avatar: true,
       },
     });
 

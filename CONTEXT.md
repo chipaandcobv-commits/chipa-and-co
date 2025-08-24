@@ -47,7 +47,6 @@ model User {
   puntos          Int         @default(0)        // Puntos actuales disponibles
   puntosHistoricos Int        @default(0)        // Puntos totales históricos
   role            Role        @default(USER)
-  avatar          String?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
   
@@ -115,7 +114,6 @@ model RewardClaim {
   userId      String
   pointsSpent Int
   status      String    @default("PENDING")      // PENDING, APPROVED, REJECTED
-  notes       String?                           // Notas de validación del admin
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   
@@ -184,7 +182,6 @@ interface User {
   puntos: number;
   puntosHistoricos: number;
   role: "USER" | "ADMIN";
-  avatar?: string;
 }
 
 interface AuthContextType {
