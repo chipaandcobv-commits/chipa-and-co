@@ -10,9 +10,13 @@
     "db:reset": "npx prisma migrate reset --force && npx prisma generate",
     "db:deploy": "npx prisma migrate deploy && npx prisma generate",
     "create-admin": "tsx src/scripts/create-admin.ts",
+    "create-test-user": "tsx src/scripts/create-test-user.ts",
+    "create-sample-data": "tsx src/scripts/create-sample-data.ts",
+    "cleanup-rewards": "tsx src/scripts/cleanup-expired-rewards.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "@prisma/client": "^6.12.0",
     "@types/qrcode": "^1.5.5",
     "bcryptjs": "^2.4.3",

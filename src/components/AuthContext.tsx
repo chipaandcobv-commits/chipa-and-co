@@ -18,6 +18,7 @@ interface AuthContextType {
   loading: boolean;
   checkAuth: () => Promise<void>;
   logout: () => Promise<void>;
+  refetch: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,6 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkAuth = async () => {
     try {
+      setLoading(true);
       const response = await fetch("/api/auth/me");
       if (response.ok) {
         const data = await response.json();
@@ -63,11 +65,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    // Evitar el flash inicial estableciendo loading como true
+    setLoading(true);
     checkAuth();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, checkAuth, logout }}>
+    <AuthContext.Provider value={{ user, loading, checkAuth, logout, refetch: checkAuth }}>
       {children}
     </AuthContext.Provider>
   );

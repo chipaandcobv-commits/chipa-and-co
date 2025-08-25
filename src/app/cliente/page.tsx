@@ -1,17 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { useAuth } from "@/lib/hooks/useAuth";
+import { useAuth } from "@/components/AuthContext";
 import { useRewards } from "@/lib/hooks/useRewards";
 import { useClaimReward } from "@/lib/hooks/useClaimReward";
 import { GiftCardIcon, HomeIcon, UserIcon } from "@/components/icons/Icons";
+import RewardConfirmationModal from "@/components/RewardConfirmationModal";
 
 export default function ClientePage() {
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [selectedReward, setSelectedReward] = useState<any>(null);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const { user, loading: userLoading, refetch: refetchUser } = useAuth();
   const { rewards, loading: rewardsLoading, refetch: refetchRewards } = useRewards();
   const { claimReward, loading: claiming } = useClaimReward();
 
+  // Mostrar loading mientras se cargan los datos
   if (userLoading || rewardsLoading) {
     return (
       <div className="min-h-svh w-full bg-[#F7EFE7] flex items-center justify-center">
@@ -23,7 +27,8 @@ export default function ClientePage() {
     );
   }
 
-  if (!user) {
+  // Mostrar error si no hay usuario después de cargar
+  if (!user && !userLoading) {
     return (
       <div className="min-h-svh w-full bg-[#F7EFE7] flex items-center justify-center">
         <div className="text-center">
@@ -33,11 +38,25 @@ export default function ClientePage() {
     );
   }
 
-  const handleClaimReward = async (rewardId: string) => {
+  // No renderizar nada si aún está cargando
+  if (!user) {
+    return null;
+  }
+
+  const handleRewardClick = (reward: any) => {
+    setSelectedReward(reward);
+    setShowConfirmationModal(true);
+  };
+
+  const handleConfirmClaim = async () => {
+    if (!selectedReward) return;
+    
     claimReward({
-      rewardId,
+      rewardId: selectedReward.id,
       onSuccess: (data) => {
         setMessage({ type: "success", text: data.message });
+        setShowConfirmationModal(false);
+        setSelectedReward(null);
         refetchUser();
         refetchRewards();
         setTimeout(() => setMessage(null), 5000);
@@ -47,6 +66,11 @@ export default function ClientePage() {
         setTimeout(() => setMessage(null), 5000);
       },
     });
+  };
+
+  const handleCloseModal = () => {
+    setShowConfirmationModal(false);
+    setSelectedReward(null);
   };
 
   return (
@@ -124,7 +148,7 @@ export default function ClientePage() {
               <div key={reward.id} className="">
                 <div 
                   className="relative h-40 w-full rounded-2xl bg-[#F4E7DB] shadow-[0_6px_14px_rgba(0,0,0,0.08)] border border-white cursor-pointer hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow"
-                  onClick={() => handleClaimReward(reward.id)}
+                  onClick={() => handleRewardClick(reward)}
                 >
                   {/* badge de puntos dentro de la tarjeta en esquina inferior izq */}
                   <div className="absolute left-3 bottom-3">
@@ -142,11 +166,6 @@ export default function ClientePage() {
                 <p className="mt-2 text-center text-[16px] font-semibold text-neutral-800">
                   {reward.name}
                 </p>
-                {reward.description && (
-                  <p className="mt-1 text-center text-[12px] text-neutral-600">
-                    {reward.description}
-                  </p>
-                )}
               </div>
             ))}
           </div>
@@ -176,6 +195,16 @@ export default function ClientePage() {
             <span className="text-xs mt-1">Perfil</span>
           </button>
         </div>
+
+        {/* Modal de confirmación */}
+        <RewardConfirmationModal
+          reward={selectedReward}
+          isOpen={showConfirmationModal}
+          onClose={handleCloseModal}
+          onConfirm={handleConfirmClaim}
+          loading={claiming}
+          userPoints={user?.puntos || 0}
+        />
       </div>
     </div>
   );

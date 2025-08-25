@@ -322,6 +322,16 @@ export default function AdminDashboard() {
                 <span>Validar Premios</span>
               </Button>
             </Link>
+
+            <Link href="/admin/expired-rewards">
+              <Button
+                variant="outline"
+                className="w-full h-20 flex flex-col items-center justify-center"
+              >
+                <div className="text-2xl mb-1">⏰</div>
+                <span>Premios Vencidos</span>
+              </Button>
+            </Link>
           </div>
         </div>
 

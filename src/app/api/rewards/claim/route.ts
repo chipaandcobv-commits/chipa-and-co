@@ -61,12 +61,35 @@ export async function POST(request: NextRequest) {
         throw new Error("Premio agotado");
       }
 
-      // Crear canje
+      // Verificar si el usuario ya tiene un premio pendiente o vencido del mismo tipo
+      const existingClaim = await tx.rewardClaim.findFirst({
+        where: {
+          rewardId,
+          userId: currentUser.userId,
+          status: {
+            in: ["PENDING", "EXPIRED"],
+          },
+        },
+      });
+
+      if (existingClaim) {
+        if (existingClaim.status === "PENDING") {
+          throw new Error("Ya tienes un premio pendiente de este tipo");
+        } else {
+          throw new Error("Ya tienes un premio vencido de este tipo");
+        }
+      }
+
+      // Crear canje con fecha de vencimiento (24 horas desde ahora)
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 24);
+      
       const claim = await tx.rewardClaim.create({
         data: {
           rewardId,
           userId: currentUser.userId,
           pointsSpent: reward.pointsCost,
+          expiresAt,
         },
         include: {
           reward: true,
