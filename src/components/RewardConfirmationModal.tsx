@@ -95,7 +95,7 @@ export default function RewardConfirmationModal({
                     Tienes 24 horas para reclamar
                   </p>
                   <p className="text-xs text-gray-600 mt-1">
-                    Después de 24 horas, el premio pasará a estado "vencido".
+                    Después de 24 horas, el premio pasará a estado &quot;vencido&quot;.
                   </p>
                 </div>
               </div>

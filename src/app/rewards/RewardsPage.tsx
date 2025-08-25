@@ -141,7 +141,7 @@ export default function RewardsPage() {
               <div className="h-48 bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center">
                 {reward.imageUrl ? (
                   <>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
+  
                     <img
                       src={reward.imageUrl}
                       alt={reward.name}

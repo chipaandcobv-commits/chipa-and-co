@@ -11,7 +11,7 @@
     "db:deploy": "npx prisma migrate deploy && npx prisma generate",
     "create-admin": "tsx src/scripts/create-admin.ts",
     "create-test-user": "tsx src/scripts/create-test-user.ts",
-    "create-sample-data": "tsx src/scripts/create-sample-data.ts",
+
     "cleanup-rewards": "tsx src/scripts/cleanup-expired-rewards.ts",
     "postinstall": "prisma generate"
   },

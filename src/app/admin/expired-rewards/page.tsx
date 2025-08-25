@@ -67,7 +67,14 @@ export default function ExpiredRewardsPage() {
   }
 
   if (!user || user.role !== "ADMIN") {
-    return <AdminRedirect />;
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Acceso Denegado</h1>
+          <p className="text-gray-600">No tienes permisos para acceder a esta página.</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -153,7 +160,7 @@ export default function ExpiredRewardsPage() {
                 Este proceso realizará las siguientes acciones:
               </p>
               <ul className="text-sm text-blue-700 space-y-1">
-                <li>• Marcar premios pendientes que han expirado (más de 24 horas) como "vencidos"</li>
+                <li>• Marcar premios pendientes que han expirado (más de 24 horas) como &quot;vencidos&quot;</li>
                 <li>• Eliminar premios vencidos que tienen más de 48 horas</li>
               </ul>
             </div>
@@ -193,7 +200,7 @@ export default function ExpiredRewardsPage() {
               <strong>Vencimiento:</strong> Los premios tienen 24 horas para ser reclamados desde el momento del canje.
             </p>
             <p>
-              <strong>Eliminación:</strong> Los premios vencidos se eliminan automáticamente después de 48 horas adicionales.
+              <strong>Eliminación:</strong> Los premios vencidos se eliminan automáticamente después de 48 horas adicionales (72 horas total desde el canje).
             </p>
             <p>
               <strong>Proceso Manual:</strong> Puedes ejecutar la limpieza manualmente usando el botón de arriba.

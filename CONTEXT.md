@@ -7,7 +7,7 @@ Sistema de fidelización basado en DNI para comercios físicos. Los clientes pre
 - ✅ **Modal de Confirmación**: Ventana de confirmación al seleccionar premios
 - ✅ **Sistema de Vencimiento**: Premios vencen en 24h y se eliminan en 48h adicionales
 - ✅ **Interfaz Mejorada**: Sin flash de carga, modal compacto con colores del tema
-- ✅ **Datos de Prueba**: Script completo para generar usuarios y contenido de prueba
+
 - ✅ **Panel de Premios Vencidos**: Gestión administrativa de premios expirados
 
 ---
@@ -424,8 +424,7 @@ npx prisma studio
 # Resetear base de datos
 npx prisma migrate reset --force
 
-# Crear datos de prueba
-npm run create-sample-data
+
 
 # Limpiar premios vencidos
 npm run cleanup-rewards
@@ -535,7 +534,6 @@ npm run cleanup-rewards
 
 ### Scripts Nuevos:
 - `src/scripts/cleanup-expired-rewards.ts` - Limpieza automática de premios vencidos
-- `src/scripts/create-sample-data.ts` - Generación de datos de prueba
 
 ### Archivos Actualizados:
 - `src/app/cliente/page.tsx` - Integración del modal de confirmación
