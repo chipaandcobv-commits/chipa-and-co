@@ -1,20 +1,27 @@
-import { redirect } from "next/navigation";
-import { getCurrentUser } from "../../lib/auth";
-import RewardsPage from "./RewardsPage";
-import AdminRedirect from "../../components/AdminRedirect";
+"use client";
 
-export const dynamic = "force-dynamic";
+import { useEffect } from "react";
+import { useAuth } from "@/lib/hooks/useAuth";
 
-export default async function UserRewardsPage() {
-  const currentUser = await getCurrentUser();
+export default function RewardsRedirectPage() {
+  const { user, loading } = useAuth();
 
-  if (!currentUser) {
-    redirect("/login");
-  }
+  useEffect(() => {
+    if (!loading && user) {
+      if (user.role === "ADMIN") {
+        window.location.href = "/admin";
+      } else {
+        window.location.href = "/cliente/rewards";
+      }
+    }
+  }, [user, loading]);
 
   return (
-    <AdminRedirect>
-      <RewardsPage />
-    </AdminRedirect>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
+        <p className="mt-4 text-gray-600">Redirigiendo a premios...</p>
+      </div>
+    </div>
   );
 }

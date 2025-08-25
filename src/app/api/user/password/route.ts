@@ -1,20 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getCurrentUser } from "../../../../lib/auth";
 import { PrismaClient } from "../../../../generated/prisma";
-import { requireAuth } from "../../../../lib/auth";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
-// PUT - Cambiar contraseña
 export async function PUT(request: NextRequest) {
   try {
-    const user = await requireAuth();
+    const currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+      return NextResponse.json(
+        { success: false, error: "No autenticado" },
+        { status: 401 }
+      );
+    }
+
     const { currentPassword, newPassword } = await request.json();
 
-    // Validaciones
     if (!currentPassword || !newPassword) {
       return NextResponse.json(
-        { success: false, error: "La contraseña actual y la nueva contraseña son requeridas" },
+        { success: false, error: "Contraseña actual y nueva contraseña son requeridas" },
         { status: 400 }
       );
     }
@@ -26,16 +32,13 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Obtener usuario con contraseña para verificar
-    const userWithPassword = await prisma.user.findUnique({
-      where: { id: user.id },
-      select: {
-        id: true,
-        password: true,
-      },
+    // Obtener usuario con contraseña
+    const user = await prisma.user.findUnique({
+      where: { id: currentUser.userId },
+      select: { password: true },
     });
 
-    if (!userWithPassword) {
+    if (!user) {
       return NextResponse.json(
         { success: false, error: "Usuario no encontrado" },
         { status: 404 }
@@ -43,27 +46,11 @@ export async function PUT(request: NextRequest) {
     }
 
     // Verificar contraseña actual
-    const isCurrentPasswordValid = await bcrypt.compare(
-      currentPassword,
-      userWithPassword.password
-    );
+    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
 
     if (!isCurrentPasswordValid) {
       return NextResponse.json(
         { success: false, error: "La contraseña actual es incorrecta" },
-        { status: 400 }
-      );
-    }
-
-    // Verificar que la nueva contraseña sea diferente a la actual
-    const isNewPasswordSame = await bcrypt.compare(
-      newPassword,
-      userWithPassword.password
-    );
-
-    if (isNewPasswordSame) {
-      return NextResponse.json(
-        { success: false, error: "La nueva contraseña debe ser diferente a la actual" },
         { status: 400 }
       );
     }
@@ -73,26 +60,19 @@ export async function PUT(request: NextRequest) {
 
     // Actualizar contraseña
     await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        password: hashedNewPassword,
-      },
+      where: { id: currentUser.userId },
+      data: { password: hashedNewPassword },
     });
 
     return NextResponse.json({
       success: true,
-      message: "Contraseña actualizada correctamente",
+      message: "Contraseña actualizada exitosamente",
     });
-  } catch (error: any) {
-    console.error("Change password error:", error);
+  } catch (error) {
+    console.error("Update password error:", error);
     return NextResponse.json(
-      { success: false, error: error.message || "Error interno del servidor" },
-      {
-        status:
-          error.message === "No autorizado"
-            ? 401
-            : 500,
-      }
+      { success: false, error: "Error interno del servidor" },
+      { status: 500 }
     );
   } finally {
     await prisma.$disconnect();

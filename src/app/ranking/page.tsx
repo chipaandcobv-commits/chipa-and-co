@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";
 
-export default function HistoryRedirectPage() {
+export default function RankingRedirectPage() {
   const { user, loading } = useAuth();
 
   useEffect(() => {
@@ -11,7 +11,7 @@ export default function HistoryRedirectPage() {
       if (user.role === "ADMIN") {
         window.location.href = "/admin";
       } else {
-        // Por ahora redirigimos al cliente, pero podríamos crear una página de historial específica
+        // Por ahora redirigimos al cliente, pero podríamos crear una página de ranking específica
         window.location.href = "/cliente";
       }
     }

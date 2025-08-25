@@ -1,21 +1,27 @@
-import { redirect } from "next/navigation";
-import { getCurrentUser } from "../../lib/auth";
-import DashboardClient from "./DashboardClient";
-import AdminRedirect from "../../components/AdminRedirect";
+"use client";
 
-// Forzar renderizado dinámico para evitar warnings de cookies
-export const dynamic = "force-dynamic";
+import { useEffect } from "react";
+import { useAuth } from "@/lib/hooks/useAuth";
 
-export default async function DashboardPage() {
-  const user = await getCurrentUser();
+export default function DashboardPage() {
+  const { user, loading } = useAuth();
 
-  if (!user) {
-    redirect("/login");
-  }
+  useEffect(() => {
+    if (!loading && user) {
+      if (user.role === "ADMIN") {
+        window.location.href = "/admin";
+      } else {
+        window.location.href = "/cliente";
+      }
+    }
+  }, [user, loading]);
 
   return (
-    <AdminRedirect>
-      <DashboardClient />
-    </AdminRedirect>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
+        <p className="mt-4 text-gray-600">Redirigiendo...</p>
+      </div>
+    </div>
   );
 }

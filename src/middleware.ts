@@ -2,10 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "./lib/auth";
 
 // Rutas que requieren autenticación
-const protectedRoutes = ["/dashboard", "/admin", "/rewards", "/ranking", "/history", "/profile"];
+const protectedRoutes = ["/dashboard", "/admin", "/rewards", "/ranking", "/history", "/profile", "/cliente"];
 
-// Rutas específicas para usuarios (no admin)
-const userOnlyRoutes = ["/dashboard", "/rewards", "/ranking", "/history", "/profile"];
+// Rutas específicas para administradores
+const adminOnlyRoutes = ["/admin"];
+
+// Rutas específicas para usuarios normales (redirigir al cliente)
+const userRoutes = ["/dashboard", "/rewards", "/ranking", "/history", "/profile"];
 
 // Rutas que redirigen al dashboard si el usuario ya está autenticado
 const authRoutes = ["/login", "/register"];
@@ -21,6 +24,11 @@ export async function middleware(request: NextRequest) {
 
   // Verificar si es una ruta de autenticación
   const isAuthRoute = authRoutes.includes(pathname);
+
+  // Verificar si es una ruta de usuario normal
+  const isUserRoute = userRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
 
   if (isProtectedRoute) {
     // Si no hay token, redirigir a login
@@ -39,6 +47,17 @@ export async function middleware(request: NextRequest) {
         response.cookies.delete("auth-token");
         return response;
       }
+
+      // Si es una ruta de usuario normal y el usuario es ADMIN, redirigir al admin
+      if (isUserRoute && user.role === "ADMIN") {
+        return NextResponse.redirect(new URL("/admin", request.url));
+      }
+
+      // Si es una ruta de usuario normal y el usuario es USER, redirigir al cliente
+      if (isUserRoute && user.role === "USER") {
+        return NextResponse.redirect(new URL("/cliente", request.url));
+      }
+
     } catch (error) {
       // Error al verificar token, limpiar cookie y redirigir a login
       const response = NextResponse.redirect(new URL("/login", request.url));
@@ -48,11 +67,15 @@ export async function middleware(request: NextRequest) {
   }
 
   if (isAuthRoute && token) {
-    // Si está autenticado y trata de acceder a login/register, redirigir al dashboard
+    // Si está autenticado y trata de acceder a login/register, redirigir según el rol
     try {
       const user = await verifyToken(token);
       if (user) {
-        return NextResponse.redirect(new URL("/dashboard", request.url));
+        if (user.role === "ADMIN") {
+          return NextResponse.redirect(new URL("/admin", request.url));
+        } else {
+          return NextResponse.redirect(new URL("/cliente", request.url));
+        }
       }
     } catch (error) {
       // Token inválido, limpiar cookie
