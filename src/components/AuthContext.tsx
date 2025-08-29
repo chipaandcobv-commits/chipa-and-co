@@ -13,12 +13,15 @@ interface User {
   updatedAt: string;
 }
 
+type CheckAuthOptions = { silent?: boolean };
+
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  checkAuth: () => Promise<void>;
+  checkAuth: (opts?: CheckAuthOptions) => Promise<void>;
   logout: () => Promise<void>;
   refetch: () => Promise<void>;
+  setAuthUser: (u: User | null) => void; // 👈 nuevo
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,60 +30,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const checkAuth = async () => {
+  const checkAuth = async ({ silent = false }: CheckAuthOptions = {}) => {
     try {
-      setLoading(true);
+      if (!silent) setLoading(true);
       const response = await fetch("/api/auth/me");
       if (response.ok) {
         const data = await response.json();
-        if (data.success) {
-          setUser(data.user);
-        } else {
-          console.log("❌ Auth check failed - no success:", data.error);
-          setUser(null);
-        }
+        setUser(data.success ? data.user : null);
       } else {
-        console.log("❌ Auth check failed - response not ok:", response.status);
         setUser(null);
       }
-    } catch (error) {
-      console.error("❌ Auth check failed:", error);
+    } catch {
       setUser(null);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
   const logout = async () => {
     try {
       await fetch("/api/auth/logout", { method: "POST" });
-      setUser(null);
-      setLoading(false);
-    } catch (error) {
-      console.error("Logout failed:", error);
-      // Aún así, limpiar el estado local
+    } finally {
       setUser(null);
       setLoading(false);
     }
   };
 
+  // 👇 setter directo para usar desde el login
+  const setAuthUser = (u: User | null) => {
+    setUser(u);
+    setLoading(false);
+  };
+
   useEffect(() => {
-    // Evitar el flash inicial estableciendo loading como true
-    setLoading(true);
-    checkAuth();
+    checkAuth({ silent: false }); // carga inicial
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, checkAuth, logout, refetch: checkAuth }}>
+    <AuthContext.Provider
+      value={{ user, loading, checkAuth, logout, refetch: checkAuth, setAuthUser }}
+    >
       {children}
     </AuthContext.Provider>
   );
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used within an AuthProvider");
+  return ctx;
 }

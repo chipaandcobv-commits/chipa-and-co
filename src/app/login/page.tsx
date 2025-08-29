@@ -14,7 +14,7 @@ import { useAuth } from "../../components/AuthContext";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { checkAuth } = useAuth();
+  const { checkAuth, setAuthUser } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -31,22 +31,21 @@ export default function LoginPage() {
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-
       const data = await response.json();
 
       if (data.success) {
-        await checkAuth(); // Actualizar el contexto de autenticación
-        // Redirigir según el rol del usuario
-        if (data.user.role === "ADMIN") {
-          router.push("/admin");
-        } else {
-          router.push("/dashboard");
-        }
+        // 👉 poblar contexto al instante SIN encender loading global
+        setAuthUser(data.user);
+
+        // 👉 redirigir al destino correcto (evitá "/dashboard" si tu home de cliente es "/cliente")
+        const target = data.user.role === "ADMIN" ? "/admin" : "/cliente";
+        router.replace(target);
+
+        // 👉 opcional: verificar en background sin tocar loading
+        checkAuth({ silent: true });
       } else {
         setErrors(data.errors || { general: data.error });
       }

@@ -109,7 +109,7 @@ export default function ClientePage() {
 
         {/* Mis puntos */}
         <section className="px-4 mt-4">
-          <h2 className="text-[22px] font-extrabold text-[#F26D1F]">
+          <h2 className="text-[24px] font-extrabold text-[#F26D1F] font-weight-800 line-height-140%">
             Mis Puntos
           </h2>
 
@@ -145,29 +145,43 @@ export default function ClientePage() {
 
           <div className="grid grid-cols-2 gap-4">
             {rewards.map((reward) => (
-              <div key={reward.id} className="">
-                <div 
-                  className="relative h-40 w-full rounded-2xl bg-[#F4E7DB] shadow-[0_6px_14px_rgba(0,0,0,0.08)] border border-white cursor-pointer hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow"
-                  onClick={() => handleRewardClick(reward)}
-                >
-                  {/* badge de puntos dentro de la tarjeta en esquina inferior izq */}
-                  <div className="absolute left-3 bottom-3">
-                    <span className="inline-flex items-center rounded-full bg-[#F26D1F] px-3 py-1 text-[13px] font-extrabold text-white shadow">
-                      {reward.pointsCost.toLocaleString("es-AR")} pts
-                    </span>
-                  </div>
-                  {/* Overlay de carga */}
-                  {claiming && (
-                    <div className="absolute inset-0 bg-black/20 rounded-2xl flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                  <div key={reward.id} className="">
+                    <div 
+                      className="relative h-40 w-full rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white cursor-pointer hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow overflow-hidden"
+                      onClick={() => handleRewardClick(reward)}
+                    >
+                      {/* Imagen del premio */}
+                      {reward.imageUrl ? (
+                        <img
+                          src={reward.imageUrl}
+                          alt={reward.name}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="h-full w-full flex items-center justify-center text-gray-400">
+                          Sin imagen
+                        </div>
+                      )}
+
+                      {/* Badge de puntos centrado abajo */}
+                      <div className="absolute left-0 bottom-0 w-full flex justify-center pb-3">
+                        <span className="inline-flex items-center justify-center rounded-full bg-[#F26D1F] px-6 py-1 text-[15px] font-extrabold text-white shadow w-[80%]">
+                          {reward.pointsCost.toLocaleString("es-AR")} pts
+                        </span>
+                      </div>
+
+                      {/* Overlay de carga */}
+                      {claiming && (
+                        <div className="absolute inset-0 bg-black/20 rounded-2xl flex items-center justify-center">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-                <p className="mt-2 text-center text-[16px] font-semibold text-neutral-800">
-                  {reward.name}
-                </p>
-              </div>
-            ))}
+                    <p className="mt-2 text-center text-[16px] font-semibold text-neutral-800">
+                      {reward.name}
+                    </p>
+                  </div>
+                ))}
           </div>
         </section>
 
