@@ -244,18 +244,35 @@ export default function OrdersManagement() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white flex items-center justify-center">
-        <div className="text-orange-600">Cargando...</div>
+      <div className="min-h-screen w-full bg-[#F7EFE7] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F26D1F] mx-auto"></div>
+          <p className="mt-4 text-gray-600">Cargando...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white">
+    <div className="min-h-screen w-full bg-[#F7EFE7] text-gray-900 font-urbanist">
  
 
       {/* Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header de bienvenida */}
+        <div className="pt-4 mb-8">
+          <div className="ml-4 rounded-l-full rounded-r-none bg-[#FCE6D5] py-3 pr-2 pl-4 shadow-sm flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-neutral-300 flex items-center justify-center text-neutral-600 text-sm">
+              <span>🛒</span>
+            </div>
+            <div className="leading-tight">
+              <p className="text-[14px] font-medium text-neutral-800">
+                Gestión de Órdenes
+              </p>
+            </div>
+          </div>
+        </div>
+
         {message && (
           <div
             className={`mb-6 p-4 rounded-lg ${
@@ -270,14 +287,15 @@ export default function OrdersManagement() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Create Order */}
-          <div className="bg-white rounded-lg shadow-sm border border-orange-100 p-6">
+          <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="text-xl font-semibold text-[#F26D1F]">
                 Crear Orden
               </h2>
               <Button
                 onClick={() => setShowCreateForm(!showCreateForm)}
                 size="sm"
+                className={showCreateForm ? "border-[#F26D1F] text-[#F26D1F] hover:bg-[#FCE6D5]" : "bg-[#F26D1F] hover:bg-[#E55A1A] text-white"}
               >
                 {showCreateForm ? "Cancelar" : "Nueva Orden"}
               </Button>
@@ -302,6 +320,7 @@ export default function OrdersManagement() {
                       onClick={searchClient}
                       isLoading={searchingClient}
                       disabled={!clientDni.trim()}
+                      className="bg-[#F26D1F] hover:bg-[#E55A1A] text-white"
                     >
                       Buscar
                     </Button>
@@ -333,7 +352,7 @@ export default function OrdersManagement() {
                     {products.map((product) => (
                       <div
                         key={product.id}
-                        className="flex justify-between items-center p-3 border border-gray-200 rounded-lg text-gray-700"
+                        className="flex justify-between items-center p-3 border border-white rounded-lg text-gray-700 bg-[#FCE6D5] hover:bg-[#F4E7DB] transition-colors"
                       >
                         <div>
                           <h4 className="font-medium">{product.name}</h4>
@@ -344,6 +363,7 @@ export default function OrdersManagement() {
                         <Button
                           onClick={() => addOrderItem(product.id)}
                           size="sm"
+                          className="bg-[#F26D1F] hover:bg-[#E55A1A] text-white"
                         >
                           Agregar
                         </Button>
@@ -363,7 +383,7 @@ export default function OrdersManagement() {
                         return (
                           <div
                             key={item.productId}
-                            className="flex justify-between items-center p-2 bg-gray-50 rounded text-gray-700"
+                            className="flex justify-between items-center p-2 bg-[#FCE6D5] rounded text-gray-700"
                           >
                             <span className="font-medium">{product?.name}</span>
                             <div className="flex items-center space-x-2">
@@ -395,10 +415,10 @@ export default function OrdersManagement() {
                         );
                       })}
                     </div>
-                    <div className="mt-4 p-4 bg-orange-50 rounded-lg">
+                    <div className="mt-4 p-4 bg-[#FCE6D5] rounded-lg">
                       <div className="flex justify-between items-center text-lg font-semibold text-gray-700">
                         <span>Total: ${getTotalAmount().toLocaleString()}</span>
-                        <span className="text-orange-600">
+                        <span className="text-[#F26D1F]">
                           {getTotalPoints()} puntos
                         </span>
                       </div>
@@ -406,7 +426,7 @@ export default function OrdersManagement() {
                     <Button
                       onClick={createOrder}
                       isLoading={creating}
-                      className="w-full mt-4"
+                      className="w-full mt-4 bg-[#F26D1F] hover:bg-[#E55A1A] text-white"
                       disabled={!clientInfo || getTotalAmount() === 0}
                     >
                       Crear Orden y Asignar Puntos
@@ -418,22 +438,22 @@ export default function OrdersManagement() {
           </div>
 
           {/* Orders List */}
-          <div className="bg-white rounded-lg shadow-sm border border-orange-100 p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">
+          <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
+            <h2 className="text-xl font-semibold text-[#F26D1F] mb-6">
               Órdenes Recientes
             </h2>
             <div className="space-y-4 max-h-96 overflow-y-auto">
               {orders.map((order) => (
                 <div
                   key={order.id}
-                  className="border border-gray-200 rounded-lg p-4"
+                  className="border border-white rounded-lg p-4 bg-[#FCE6D5] hover:bg-[#F4E7DB] transition-colors"
                 >
                   <div className="flex justify-between items-start mb-2">
                     <div>
                       <p className="font-medium text-green-600">
                         ${order.totalAmount.toLocaleString()}
                       </p>
-                      <p className="text-sm text-orange-600">
+                      <p className="text-sm text-[#F26D1F]">
                         {order.totalPoints} puntos
                       </p>
                     </div>

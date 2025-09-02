@@ -173,16 +173,33 @@ export default function RewardsManagement() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white flex items-center justify-center">
-        <div className="text-orange-600">Cargando premios...</div>
+      <div className="min-h-screen w-full bg-[#F7EFE7] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F26D1F] mx-auto"></div>
+          <p className="mt-4 text-gray-600">Cargando premios...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white">
+    <div className="min-h-screen w-full bg-[#F7EFE7] text-gray-900 font-urbanist">
       {/* Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header de bienvenida */}
+        <div className="pt-4 mb-8">
+          <div className="ml-4 rounded-l-full rounded-r-none bg-[#FCE6D5] py-3 pr-2 pl-4 shadow-sm flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-neutral-300 flex items-center justify-center text-neutral-600 text-sm">
+              <span>🎁</span>
+            </div>
+            <div className="leading-tight">
+              <p className="text-[14px] font-medium text-neutral-800">
+                Gestión de Premios
+              </p>
+            </div>
+          </div>
+        </div>
+
         {message && (
           <div
             className={`mb-6 p-4 rounded-lg ${
@@ -198,15 +215,16 @@ export default function RewardsManagement() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Form */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm border border-orange-100 p-6">
+            <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold text-gray-900">
+                <h2 className="text-xl font-semibold text-[#F26D1F]">
                   {editingReward ? "Editar Premio" : "Nuevo Premio"}
                 </h2>
                 <Button
                   onClick={() => setShowForm(!showForm)}
                   size="sm"
                   variant={showForm ? "outline" : "primary"}
+                  className={showForm ? "border-[#F26D1F] text-[#F26D1F] hover:bg-[#FCE6D5]" : "bg-[#F26D1F] hover:bg-[#E55A1A] text-white"}
                 >
                   {showForm ? "Cancelar" : "Nuevo"}
                 </Button>
@@ -231,7 +249,7 @@ export default function RewardsManagement() {
                         setForm({ ...form, description: e.target.value })
                       }
                       placeholder="Descripción del premio..."
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F26D1F] focus:border-[#F26D1F]"
                       rows={3}
                     />
                   </div>
@@ -277,12 +295,12 @@ export default function RewardsManagement() {
                     <Button
                       onClick={handleSubmit}
                       isLoading={saving}
-                      className="flex-1"
+                      className="flex-1 bg-[#F26D1F] hover:bg-[#E55A1A] text-white"
                     >
                       {editingReward ? "Actualizar" : "Crear"}
                     </Button>
                     {editingReward && (
-                      <Button onClick={resetForm} variant="outline">
+                      <Button onClick={resetForm} variant="outline" className="border-[#F26D1F] text-[#F26D1F] hover:bg-[#FCE6D5]">
                         Cancelar
                       </Button>
                     )}
@@ -294,8 +312,8 @@ export default function RewardsManagement() {
 
           {/* Rewards List */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-sm border border-orange-100 p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">
+            <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
+              <h2 className="text-xl font-semibold text-[#F26D1F] mb-6">
                 Premios ({rewards.length})
               </h2>
 
@@ -303,7 +321,7 @@ export default function RewardsManagement() {
                 {rewards.map((reward) => (
                   <div
                     key={reward.id}
-                    className="border border-gray-200 rounded-lg p-4"
+                    className="border border-white rounded-lg p-4 bg-[#FCE6D5] hover:bg-[#F4E7DB] transition-colors"
                   >
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex-1">
@@ -329,7 +347,7 @@ export default function RewardsManagement() {
 
                     <div className="text-sm text-gray-600 space-y-1">
                       <p>
-                        💎<strong>{reward.pointsCost}</strong> puntos
+                        💎<strong className="text-[#F26D1F]">{reward.pointsCost}</strong> puntos
                       </p>
                       <p>
                         📦 Stock:{" "}
@@ -343,7 +361,7 @@ export default function RewardsManagement() {
                         onClick={() => handleEdit(reward)}
                         size="sm"
                         variant="outline"
-                        className="flex-1"
+                        className="flex-1 border-[#F26D1F] text-[#F26D1F] hover:bg-[#FCE6D5]"
                       >
                         Editar
                       </Button>
@@ -351,7 +369,7 @@ export default function RewardsManagement() {
                         onClick={() => handleDelete(reward)}
                         size="sm"
                         variant="outline"
-                        className="flex-1 text-red-600 hover:bg-red-50"
+                        className="flex-1 text-red-600 hover:bg-red-50 border-red-300"
                       >
                         Eliminar
                       </Button>

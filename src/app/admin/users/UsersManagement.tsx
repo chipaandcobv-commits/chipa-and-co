@@ -92,7 +92,16 @@ export default function UsersManagement() {
     fetchUsers();
   };
 
-
+  if (loading) {
+    return (
+      <div className="min-h-screen w-full bg-[#F7EFE7] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F26D1F] mx-auto"></div>
+          <p className="mt-4 text-gray-600">Cargando usuarios...</p>
+        </div>
+      </div>
+    );
+  }
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
@@ -104,20 +113,25 @@ export default function UsersManagement() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white">
+    <div className="min-h-screen w-full bg-[#F7EFE7] text-gray-900 font-urbanist">
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            👥 Gestión de Usuarios
-          </h1>
-          <p className="text-gray-700">
-            Administra los usuarios del sistema y sus roles.
-          </p>
+        {/* Header de bienvenida */}
+        <div className="pt-4 mb-8">
+          <div className="ml-4 rounded-l-full rounded-r-none bg-[#FCE6D5] py-3 pr-2 pl-4 shadow-sm flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-neutral-300 flex items-center justify-center text-neutral-600 text-sm">
+              <span>👥</span>
+            </div>
+            <div className="leading-tight">
+              <p className="text-[14px] font-medium text-neutral-800">
+                Gestión de Usuarios
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
+        <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 mb-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <Input
@@ -135,7 +149,7 @@ export default function UsersManagement() {
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value as any)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-gray-700"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F26D1F] focus:border-[#F26D1F] text-gray-700"
               >
                 <option value="ALL">Todos los roles</option>
                 <option value="USER">Usuarios</option>
@@ -143,7 +157,7 @@ export default function UsersManagement() {
               </select>
             </div>
             <div className="flex items-end">
-              <Button onClick={handleSearch} className="w-full">
+              <Button onClick={handleSearch} className="w-full bg-[#F26D1F] hover:bg-[#E55A1A] text-white">
                 Buscar
               </Button>
             </div>
@@ -151,53 +165,53 @@ export default function UsersManagement() {
         </div>
 
         {/* Users Table */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">
+        <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white overflow-hidden hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
+          <div className="px-6 py-4 border-b border-white">
+            <h2 className="text-lg font-semibold text-[#F26D1F]">
               Lista de Usuarios ({filteredUsers.length})
             </h2>
           </div>
 
           {loading ? (
             <div className="p-8 text-center">
-              <div className="animate-spin h-8 w-8 border-2 border-orange-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+              <div className="animate-spin h-8 w-8 border-2 border-[#F26D1F] border-t-transparent rounded-full mx-auto mb-4"></div>
               <p className="text-gray-600">Cargando usuarios...</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-white">
+                <thead className="bg-[#FCE6D5]">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-neutral-800 uppercase tracking-wider">
                       Usuario
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-neutral-800 uppercase tracking-wider">
                       DNI
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-neutral-800 uppercase tracking-wider">
                       Rol
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-neutral-800 uppercase tracking-wider">
                       Puntos
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-neutral-800 uppercase tracking-wider">
                       Órdenes / Premios
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-neutral-800 uppercase tracking-wider">
                       Fecha de Registro
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-neutral-800 uppercase tracking-wider">
                       Acciones
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-[#F4E7DB] divide-y divide-white">
                   {filteredUsers.map((user) => (
-                    <tr key={user.id} className="hover:bg-gray-50">
+                    <tr key={user.id} className="hover:bg-[#FCE6D5]">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className="h-10 w-10 bg-orange-100 rounded-full flex items-center justify-center">
-                            <UserIcon className="h-5 w-5 text-orange-600" />
+                          <div className="h-10 w-10 bg-[#F26D1F] rounded-full flex items-center justify-center">
+                            <UserIcon className="h-5 w-5 text-white" />
                           </div>
                           <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900">
@@ -223,7 +237,7 @@ export default function UsersManagement() {
                           {user.role}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#F26D1F] font-semibold">
                         {user.puntos} pts
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -250,6 +264,7 @@ export default function UsersManagement() {
                             }
                             isLoading={updatingUserId === user.id}
                             disabled={updatingUserId !== null}
+                            className={user.role === "ADMIN" ? "bg-red-600 hover:bg-red-700 text-white" : "bg-[#F26D1F] hover:bg-[#E55A1A] text-white"}
                           >
                             {user.role === "ADMIN"
                               ? "Quitar Admin"

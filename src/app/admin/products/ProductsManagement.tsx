@@ -78,8 +78,6 @@ export default function ProductsManagement() {
       newErrors.price = "El precio debe ser un número válido mayor a 0";
     }
 
-
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -177,23 +175,46 @@ export default function ProductsManagement() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white">
-   
+  if (loading) {
+    return (
+      <div className="min-h-screen w-full bg-[#F7EFE7] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F26D1F] mx-auto"></div>
+          <p className="mt-4 text-gray-600">Cargando productos...</p>
+        </div>
+      </div>
+    );
+  }
 
+  return (
+    <div className="min-h-screen w-full bg-[#F7EFE7] text-gray-900 font-urbanist">
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header de bienvenida */}
+        <div className="pt-4 mb-8">
+          <div className="ml-4 rounded-l-full rounded-r-none bg-[#FCE6D5] py-3 pr-2 pl-4 shadow-sm flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-neutral-300 flex items-center justify-center text-neutral-600 text-sm">
+              <span>📦</span>
+            </div>
+            <div className="leading-tight">
+              <p className="text-[14px] font-medium text-neutral-800">
+                Gestión de Productos
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Add Product Button */}
         <div className="mb-6">
-          <Button onClick={() => setShowForm(true)} disabled={showForm}>
+          <Button onClick={() => setShowForm(true)} disabled={showForm} className="bg-[#F26D1F] hover:bg-[#E55A1A] text-white">
             + Agregar Producto
           </Button>
         </div>
 
         {/* Product Form */}
         {showForm && (
-          <div className="bg-white rounded-lg shadow p-6 mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 mb-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
+            <h2 className="text-lg font-semibold text-[#F26D1F] mb-4">
               {editingProduct ? "Editar Producto" : "Nuevo Producto"}
             </h2>
 
@@ -233,6 +254,7 @@ export default function ProductsManagement() {
                   type="submit"
                   isLoading={savingProduct}
                   disabled={savingProduct}
+                  className="bg-[#F26D1F] hover:bg-[#E55A1A] text-white"
                 >
                   {editingProduct ? "Actualizar" : "Crear"} Producto
                 </Button>
@@ -242,6 +264,7 @@ export default function ProductsManagement() {
                   variant="outline"
                   onClick={handleCancelForm}
                   disabled={savingProduct}
+                  className="border-[#F26D1F] text-[#F26D1F] hover:bg-[#FCE6D5]"
                 >
                   Cancelar
                 </Button>
@@ -251,46 +274,46 @@ export default function ProductsManagement() {
         )}
 
         {/* Products Table */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">
+        <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white overflow-hidden hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
+          <div className="px-6 py-4 border-b border-white">
+            <h2 className="text-lg font-semibold text-[#F26D1F]">
               Lista de Productos ({products.length})
             </h2>
           </div>
 
           {loading ? (
             <div className="p-8 text-center">
-              <div className="animate-spin h-8 w-8 border-2 border-orange-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+              <div className="animate-spin h-8 w-8 border-2 border-[#F26D1F] border-t-transparent rounded-full mx-auto mb-4"></div>
               <p className="text-gray-600">Cargando productos...</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-white">
+                <thead className="bg-[#FCE6D5]">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-neutral-800 uppercase tracking-wider">
                       Producto
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-neutral-800 uppercase tracking-wider">
                       Precio
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-neutral-800 uppercase tracking-wider">
                       Estado
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-neutral-800 uppercase tracking-wider">
                       Total Ventas
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-neutral-800 uppercase tracking-wider">
                       Fecha Creación
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-neutral-800 uppercase tracking-wider">
                       Acciones
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-[#F4E7DB] divide-y divide-white">
                   {products.map((product) => (
-                    <tr key={product.id} className="hover:bg-gray-50">
+                    <tr key={product.id} className="hover:bg-[#FCE6D5]">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
                           <div className="text-sm font-medium text-gray-900">
@@ -332,6 +355,7 @@ export default function ProductsManagement() {
                             size="sm"
                             onClick={() => handleEdit(product)}
                             disabled={showForm}
+                            className="bg-[#F26D1F] hover:bg-[#E55A1A] text-white"
                           >
                             Editar
                           </Button>
@@ -342,6 +366,7 @@ export default function ProductsManagement() {
                             onClick={() => handleDelete(product.id)}
                             isLoading={deletingProductId === product.id}
                             disabled={deletingProductId !== null || showForm}
+                            className="border-[#F26D1F] text-[#F26D1F] hover:bg-[#FCE6D5]"
                           >
                             Eliminar
                           </Button>
@@ -356,7 +381,7 @@ export default function ProductsManagement() {
                 <div className="p-8 text-center">
                   <DashboardIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-gray-500">No hay productos registrados</p>
-                  <Button onClick={() => setShowForm(true)} className="mt-4">
+                  <Button onClick={() => setShowForm(true)} className="mt-4 bg-[#F26D1F] hover:bg-[#E55A1A] text-white">
                     Crear el primer producto
                   </Button>
                 </div>
