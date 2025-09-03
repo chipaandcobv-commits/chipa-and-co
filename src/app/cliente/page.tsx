@@ -38,9 +38,16 @@ export default function ClientePage() {
     );
   }
 
-  // No renderizar nada si aún está cargando
-  if (!user) {
-    return null;
+  // No renderizar nada si aún está cargando o si faltan propiedades del usuario
+  if (!user || typeof user.puntos === 'undefined') {
+    return (
+      <div className="min-h-svh w-full bg-[#F7EFE7] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F26D1F] mx-auto"></div>
+          <p className="mt-4 text-gray-600">Cargando información del usuario...</p>
+        </div>
+      </div>
+    );
   }
 
   const handleRewardClick = (reward: any) => {
@@ -118,7 +125,7 @@ export default function ClientePage() {
               <div>
                 <div className="flex items-end gap-2 leading-none">
                   <span className="text-4xl font-black tracking-tight">
-                    {user.puntos.toLocaleString("es-AR")}
+                    {(user.puntos || 0).toLocaleString("es-AR")}
                   </span>
                 </div>
                 <div className="uppercase text-white/90 tracking-wide font-semibold text-[15px] mt-1">

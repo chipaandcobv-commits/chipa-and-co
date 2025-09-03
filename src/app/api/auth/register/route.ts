@@ -62,6 +62,7 @@ export async function POST(request: NextRequest) {
       userId: user.id,
       email: user.email,
       name: user.name,
+      role: user.role,
     });
 
     // Configurar cookie
@@ -74,8 +75,11 @@ export async function POST(request: NextRequest) {
         name: user.name,
         email: user.email,
         dni: user.dni,
+        puntos: user.puntos,
+        puntosHistoricos: user.puntosHistoricos,
         role: user.role,
         createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
       },
     });
   } catch (error) {

@@ -324,7 +324,7 @@ export default function ConfigManagement() {
                         <strong>Factor de cambio:</strong> {(config.pointsPerPeso / originalConfig.pointsPerPeso).toFixed(2)}x
                       </p>
                       <p className="text-xs">
-                        💡 Después de guardar, usa "Recalcular Puntos" para actualizar proporcionalmente 
+                        💡 Después de guardar, usa &quot;Recalcular Puntos&quot; para actualizar proporcionalmente 
                         los puntos actuales e históricos de todos los usuarios.
                       </p>
                     </div>

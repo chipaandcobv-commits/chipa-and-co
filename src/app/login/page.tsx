@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Button from "../../components/ui/Button";
@@ -14,7 +14,7 @@ import { useAuth } from "../../components/AuthContext";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { checkAuth, setAuthUser } = useAuth();
+  const { checkAuth, setAuthUser, user } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -22,6 +22,14 @@ export default function LoginPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  // Redirección automática si ya está autenticado
+  useEffect(() => {
+    if (user) {
+      const target = user.role === "ADMIN" ? "/admin" : "/cliente";
+      router.replace(target);
+    }
+  }, [user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -58,9 +58,9 @@ class SecurityLogger {
   
   private getClientInfo(request: NextRequest) {
     return {
-      ipAddress: request.ip || 
-                 request.headers.get("x-forwarded-for") || 
+      ipAddress: request.headers.get("x-forwarded-for") || 
                  request.headers.get("x-real-ip") || 
+                 request.headers.get("cf-connecting-ip") ||
                  "unknown",
       userAgent: request.headers.get("user-agent") || "unknown",
       path: request.nextUrl.pathname,
@@ -185,7 +185,7 @@ class SecurityLogger {
     });
   }
   
-  logAccessDenied(request: NextRequest, userId?: string, userEmail?: string, reason: string): void {
+  logAccessDenied(request: NextRequest, reason: string, userId?: string, userEmail?: string): void {
     this.log(SecurityEventType.ACCESS_DENIED, request, userId, userEmail, undefined, {
       reason,
       timestamp: new Date().toISOString(),

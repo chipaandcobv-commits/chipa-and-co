@@ -58,8 +58,12 @@ export async function POST(request: NextRequest) {
         id: user.id,
         name: user.name,
         email: user.email,
+        dni: user.dni,
+        puntos: user.puntos,
+        puntosHistoricos: user.puntosHistoricos,
         role: user.role,
         createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
       },
       token,
     });

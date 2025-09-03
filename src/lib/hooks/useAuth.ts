@@ -33,8 +33,15 @@ export function useAuth() {
       const data = await response.json();
 
       if (data.success) {
+        // Asegurar que el usuario tenga todas las propiedades necesarias
+        const userWithDefaults = {
+          ...data.user,
+          puntos: data.user.puntos ?? 0,
+          puntosHistoricos: data.user.puntosHistoricos ?? 0,
+        };
+        
         setAuthState({
-          user: data.user,
+          user: userWithDefaults,
           loading: false,
           error: null,
         });

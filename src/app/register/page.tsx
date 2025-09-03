@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Button from "../../components/ui/Button";
@@ -15,7 +15,7 @@ import { useAuth } from "../../components/AuthContext";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { checkAuth } = useAuth();
+  const { checkAuth, user } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -27,6 +27,14 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Redirección automática si ya está autenticado
+  useEffect(() => {
+    if (user) {
+      const target = user.role === "ADMIN" ? "/admin" : "/cliente";
+      router.replace(target);
+    }
+  }, [user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,7 +58,7 @@ export default function RegisterPage() {
         if (data.user.role === "ADMIN") {
           router.push("/admin");
         } else {
-          router.push("/dashboard");
+          router.push("/cliente");
         }
       } else {
         setErrors(data.errors || { general: data.error });

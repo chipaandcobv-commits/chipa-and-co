@@ -1,10 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  images: {
-    unoptimized: true,
-  },
-  
   // Configuración de seguridad robusta
   async headers() {
     return [
@@ -78,10 +74,7 @@ const nextConfig: NextConfig = {
   },
   
   // Configuración de seguridad adicional
-  experimental: {
-    // Habilitar características de seguridad experimentales
-    serverComponentsExternalPackages: ["bcryptjs"],
-  },
+  serverExternalPackages: ["bcryptjs"],
   
   // Configuración de compilación segura
   compiler: {
@@ -95,5 +88,5 @@ const nextConfig: NextConfig = {
     remotePatterns: [],
   },
 };
-
+``
 export default nextConfig;

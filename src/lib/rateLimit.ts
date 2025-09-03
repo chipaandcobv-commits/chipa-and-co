@@ -57,9 +57,10 @@ export function getRateLimitConfig(path: string): RateLimitConfig {
 
 export function getClientIdentifier(request: NextRequest): string {
   // Identificar cliente por IP y User-Agent
-  const ip = request.ip || 
-             request.headers.get("x-forwarded-for") || 
+  const ip = request.headers.get("x-forwarded-for") || 
              request.headers.get("x-real-ip") || 
+             request.headers.get("cf-connecting-ip") || // Cloudflare
+             request.headers.get("x-client-ip") || // Otros proxies
              "unknown";
   
   const userAgent = request.headers.get("user-agent") || "unknown";

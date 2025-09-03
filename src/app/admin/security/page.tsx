@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Card } from "../../../components/ui/Card";
-import { Button } from "../../../components/ui/Button";
+import Button from "../../../components/ui/Button";
 import { DashboardIcon, ShieldIcon, AlertIcon, CheckIcon } from "../../../components/icons/Icons";
 
 interface SecurityStats {
@@ -104,6 +104,7 @@ export default function SecurityDashboard() {
           eventType: "LOGIN_FAILED",
           ipAddress: "192.168.1.100",
           userEmail: "admin@example.com",
+          userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
           path: "/api/auth/login",
           method: "POST",
           details: { reason: "Invalid password", failedAttempts: 3 },

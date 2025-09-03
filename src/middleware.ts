@@ -111,7 +111,7 @@ export async function middleware(request: NextRequest) {
     if (isProtectedRoute) {
       // Si no hay token, redirigir a login
       if (!token) {
-        securityLogger.logAccessDenied(request, undefined, undefined, "No token provided");
+        securityLogger.logAccessDenied(request, "No token provided");
         
         const loginUrl = new URL("/login", request.url);
         loginUrl.searchParams.set("redirect", pathname);
@@ -158,7 +158,7 @@ export async function middleware(request: NextRequest) {
         
         // Verificar acceso a rutas admin
         if (adminOnlyRoutes.some(route => pathname.startsWith(route)) && user.role !== "ADMIN") {
-          securityLogger.logAccessDenied(request, user.userId, user.email, "Admin access required");
+          securityLogger.logAccessDenied(request, "Admin access required", user.userId, user.email);
           return NextResponse.json(
             { error: "Acceso denegado: Se requieren permisos de administrador" },
             { status: 403 }
