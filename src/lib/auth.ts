@@ -174,3 +174,12 @@ export async function requireAuth() {
     await prisma.$disconnect();
   }
 }
+
+// Require admin role - throws error if not admin
+export async function requireAdmin() {
+  const user = await requireAuth();
+  if (user.role !== "ADMIN") {
+    throw new Error("Se requiere rol de administrador");
+  }
+  return user;
+}

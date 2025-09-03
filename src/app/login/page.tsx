@@ -72,14 +72,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white flex items-center justify-center p-4">
+    <div className="min-h-screen w-full bg-[#F7EFE7] text-gray-900 font-urbanist flex items-center justify-center p-4">
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
-          <div className="mx-auto h-16 w-16 bg-orange-500 rounded-full flex items-center justify-center mb-4">
+          <div className="mx-auto h-16 w-16 bg-[#F26D1F] rounded-full flex items-center justify-center mb-4">
             <LockIcon className="h-8 w-8 text-white" />
           </div>
-          <h2 className="text-3xl font-bold text-gray-900">Iniciar Sesión</h2>
+          <h2 className="text-3xl font-bold text-[#F26D1F]">Iniciar Sesión</h2>
           <p className="mt-2 text-sm text-gray-600">
             Accede a tu cuenta de Chipa&Co
           </p>
@@ -87,7 +87,7 @@ export default function LoginPage() {
 
         {/* Form */}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="bg-white rounded-2xl shadow-xl p-8 space-y-6">
+          <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-8 space-y-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
             {errors.general && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 text-sm">
                 {errors.general}
@@ -106,29 +106,35 @@ export default function LoginPage() {
               required
             />
 
-            <Input
-              label="Contraseña"
-              type={showPassword ? "text" : "password"}
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Tu contraseña"
-              error={errors.password}
-              required
-              rightIcon={
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Contraseña
+              </label>
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Tu contraseña"
+                  error={errors.password}
+                  required
+                  className="pr-12"
+                />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                  style={{ minHeight: '20px', minWidth: '20px' }}
                 >
                   {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
                 </button>
-              }
-            />
+              </div>
+            </div>
 
             <Button
               type="submit"
-              className="w-full"
+              className="w-full bg-[#F26D1F] hover:bg-[#E55A1A] text-white"
               size="lg"
               isLoading={isLoading}
             >
@@ -142,7 +148,7 @@ export default function LoginPage() {
               ¿No tienes cuenta?{" "}
               <Link
                 href="/register"
-                className="font-medium text-orange-600 hover:text-orange-500 transition-colors"
+                className="font-medium text-[#F26D1F] hover:text-[#E55A1A] transition-colors"
               >
                 Regístrate aquí
               </Link>

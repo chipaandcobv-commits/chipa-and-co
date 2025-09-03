@@ -3,16 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "prisma generate && next build",
+    "dev": "next dev",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "db:reset": "npx prisma migrate reset --force && npx prisma generate",
     "db:deploy": "npx prisma migrate deploy && npx prisma generate",
-    "create-admin": "tsx src/scripts/create-admin.ts",
-    "create-test-user": "tsx src/scripts/create-test-user.ts",
-
     "cleanup-rewards": "tsx src/scripts/cleanup-expired-rewards.ts",
+    "cleanup-rewards-auto": "tsx -e \"import('./src/scripts/cleanup-expired-rewards').then(m => m.startAutoCleanup())\"",
+    "populate-test-data": "tsx src/scripts/populate-test-data.ts",
+    "create-admin": "tsx src/scripts/create-admin.ts",
+    "create-sample-rewards": "tsx src/scripts/create-sample-rewards.ts",
+    "create-test-user": "tsx src/scripts/create-test-user.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -25,7 +27,8 @@
     "next": "15.4.2",
     "qrcode": "^1.5.4",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

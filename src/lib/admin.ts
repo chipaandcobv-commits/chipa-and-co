@@ -29,13 +29,44 @@ export async function isCurrentUserAdmin(): Promise<boolean> {
   }
 }
 
-// Verificar permisos de admin para API routes
+// Verificar permisos de admin para API routes y retornar usuario completo
 export async function requireAdmin() {
-  const isAdmin = await isCurrentUserAdmin();
-  if (!isAdmin) {
-    throw new Error("Acceso denegado: Se requieren permisos de administrador");
+  try {
+    const currentUser = await getCurrentUser();
+    if (!currentUser) {
+      throw new Error("No autorizado");
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: currentUser.userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        dni: true,
+        puntos: true,
+        puntosHistoricos: true,
+        role: true,
+        password: true, // Necesario para cambio de contraseña
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    if (!user) {
+      throw new Error("Usuario no encontrado");
+    }
+
+    if (user.role !== "ADMIN") {
+      throw new Error("Se requiere rol de administrador");
+    }
+
+    return user;
+  } catch (error) {
+    throw error;
+  } finally {
+    await prisma.$disconnect();
   }
-  return true;
 }
 
 // Obtener usuario completo con rol

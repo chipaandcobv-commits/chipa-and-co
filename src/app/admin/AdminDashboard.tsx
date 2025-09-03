@@ -265,88 +265,78 @@ export default function AdminDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="mt-8 relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
-          <h2 className="text-lg font-semibold text-[#F26D1F] mb-4">
+        <div className="mt-6 sm:mt-8 relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-4 sm:p-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
+          <h2 className="text-base sm:text-lg font-semibold text-[#F26D1F] mb-4">
             Acciones Rápidas
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Link href="/admin/config">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
+            <Link href="/admin/users">
               <Button
                 variant="outline"
-                className="w-full h-20 flex flex-col items-center justify-center bg-white hover:bg-[#FCE6D5] border-[#F26D1F] text-[#F26D1F] hover:text-[#F26D1F]"
+                className="w-full h-16 sm:h-20 flex flex-col items-center justify-center bg-white hover:bg-[#FCE6D5] border-[#F26D1F] text-[#F26D1F] hover:text-[#F26D1F]"
               >
-                <div className="text-2xl mb-1">⚙️</div>
-                <span>Configuración</span>
-              </Button>
-            </Link>
-
-            <Link href="/admin/products">
-              <Button
-                variant="outline"
-                className="w-full h-20 flex flex-col items-center justify-center bg-white hover:bg-[#FCE6D5] border-[#F26D1F] text-[#F26D1F] hover:text-[#F26D1F]"
-              >
-                <div className="text-2xl mb-1">📦</div>
-                <span>Gestionar Productos</span>
+                <div className="text-xl sm:text-2xl mb-1">👥</div>
+                <span className="text-xs sm:text-sm">Usuarios</span>
               </Button>
             </Link>
 
             <Link href="/admin/orders">
               <Button
                 variant="outline"
-                className="w-full h-20 flex flex-col items-center justify-center bg-white hover:bg-[#FCE6D5] border-[#F26D1F] text-[#F26D1F] hover:text-[#F26D1F]"
+                className="w-full h-16 sm:h-20 flex flex-col items-center justify-center bg-white hover:bg-[#FCE6D5] border-[#F26D1F] text-[#F26D1F] hover:text-[#F26D1F]"
               >
-                <div className="text-2xl mb-1">🛒</div>
-                <span>Crear Órdenes</span>
+                <div className="text-xl sm:text-2xl mb-1">🛒</div>
+                <span className="text-xs sm:text-sm">Crear Órdenes</span>
+              </Button>
+            </Link>
+
+            <Link href="/admin/products">
+              <Button
+                variant="outline"
+                className="w-full h-16 sm:h-20 flex flex-col items-center justify-center bg-white hover:bg-[#FCE6D5] border-[#F26D1F] text-[#F26D1F] hover:text-[#F26D1F]"
+              >
+                <div className="text-xl sm:text-2xl mb-1">📦</div>
+                <span className="text-xs sm:text-sm">Gestionar Productos</span>
               </Button>
             </Link>
 
             <Link href="/admin/rewards">
               <Button
                 variant="outline"
-                className="w-full h-20 flex flex-col items-center justify-center bg-white hover:bg-[#FCE6D5] border-[#F26D1F] text-[#F26D1F] hover:text-[#F26D1F]"
+                className="w-full h-16 sm:h-20 flex flex-col items-center justify-center bg-white hover:bg-[#FCE6D5] border-[#F26D1F] text-[#F26D1F] hover:text-[#F26D1F]"
               >
-                <div className="text-2xl mb-1">🎁</div>
-                <span>Gestionar Premios</span>
-              </Button>
-            </Link>
-
-            <Link href="/admin/users">
-              <Button
-                variant="outline"
-                className="w-full h-20 flex flex-col items-center justify-center bg-white hover:bg-[#FCE6D5] border-[#F26D1F] text-[#F26D1F] hover:text-[#F26D1F]"
-              >
-                <div className="text-2xl mb-1">👥</div>
-                <span>Usuarios</span>
+                <div className="text-xl sm:text-2xl mb-1">🎁</div>
+                <span className="text-xs sm:text-sm">Gestionar Premios</span>
               </Button>
             </Link>
 
             <Link href="/admin/ranking">
               <Button
                 variant="outline"
-                className="w-full h-20 flex flex-col items-center justify-center bg-white hover:bg-[#FCE6D5] border-[#F26D1F] text-[#F26D1F] hover:text-[#F26D1F]"
+                className="w-full h-16 sm:h-20 flex flex-col items-center justify-center bg-white hover:bg-[#FCE6D5] border-[#F26D1F] text-[#F26D1F] hover:text-[#F26D1F]"
               >
-                <div className="text-2xl mb-1">🏆</div>
-                <span>Ranking</span>
+                <div className="text-xl sm:text-2xl mb-1">🏆</div>
+                <span className="text-xs sm:text-sm">Ranking</span>
               </Button>
             </Link>
 
             <Link href="/admin/validate">
               <Button
                 variant="outline"
-                className="w-full h-20 flex flex-col items-center justify-center bg-white hover:bg-[#FCE6D5] border-[#F26D1F] text-[#F26D1F] hover:text-[#F26D1F]"
+                className="w-full h-16 sm:h-20 flex flex-col items-center justify-center bg-white hover:bg-[#FCE6D5] border-[#F26D1F] text-[#F26D1F] hover:text-[#F26D1F]"
               >
-                <div className="text-2xl mb-1">✅</div>
-                <span>Validar Premios</span>
+                <div className="text-xl sm:text-2xl mb-1">✅</div>
+                <span className="text-xs sm:text-sm">Validar Premios</span>
               </Button>
             </Link>
 
-            <Link href="/admin/expired-rewards">
+            <Link href="/admin/config">
               <Button
                 variant="outline"
-                className="w-full h-20 flex flex-col items-center justify-center bg-white hover:bg-[#FCE6D5] border-[#F26D1F] text-[#F26D1F] hover:text-[#F26D1F]"
+                className="w-full h-16 sm:h-20 flex flex-col items-center justify-center bg-white hover:bg-[#FCE6D5] border-[#F26D1F] text-[#F26D1F] hover:text-[#F26D1F]"
               >
-                <div className="text-2xl mb-1">⏰</div>
-                <span>Premios Vencidos</span>
+                <div className="text-xl sm:text-2xl mb-1">⚙️</div>
+                <span className="text-xs sm:text-sm">Configuración</span>
               </Button>
             </Link>
           </div>

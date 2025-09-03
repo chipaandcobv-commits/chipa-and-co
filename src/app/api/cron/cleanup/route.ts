@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin";
 import { PrismaClient } from "@/generated/prisma";
 
 const prisma = new PrismaClient();
@@ -50,41 +49,28 @@ async function cleanupExpiredRewards() {
 
 export async function GET(request: NextRequest) {
   try {
-    await requireAdmin();
+    // Verificar token de seguridad (opcional, para mayor seguridad)
+    const authHeader = request.headers.get("authorization");
+    const expectedToken = process.env.CRON_SECRET_TOKEN;
+    
+    if (expectedToken && authHeader !== `Bearer ${expectedToken}`) {
+      return NextResponse.json(
+        { success: false, error: "No autorizado" },
+        { status: 401 }
+      );
+    }
 
     // Ejecutar limpieza automática
     const cleanupResult = await cleanupExpiredRewards();
 
-    // Obtener estadísticas actualizadas
-    const stats = await prisma.rewardClaim.groupBy({
-      by: ["status"],
-      _count: {
-        status: true,
-      },
-    });
-
-    const totalClaims = await prisma.rewardClaim.count();
-    const pendingClaims = await prisma.rewardClaim.count({
-      where: { status: "PENDING" },
-    });
-    const expiredClaims = await prisma.rewardClaim.count({
-      where: { status: "EXPIRED" },
-    });
-
     return NextResponse.json({
       success: true,
-      stats: {
-        total: totalClaims,
-        pending: pendingClaims,
-        expired: expiredClaims,
-        approved: stats.find(s => s.status === "APPROVED")?._count.status || 0,
-        rejected: stats.find(s => s.status === "REJECTED")?._count.status || 0,
-      },
-      cleanup: cleanupResult,
       message: `Limpieza automática ejecutada: ${cleanupResult.expiredCount} vencidos, ${cleanupResult.deletedCount} eliminados`,
+      result: cleanupResult,
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error("Error en GET /api/admin/rewards/expire:", error);
+    console.error("Error en cron cleanup:", error);
     return NextResponse.json(
       { success: false, error: "Error interno del servidor" },
       { status: 500 }
@@ -94,7 +80,16 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    await requireAdmin();
+    // Verificar token de seguridad
+    const authHeader = request.headers.get("authorization");
+    const expectedToken = process.env.CRON_SECRET_TOKEN;
+    
+    if (expectedToken && authHeader !== `Bearer ${expectedToken}`) {
+      return NextResponse.json(
+        { success: false, error: "No autorizado" },
+        { status: 401 }
+      );
+    }
 
     // Ejecutar limpieza manual
     const result = await cleanupExpiredRewards();
@@ -103,9 +98,10 @@ export async function POST(request: NextRequest) {
       success: true,
       message: `Limpieza manual ejecutada: ${result.expiredCount} vencidos, ${result.deletedCount} eliminados`,
       result,
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error("Error en POST /api/admin/rewards/expire:", error);
+    console.error("Error en cron cleanup POST:", error);
     return NextResponse.json(
       { success: false, error: "Error interno del servidor" },
       { status: 500 }

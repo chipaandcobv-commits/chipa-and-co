@@ -63,7 +63,9 @@ export default function OrdersManagement() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [message, setMessage] = useState("");
   const [searchingClient, setSearchingClient] = useState(false);
+  const [backingUp, setBackingUp] = useState(false);
   const router = useRouter();
+  const [showBackupSection, setShowBackupSection] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -119,6 +121,54 @@ export default function OrdersManagement() {
       setMessage("Error al buscar cliente");
     } finally {
       setSearchingClient(false);
+    }
+  };
+
+  const handleBackupOrders = async () => {
+    if (!confirm("¿Estás seguro de que quieres hacer backup de todas las órdenes y eliminarlas? Esta acción no se puede deshacer.")) {
+      return;
+    }
+
+    setBackingUp(true);
+    setMessage("");
+
+    try {
+      const response = await fetch("/api/admin/orders/backup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        // Crear blob del archivo Excel
+        const blob = await response.blob();
+        
+        // Crear URL para descarga
+        const url = window.URL.createObjectURL(blob);
+        
+        // Crear elemento de descarga
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `backup-ordenes-${new Date().toISOString().split('T')[0]}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        
+        // Limpiar
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        setMessage(`Backup completado: Se descargó el archivo Excel con ${orders.length} órdenes`);
+        fetchData(); // Refresh data
+        setTimeout(() => setMessage(""), 5000);
+      } else {
+        const data = await response.json();
+        setMessage(data.error || "Error al hacer backup");
+      }
+    } catch (error) {
+      setMessage("Error de conexión");
+    } finally {
+      setBackingUp(false);
     }
   };
 
@@ -439,9 +489,46 @@ export default function OrdersManagement() {
 
           {/* Orders List */}
           <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
-            <h2 className="text-xl font-semibold text-[#F26D1F] mb-6">
-              Órdenes Recientes
-            </h2>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold text-[#F26D1F]">
+                Órdenes Recientes
+              </h2>
+              <Button
+                onClick={() => setShowBackupSection(!showBackupSection)}
+                size="sm"
+                variant="outline"
+                className="border-[#F26D1F] text-[#F26D1F] hover:bg-[#FCE6D5]"
+              >
+                {showBackupSection ? "Ocultar" : "Backup"}
+              </Button>
+            </div>
+
+            {/* Backup Section */}
+            {showBackupSection && (
+              <div className="mb-6 p-4 bg-[#FCE6D5] rounded-lg border border-[#F26D1F]">
+                <h3 className="text-lg font-medium text-[#F26D1F] mb-3">
+                  🔄 Backup y Limpieza de Órdenes
+                </h3>
+                <p className="text-sm text-gray-700 mb-4">
+                  Esta función creará un backup de todas las órdenes existentes en formato Excel y luego las eliminará de la base de datos para liberar espacio.
+                  <strong className="text-red-600"> Esta acción no se puede deshacer.</strong>
+                </p>
+                <div className="flex items-center gap-4">
+                  <div className="text-sm text-gray-600">
+                    <span className="font-medium">Órdenes actuales:</span> {orders.length}
+                  </div>
+                  <Button
+                    onClick={handleBackupOrders}
+                    isLoading={backingUp}
+                    disabled={orders.length === 0}
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                  >
+                    {backingUp ? "Procesando..." : "Hacer Backup y Descargar Excel"}
+                  </Button>
+                </div>
+              </div>
+            )}
+
             <div className="space-y-4 max-h-96 overflow-y-auto">
               {orders.map((order) => (
                 <div

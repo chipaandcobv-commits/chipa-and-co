@@ -22,9 +22,9 @@ async function createAdmin() {
     // Datos del admin (puedes modificar estos valores)
     const adminData = {
       name: "Administrador",
-      email: "admin@app-fidelizacion.com",
-      dni: "ADMIN001",
-      password: "Admin123456", // Cambia esta contraseña
+      email: "admin@chipa.com",
+      dni: "00000000",
+      password: "admin123", // Cambia esta contraseña
     };
 
     // Hash de la contraseña

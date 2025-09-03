@@ -5,10 +5,14 @@ Sistema de fidelización basado en DNI para comercios físicos. Los clientes pre
 
 ## 🆕 FUNCIONALIDADES RECIENTES IMPLEMENTADAS
 - ✅ **Modal de Confirmación**: Ventana de confirmación al seleccionar premios
-- ✅ **Sistema de Vencimiento**: Premios vencen en 24h y se eliminan en 48h adicionales
+- ✅ **Sistema de Vencimiento Automático**: Premios vencen en 24h y se eliminan en 48h adicionales
 - ✅ **Interfaz Mejorada**: Sin flash de carga, modal compacto con colores del tema
-
 - ✅ **Panel de Premios Vencidos**: Gestión administrativa de premios expirados
+- ✅ **Limpieza Automática**: Sistema automático de limpieza de premios vencidos
+- ✅ **Backup de Órdenes**: Funcionalidad para respaldar y limpiar órdenes antiguas
+- ✅ **Cambio de Contraseña Admin**: Panel para que el administrador cambie su contraseña
+- ✅ **Estilo Unificado**: Todas las páginas administrativas tienen el mismo diseño
+- ✅ **Login Responsive**: Solucionado problema de campo de contraseña en móvil
 
 ---
 
@@ -27,6 +31,10 @@ Sistema de fidelización basado en DNI para comercios físicos. Los clientes pre
 src/
 ├── app/                    # Next.js App Router
 │   ├── api/               # API Routes
+│   │   ├── admin/         # Endpoints administrativos
+│   │   ├── auth/          # Autenticación
+│   │   ├── cron/          # Cron jobs automáticos
+│   │   └── user/          # Endpoints de usuario
 │   ├── admin/             # Rutas administrativas
 │   ├── (user routes)/     # Rutas de usuario
 │   └── layout.tsx         # Layout global con AuthProvider
@@ -177,11 +185,20 @@ enum Role {
 5. **Estados finales** → APPROVED (aprobado), REJECTED (rechazado)
 
 ### ⏰ Flujo de Vencimiento de Premios (Automático):
-1. **Cada 24 horas** → Script automático ejecuta limpieza
+1. **Cada acceso a premios vencidos** → Script automático ejecuta limpieza
 2. **Premios PENDING vencidos** → Status cambia a "EXPIRED" si expiresAt < now
 3. **Premios EXPIRED antiguos** → Se eliminan si expiresAt < now - 48h (72h total)
-4. **Limpieza manual** → Admin puede ejecutar desde `/admin/expired-rewards`
-5. **Estadísticas** → Dashboard muestra premios vencidos y pendientes de eliminación
+4. **Limpieza automática** → Se ejecuta cada vez que se accede a `/admin/expired-rewards`
+5. **Cron job opcional** → Endpoint `/api/cron/cleanup` para automatización externa
+
+### 🔄 Flujo de Backup de Órdenes (Administrador):
+1. **Admin accede a órdenes** → Botón "Backup" en `/admin/orders`
+2. **Selecciona backup** → Se muestra sección de backup y limpieza
+3. **Confirma acción** → Confirmación de eliminación permanente
+4. **Proceso automático** → POST a `/api/admin/orders/backup`
+5. **Backup completo** → Todas las órdenes se respaldan en memoria
+6. **Limpieza de BD** → Se eliminan todas las órdenes y sus items
+7. **Confirmación** → Mensaje de éxito con cantidad de órdenes procesadas
 
 ---
 
@@ -224,7 +241,7 @@ const protectedRoutes = [...adminRoutes, ...userOnlyRoutes];   // Requiere auth
 4. **Cookie Setting** → httpOnly, secure, sameSite
 5. **Response** → `{ user: {...}, success: true }`
 6. **Client Update** → AuthContext.setUser()
-7. **Redirect** → Admin → `/admin`, User → `/dashboard`
+7. **Redirect** → Admin → `/admin`, User → `/cliente`
 
 ---
 
@@ -342,6 +359,7 @@ await prisma.user.update({
 - `PATCH /api/admin/users` → Cambiar rol de usuario
 - `GET /api/admin/orders` → Buscar usuario por DNI
 - `POST /api/admin/orders` → Crear nueva orden
+- `POST /api/admin/orders/backup` → Backup y limpieza de órdenes
 - `GET /api/admin/products` → Lista de productos
 - `POST /api/admin/products` → Crear producto
 - `PUT /api/admin/products/[id]` → Actualizar producto
@@ -350,11 +368,16 @@ await prisma.user.update({
 - `PUT /api/admin/rewards/[id]` → Actualizar premio
 - `GET /api/admin/rewards/validate` → Premios pendientes de validación
 - `PATCH /api/admin/rewards/validate` → Validar premio
-- `GET /api/admin/rewards/expire` → Estadísticas de premios vencidos
-- `POST /api/admin/rewards/expire` → Ejecutar limpieza de premios vencidos
+- `GET /api/admin/rewards/expire` → Estadísticas y limpieza automática de premios vencidos
+- `POST /api/admin/rewards/expire` → Ejecutar limpieza manual de premios vencidos
 - `GET /api/admin/ranking` → Ranking de usuarios por puntos históricos
 - `GET /api/admin/config` → Configuración del sistema
 - `POST /api/admin/config` → Actualizar configuración
+- `PUT /api/admin/password` → Cambiar contraseña del administrador
+
+### Cron Jobs:
+- `GET /api/cron/cleanup` → Limpieza automática de premios vencidos
+- `POST /api/cron/cleanup` → Limpieza manual de premios vencidos
 
 ---
 
@@ -408,6 +431,7 @@ DATABASE_URL="postgresql://..."
 JWT_SECRET="secret-key"
 NEXTAUTH_SECRET="nextauth-secret"
 NODE_ENV="development|production"
+CRON_SECRET_TOKEN="optional-cron-token"  # Para cron jobs externos
 ```
 
 ### Scripts de Utilidades:
@@ -424,10 +448,11 @@ npx prisma studio
 # Resetear base de datos
 npx prisma migrate reset --force
 
-
-
-# Limpiar premios vencidos
+# Limpiar premios vencidos (manual)
 npm run cleanup-rewards
+
+# Limpiar premios vencidos (automático cada 6h)
+npm run cleanup-rewards-auto
 ```
 
 ### Configuraciones Dinámicas (SystemConfig):
@@ -448,11 +473,14 @@ npm run cleanup-rewards
 6. **Flash de interfaz** → Verificar AuthContext loading state
 7. **Modal no se abre** → Verificar RewardConfirmationModal props
 8. **Premios no vencen** → Ejecutar npm run cleanup-rewards
+9. **Campo contraseña móvil** → Verificar estilos responsive en login
+10. **Backup no funciona** → Verificar permisos de administrador
 
 ### Logs Importantes:
 - Errores de autenticación en consola del navegador
 - Errores de Prisma en terminal del servidor
 - Network requests fallidos en DevTools
+- Logs de limpieza automática en consola
 
 ---
 
@@ -477,13 +505,33 @@ npm run cleanup-rewards
 1. RewardClaim creado → expiresAt = now + 24h
 2. Pasadas 24h → Script automático cambia status a EXPIRED
 3. Pasadas 48h adicionales → Script elimina registro permanentemente
-4. Admin puede ejecutar limpieza manual desde panel
+4. Limpieza automática se ejecuta en cada acceso a premios vencidos
 
 ### Caso 5: Usuario Selecciona Premio
 1. Click en premio → Se abre modal de confirmación
 2. Modal muestra → Imagen, puntos, descripción, advertencia 24h
 3. Usuario confirma → Se procesa canje con validaciones
 4. Modal se cierra → Usuario ve notificación de éxito/error
+
+### Caso 6: Admin Hace Backup de Órdenes
+1. Admin accede a órdenes → Botón "Backup"
+2. Confirma acción → Se ejecuta backup automático
+3. Todas las órdenes se respaldan en memoria
+4. Se eliminan de la base de datos
+5. Confirmación de éxito con cantidad procesada
+
+### Caso 7: Admin Cambia Contraseña
+1. Admin va a configuración → Sección "Cambiar Contraseña"
+2. Ingresa contraseña actual y nueva
+3. Sistema valida y actualiza
+4. Confirmación de cambio exitoso
+
+### Caso 8: Población de Datos de Prueba
+1. Ejecutar `npm run populate-test-data`
+2. Script genera 1,500 usuarios con datos realistas
+3. Crea 1,500 órdenes distribuidas en el último mes
+4. Genera 450 reclamos de premios con estados variados
+5. Base de datos lista para testing completo de funcionalidades
 
 ---
 
@@ -510,8 +558,9 @@ npm run cleanup-rewards
 - Integración con sistemas de punto de venta
 - Dashboard de métricas en tiempo real
 - API REST para integraciones externas
-- Cron job automático para limpieza de premios vencidos
 - Notificaciones por email cuando premios están por vencer
+- Exportación de datos en Excel/CSV
+- Sistema de auditoría completo
 
 ### Arquitectura Escalable:
 - Microservicios para separar concerns
@@ -521,7 +570,7 @@ npm run cleanup-rewards
 
 ---
 
-**🎯 ESTADO ACTUAL**: Sistema completamente funcional con todas las características implementadas. Modal de confirmación de premios, sistema de vencimiento automático (24h + 48h), panel de gestión de premios vencidos, datos de prueba completos, y interfaz optimizada sin flash de carga. Puntos históricos, validación de premios, y navegación contextual por roles funcionando correctamente. Interfaz limpia, responsive y con colores del tema unificados.
+**🎯 ESTADO ACTUAL**: Sistema completamente funcional con todas las características implementadas. Modal de confirmación de premios, sistema de vencimiento automático (24h + 48h), panel de gestión de premios vencidos, limpieza automática, backup de órdenes, cambio de contraseña de administrador, interfaz unificada, login responsive, y datos de prueba completos. Puntos históricos, validación de premios, y navegación contextual por roles funcionando correctamente. Interfaz limpia, responsive y con colores del tema unificados. Sistema de limpieza automática implementado con cron jobs opcionales. Script de población de datos de prueba para testing completo con 1,500 usuarios y órdenes realistas.
 
 ## 📁 ARCHIVOS PRINCIPALES IMPLEMENTADOS
 
@@ -530,14 +579,26 @@ npm run cleanup-rewards
 - `src/app/admin/expired-rewards/page.tsx` - Panel de gestión de premios vencidos
 
 ### API Endpoints Nuevos:
-- `src/app/api/admin/rewards/expire/route.ts` - Gestión de premios vencidos
+- `src/app/api/admin/rewards/expire/route.ts` - Gestión y limpieza automática de premios vencidos
+- `src/app/api/admin/orders/backup/route.ts` - Backup y limpieza de órdenes
+- `src/app/api/admin/password/route.ts` - Cambio de contraseña del administrador
+- `src/app/api/cron/cleanup/route.ts` - Endpoint para cron jobs de limpieza
 
 ### Scripts Nuevos:
 - `src/scripts/cleanup-expired-rewards.ts` - Limpieza automática de premios vencidos
+- `src/scripts/populate-test-data.ts` - Poblar base de datos con datos de prueba realistas
 
 ### Archivos Actualizados:
 - `src/app/cliente/page.tsx` - Integración del modal de confirmación
+- `src/app/cliente/profile/page.tsx` - Funcionalidad de edición de perfil
+- `src/app/admin/config/ConfigManagement.tsx` - Sección de cambio de contraseña
+- `src/app/admin/orders/OrdersManagement.tsx` - Funcionalidad de backup de órdenes
+- `src/app/admin/ranking/RankingManagement.tsx` - Estilo unificado
+- `src/app/admin/validate/ValidateRewards.tsx` - Estilo unificado
+- `src/app/login/page.tsx` - Solución de problema móvil y estilo unificado
 - `src/components/AuthContext.tsx` - Mejoras en manejo de estado de carga
 - `prisma/schema.prisma` - Campo expiresAt en RewardClaim
 - `package.json` - Nuevos scripts npm
 - `CREDENTIALS.md` - Credenciales de acceso completas
+- `CRON_SETUP.md` - Guía completa de configuración de limpieza automática
+- `POPULATE_TEST_DATA.md` - Documentación completa del script de población de datos

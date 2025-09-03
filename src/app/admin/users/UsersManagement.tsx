@@ -143,23 +143,6 @@ export default function UsersManagement() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Filtrar por rol
-              </label>
-              <select
-                value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value as any)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F26D1F] focus:border-[#F26D1F] text-gray-700"
-              >
-                <option value="ALL">Todos los roles</option>
-                <option value="USER">Usuarios</option>
-                <option value="ADMIN">Administradores</option>
-              </select>
-            </div>
-            <div className="flex items-end">
-              <Button onClick={handleSearch} className="w-full bg-[#F26D1F] hover:bg-[#E55A1A] text-white">
-                Buscar
-              </Button>
             </div>
           </div>
         </div>
@@ -199,9 +182,6 @@ export default function UsersManagement() {
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-neutral-800 uppercase tracking-wider">
                       Fecha de Registro
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-neutral-800 uppercase tracking-wider">
-                      Acciones
                     </th>
                   </tr>
                 </thead>
@@ -248,29 +228,6 @@ export default function UsersManagement() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {new Date(user.createdAt).toLocaleDateString("es-ES")}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex space-x-2">
-                          <Button
-                            variant={
-                              user.role === "ADMIN" ? "secondary" : "primary"
-                            }
-                            size="sm"
-                            onClick={() =>
-                              handleRoleChange(
-                                user.id,
-                                user.role === "ADMIN" ? "USER" : "ADMIN"
-                              )
-                            }
-                            isLoading={updatingUserId === user.id}
-                            disabled={updatingUserId !== null}
-                            className={user.role === "ADMIN" ? "bg-red-600 hover:bg-red-700 text-white" : "bg-[#F26D1F] hover:bg-[#E55A1A] text-white"}
-                          >
-                            {user.role === "ADMIN"
-                              ? "Quitar Admin"
-                              : "Hacer Admin"}
-                          </Button>
-                        </div>
                       </td>
                     </tr>
                   ))}
