@@ -36,7 +36,7 @@ export default function AuthHeader() {
 
   // Configuración de navegación del admin
   const adminNavItems = [
-    { href: "/admin", label: "Dashboard", icon: DashboardIcon, color: "text-[#F26D1F]" },
+    { href: "/admin", label: "Inicio", icon: DashboardIcon, color: "text-[#F26D1F]" },
     { href: "/admin/users", label: "Usuarios", icon: User, color: "text-[#F26D1F]" },
     { href: "/admin/orders", label: "Órdenes", icon: ShoppingCart, color: "text-[#F26D1F]" },
     { href: "/admin/products", label: "Productos", icon: Package, color: "text-[#F26D1F]" },

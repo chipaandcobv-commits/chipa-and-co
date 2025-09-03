@@ -350,12 +350,12 @@ export default function ProductsManagement() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex space-x-2">
-                          <Button
+                        <Button
                             variant="secondary"
                             size="sm"
                             onClick={() => handleEdit(product)}
                             disabled={showForm}
-                            className="bg-[#F26D1F] hover:bg-[#E55A1A] text-white"
+                            className="bg-[#F26D1F] hover:bg-[#E55A1A] text-white disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             Editar
                           </Button>

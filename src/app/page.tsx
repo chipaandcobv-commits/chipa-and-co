@@ -43,7 +43,7 @@ export default async function HomePage() {
               <Link href="/dashboard">
                 <Button size="lg" className="text-lg px-8 py-3">
                   <DashboardIcon className="w-5 h-5 mr-2" />
-                  Ir al Dashboard
+                  Ir al Inicio
                 </Button>
               </Link>
               <Link href="/rewards">
@@ -138,16 +138,6 @@ export default async function HomePage() {
             </div>
 
             <div className="bg-white rounded-lg shadow-sm border border-orange-100 p-6 text-center">
-              <div className="text-3xl mb-3">🏆</div>
-              <h3 className="font-semibold text-gray-900 mb-2">
-                Sistema de Ranking
-              </h3>
-              <p className="text-sm text-gray-600">
-                Compite con otros usuarios y alcanza la cima
-              </p>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-sm border border-orange-100 p-6 text-center">
               <div className="text-3xl mb-3">🎯</div>
               <h3 className="font-semibold text-gray-900 mb-2">
                 Premios Variados
@@ -201,23 +191,6 @@ export default async function HomePage() {
             </div>
           ) : (
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link href="/rewards">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="bg-white text-orange-600 hover:bg-orange-50 border-white text-lg px-8 py-3"
-                >
-                  🎁 Explorar Premios
-                </Button>
-              </Link>
-              <Link href="/ranking">
-                <Button
-                  size="lg"
-                  className="bg-orange-700 hover:bg-orange-800 text-lg px-8 py-3"
-                >
-                  🏆 Ver Ranking
-                </Button>
-              </Link>
             </div>
           )}
         </div>
@@ -239,7 +212,7 @@ export default async function HomePage() {
                 href="/dashboard"
                 className="text-gray-300 hover:text-white"
               >
-                Dashboard
+                Inicio
               </Link>
               <Link href="/rewards" className="text-gray-300 hover:text-white">
                 Premios
@@ -255,7 +228,7 @@ export default async function HomePage() {
 
           <div className="mt-8 pt-8 border-t border-gray-800 text-gray-300 text-sm">
             <p>
-              &copy; 2024 Chipa&Co. Todos los derechos
+              &copy; 2025 Chipa&Co. Todos los derechos
               reservados.
             </p>
           </div>

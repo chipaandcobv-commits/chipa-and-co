@@ -2,6 +2,8 @@ import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 import { PrismaClient } from "../generated/prisma";
+import { NextRequest } from "next/server";
+import { securityLogger, SecurityEventType } from "./securityLogger";
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET ||
@@ -12,6 +14,7 @@ export interface TokenPayload {
   userId: string;
   email: string;
   name: string;
+  role: string;
   [key: string]: string | number | boolean | null | undefined; // Index signature para compatibilidad con JWTPayload
 }
 
@@ -50,7 +53,8 @@ export async function verifyToken(token: string): Promise<TokenPayload | null> {
       payload !== null &&
       "userId" in payload &&
       "email" in payload &&
-      "name" in payload
+      "name" in payload &&
+      "role" in payload
     ) {
       return payload as TokenPayload;
     }
@@ -95,7 +99,7 @@ export async function clearAuthCookie() {
   cookieStore.delete("auth-token");
 }
 
-// Get full user data including role and points
+// Get full user data including role and points con validación adicional
 export async function getCurrentUserFull() {
   try {
     const currentUser = await getCurrentUser();
@@ -111,19 +115,34 @@ export async function getCurrentUserFull() {
         email: true,
         puntos: true,
         role: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
 
     await prisma.$disconnect();
 
-    if (!user) return null;
+    if (!user) {
+      // Usuario no encontrado en BD - posible token inválido
+      securityLogger.log(
+        SecurityEventType.SUSPICIOUS_ACTIVITY,
+        {} as NextRequest,
+        currentUser.userId,
+        currentUser.email,
+        undefined,
+        { reason: "User not found in database" }
+      );
+      return null;
+    }
 
     return {
       id: user.id,
       name: user.name,
       email: user.email,
-      points: user.puntos, // Mapear puntos a points para consistencia
+      points: user.puntos,
       role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     };
   } catch (error) {
     console.error("Error getting current user full data:", error);
@@ -159,6 +178,16 @@ export async function requireAuth() {
     if (!user) {
       console.error(`❌ Usuario no encontrado en BD. Token userId: ${currentUser.userId}`);
       console.error(`❌ Token info: ${currentUser.name} (${currentUser.email})`);
+      
+      // Log de actividad sospechosa
+      securityLogger.log(
+        SecurityEventType.SUSPICIOUS_ACTIVITY,
+        {} as NextRequest,
+        currentUser.userId,
+        currentUser.email,
+        undefined,
+        { reason: "User not found in database during requireAuth" }
+      );
       
       // Limpiar el token inválido
       await clearAuthCookie();

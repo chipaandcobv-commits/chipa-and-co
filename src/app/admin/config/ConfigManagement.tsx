@@ -13,8 +13,10 @@ interface SystemConfig {
 
 export default function ConfigManagement() {
   const [config, setConfig] = useState<SystemConfig>({ pointsPerPeso: 1 });
+  const [originalConfig, setOriginalConfig] = useState<SystemConfig>({ pointsPerPeso: 1 });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [recalculating, setRecalculating] = useState(false);
   const [message, setMessage] = useState("");
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [passwordData, setPasswordData] = useState({
@@ -39,6 +41,7 @@ export default function ConfigManagement() {
 
       if (data.success) {
         setConfig(data.config);
+        setOriginalConfig(data.config); // Guardar configuración original
       }
     } catch (error) {
       console.error("Error fetching config:", error);
@@ -64,6 +67,7 @@ export default function ConfigManagement() {
 
       if (data.success) {
         setMessage("Configuración guardada exitosamente");
+        setOriginalConfig(config); // Actualizar configuración original
         setTimeout(() => setMessage(""), 3000);
       } else {
         setMessage(data.error || "Error al guardar configuración");
@@ -74,6 +78,45 @@ export default function ConfigManagement() {
       setSaving(false);
     }
   };
+
+  const handleRecalculatePoints = async () => {
+    if (!confirm("¿Estás seguro de que quieres recalcular los puntos de todos los usuarios? Esta acción no se puede deshacer.")) {
+      return;
+    }
+
+    setRecalculating(true);
+    setMessage("");
+
+    try {
+      const response = await fetch("/api/admin/config/recalculate-points", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          oldPointsPerPeso: originalConfig.pointsPerPeso,
+          newPointsPerPeso: config.pointsPerPeso,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage(`✅ ${data.message}`);
+        setOriginalConfig(config); // Actualizar configuración original
+        setTimeout(() => setMessage(""), 5000);
+      } else {
+        setMessage(`❌ ${data.error || "Error al recalcular puntos"}`);
+      }
+    } catch (error) {
+      setMessage("❌ Error de conexión al recalcular puntos");
+    } finally {
+      setRecalculating(false);
+    }
+  };
+
+  // Verificar si la configuración ha cambiado
+  const hasConfigChanged = originalConfig.pointsPerPeso !== config.pointsPerPeso;
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -193,32 +236,100 @@ export default function ConfigManagement() {
                   Define cuántos puntos se otorgan por cada peso gastado. 
                   <strong className="text-[#F26D1F]"> Configuración actual: {config.pointsPerPeso} peso = {config.pointsPerPeso} punto</strong>
                 </p>
-                <Input
-                  type="number"
-                  value={config.pointsPerPeso}
-                  onChange={(e) =>
-                    setConfig({
-                      ...config,
-                      pointsPerPeso: parseFloat(e.target.value) || 1,
-                    })
-                  }
-                  placeholder="1"
-                  min="0.01"
-                  step="0.01"
-                />
+                <div className="relative">
+                  <Input
+                    type="number"
+                    value={config.pointsPerPeso}
+                    onChange={(e) =>
+                      setConfig({
+                        ...config,
+                        pointsPerPeso: parseFloat(e.target.value) || 1,
+                      })
+                    }
+                    placeholder="1"
+                    min="0.01"
+                    step="0.01"
+                    className={hasConfigChanged ? "border-[#F59E0B] ring-2 ring-[#F59E0B] ring-opacity-20" : ""}
+                  />
+                  {hasConfigChanged && (
+                    <div className="absolute -top-2 -right-2 bg-[#F59E0B] text-white text-xs px-2 py-1 rounded-full">
+                      Cambió
+                    </div>
+                  )}
+                </div>
                 <p className="text-xs text-gray-500 mt-1">
                   Actual: $1 peso = {config.pointsPerPeso} punto(s)
+                  {hasConfigChanged && (
+                    <span className="text-[#F59E0B] font-medium">
+                      {" "}(antes: {originalConfig.pointsPerPeso})
+                    </span>
+                  )}
                 </p>
               </div>
 
               <div className="pt-4 border-t border-white">
-                <Button
-                  onClick={handleSave}
-                  isLoading={saving}
-                  className="w-full sm:w-auto bg-[#F26D1F] hover:bg-[#E55A1A] text-white"
-                >
-                  Guardar Configuración
-                </Button>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button
+                    onClick={handleSave}
+                    isLoading={saving}
+                    className="flex-1 bg-[#F26D1F] hover:bg-[#E55A1A] text-white"
+                  >
+                    Guardar Configuración
+                  </Button>
+                  
+                  {hasConfigChanged && (
+                    <Button
+                      onClick={handleRecalculatePoints}
+                      isLoading={recalculating}
+                      disabled={recalculating}
+                      className="flex-1 bg-[#10B981] hover:bg-[#059669] text-white disabled:opacity-50"
+                    >
+                      {recalculating ? (
+                        <div className="flex items-center gap-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          Recalculando...
+                        </div>
+                      ) : (
+                        "🔄 Recalcular Puntos"
+                      )}
+                    </Button>
+                  )}
+                </div>
+                
+                {hasConfigChanged && (
+                  <div className="mt-4 p-4 bg-[#FEF3C7] border border-[#F59E0B] rounded-lg">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-medium text-[#D97706]">⚠️ Cambio en Sistema de Puntos</h4>
+                      <Button
+                        onClick={() => {
+                          setConfig(originalConfig);
+                          setMessage("Cambios revertidos");
+                          setTimeout(() => setMessage(""), 3000);
+                        }}
+                        size="sm"
+                        variant="outline"
+                        className="border-[#F59E0B] text-[#F59E0B] hover:bg-[#FEF3C7]"
+                      >
+                        ↩️ Revertir
+                      </Button>
+                    </div>
+                    <div className="text-sm text-[#92400E] space-y-2">
+                      <p>
+                        <strong>Configuración anterior:</strong> {originalConfig.pointsPerPeso} peso = {originalConfig.pointsPerPeso} punto
+                      </p>
+                      <p>
+                        <strong>Nueva configuración:</strong> {config.pointsPerPeso} peso = {config.pointsPerPeso} punto
+                      </p>
+                      <p>
+                        <strong>Factor de cambio:</strong> {(config.pointsPerPeso / originalConfig.pointsPerPeso).toFixed(2)}x
+                      </p>
+                      <p className="text-xs">
+                        💡 Después de guardar, usa "Recalcular Puntos" para actualizar proporcionalmente 
+                        los puntos actuales e históricos de todos los usuarios.
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -236,6 +347,18 @@ export default function ConfigManagement() {
                   • Una compra de $10,000 = <span className="text-[#F26D1F] font-semibold">{Math.round(10000 * config.pointsPerPeso)} punto(s)</span>
                 </p>
               </div>
+              
+              {hasConfigChanged && (
+                <div className="mt-3 p-3 bg-[#FEF3C7] rounded border border-[#F59E0B]">
+                  <h4 className="text-sm font-medium text-[#D97706] mb-2">📊 Impacto del Cambio</h4>
+                  <div className="text-xs text-[#92400E] space-y-1">
+                    <p>• <strong>Antes:</strong> $1,000 = {Math.round(1000 * originalConfig.pointsPerPeso)} puntos</p>
+                    <p>• <strong>Ahora:</strong> $1,000 = {Math.round(1000 * config.pointsPerPeso)} puntos</p>
+                    <p>• <strong>Diferencia:</strong> {Math.round(1000 * config.pointsPerPeso) - Math.round(1000 * originalConfig.pointsPerPeso)} puntos</p>
+                  </div>
+                </div>
+              )}
+              
               <div className="mt-3 p-3 bg-white rounded border border-[#F26D1F]">
                 <p className="text-sm text-[#F26D1F] font-medium">
                   💡 Configuración de Puntos: Define la relación entre pesos gastados y puntos otorgados
