@@ -6,6 +6,7 @@ import { useRewards } from "@/lib/hooks/useRewards";
 import { useClaimReward } from "@/lib/hooks/useClaimReward";
 import { GiftCardIcon, HomeIcon, UserIcon } from "@/components/icons/Icons";
 import RewardConfirmationModal from "@/components/RewardConfirmationModal";
+import BottomNavigation from "@/components/BottomNavigation";
 
 export default function ClientePage() {
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -18,10 +19,15 @@ export default function ClientePage() {
   // Mostrar loading mientras se cargan los datos
   if (userLoading || rewardsLoading) {
     return (
-      <div className="min-h-svh w-full bg-[#F7EFE7] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F26D1F] mx-auto"></div>
-          <p className="mt-4 text-gray-600">Cargando...</p>
+      <div className="min-h-svh w-full bg-[#F7EFE7] text-gray-900 font-urbanist">
+        <div className="mx-auto max-w-[480px] min-h-svh relative pb-28">
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F26D1F] mx-auto"></div>
+              <p className="mt-4 text-gray-600">Cargando...</p>
+            </div>
+          </div>
+          <BottomNavigation />
         </div>
       </div>
     );
@@ -30,9 +36,14 @@ export default function ClientePage() {
   // Mostrar error si no hay usuario después de cargar
   if (!user && !userLoading) {
     return (
-      <div className="min-h-svh w-full bg-[#F7EFE7] flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600">No se pudo cargar la información del usuario</p>
+      <div className="min-h-svh w-full bg-[#F7EFE7] text-gray-900 font-urbanist">
+        <div className="mx-auto max-w-[480px] min-h-svh relative pb-28">
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <p className="text-gray-600">No se pudo cargar la información del usuario</p>
+            </div>
+          </div>
+          <BottomNavigation />
         </div>
       </div>
     );
@@ -41,10 +52,15 @@ export default function ClientePage() {
   // No renderizar nada si aún está cargando o si faltan propiedades del usuario
   if (!user || typeof user.puntos === 'undefined') {
     return (
-      <div className="min-h-svh w-full bg-[#F7EFE7] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F26D1F] mx-auto"></div>
-          <p className="mt-4 text-gray-600">Cargando información del usuario...</p>
+      <div className="min-h-svh w-full bg-[#F7EFE7] text-gray-900 font-urbanist">
+        <div className="mx-auto max-w-[480px] min-h-svh relative pb-28">
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F26D1F] mx-auto"></div>
+              <p className="mt-4 text-gray-600">Cargando información del usuario...</p>
+            </div>
+          </div>
+          <BottomNavigation />
         </div>
       </div>
     );
@@ -86,7 +102,7 @@ export default function ClientePage() {
       <div className="mx-auto max-w-[480px] min-h-svh relative pb-28">
         {/* Mensaje de notificación */}
         {message && (
-          <div className={`fixed top-4 left-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
+          <div className={`absolute top-4 left-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
             message.type === "success" 
               ? "bg-green-500 text-white" 
               : "bg-red-500 text-white"
@@ -193,29 +209,7 @@ export default function ClientePage() {
         </section>
 
         {/* Bottom Navigation */}
-        <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 bg-[#F7EFE7] border-t border-gray-200 flex justify-around items-center py-3 px-6 shadow-lg rounded-t-2xl max-w-[480px] w-full z-50">
-                     <button 
-             onClick={() => window.location.href = "/cliente/rewards"}
-             className="flex flex-col items-center p-2 rounded-lg transition-colors text-gray-600 hover:text-[#F26D1F]"
-           >
-             <GiftCardIcon className="w-6 h-6" />
-             <span className="text-xs mt-1">Premios</span>
-           </button>
-          <button 
-            onClick={() => window.location.href = "/cliente"}
-            className="flex flex-col items-center p-2 rounded-lg transition-colors text-[#F26D1F] bg-orange-50"
-          >
-            <HomeIcon className="w-6 h-6" />
-            <span className="text-xs mt-1">Inicio</span>
-          </button>
-          <button 
-            onClick={() => window.location.href = "/cliente/profile"}
-            className="flex flex-col items-center p-2 rounded-lg transition-colors text-gray-600 hover:text-[#F26D1F]"
-          >
-            <UserIcon className="w-6 h-6" />
-            <span className="text-xs mt-1">Perfil</span>
-          </button>
-        </div>
+        <BottomNavigation />
 
         {/* Modal de confirmación */}
         <RewardConfirmationModal

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { UserIcon, LogoutIcon, HomeIcon, GiftCardIcon, EyeIcon, EyeOffIcon } from "@/components/icons/Icons";
+import BottomNavigation from "@/components/BottomNavigation";
 
 export default function ProfilePage() {
   const { user, loading, logout, refetch } = useAuth();
@@ -28,12 +29,27 @@ export default function ProfilePage() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  // Actualizar datos del perfil cuando el usuario cambie usando useEffect
+  React.useEffect(() => {
+    if (user) {
+      setProfileData({
+        name: user.name || "",
+        email: user.email || "",
+      });
+    }
+  }, [user]);
+
   if (loading) {
     return (
-      <div className="min-h-svh w-full bg-[#F7EFE7] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F26D1F] mx-auto"></div>
-          <p className="mt-4 text-gray-600">Cargando perfil...</p>
+      <div className="min-h-svh w-full bg-[#F7EFE7] text-gray-900 font-urbanist">
+        <div className="mx-auto max-w-[480px] min-h-svh relative pb-28">
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F26D1F] mx-auto"></div>
+              <p className="mt-4 text-gray-600">Cargando perfil...</p>
+            </div>
+          </div>
+          <BottomNavigation />
         </div>
       </div>
     );
@@ -41,20 +57,17 @@ export default function ProfilePage() {
 
   if (!user) {
     return (
-      <div className="min-h-svh w-full bg-[#F7EFE7] flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600">No se pudo cargar la información del usuario</p>
+      <div className="min-h-svh w-full bg-[#F7EFE7] text-gray-900 font-urbanist">
+        <div className="mx-auto max-w-[480px] min-h-svh relative pb-28">
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <p className="text-gray-600">No se pudo cargar la información del usuario</p>
+            </div>
+          </div>
+          <BottomNavigation />
         </div>
       </div>
     );
-  }
-
-  // Actualizar datos del perfil cuando el usuario cambie
-  if (user && (profileData.name !== user.name || profileData.email !== user.email)) {
-    setProfileData({
-      name: user.name,
-      email: user.email,
-    });
   }
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
@@ -139,7 +152,7 @@ export default function ProfilePage() {
       <div className="mx-auto max-w-[480px] min-h-svh relative pb-28">
         {/* Mensaje de notificación */}
         {message && (
-          <div className={`fixed top-4 left-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
+          <div className={`absolute top-4 left-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
             message.type === "success" 
               ? "bg-green-500 text-white" 
               : "bg-red-500 text-white"
@@ -342,29 +355,7 @@ export default function ProfilePage() {
         </section>
 
         {/* Bottom Navigation */}
-        <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 bg-[#F7EFE7] border-t border-gray-200 flex justify-around items-center py-3 px-6 shadow-lg rounded-t-2xl max-w-[480px] w-full z-50">
-                     <button 
-             onClick={() => window.location.href = "/cliente/rewards"}
-             className="flex flex-col items-center p-2 rounded-lg transition-colors text-gray-600 hover:text-[#F26D1F]"
-           >
-             <GiftCardIcon className="w-6 h-6" />
-             <span className="text-xs mt-1">Premios</span>
-           </button>
-          <button 
-            onClick={() => window.location.href = "/cliente"}
-            className="flex flex-col items-center p-2 rounded-lg transition-colors text-gray-600 hover:text-[#F26D1F]"
-          >
-            <HomeIcon className="w-6 h-6" />
-            <span className="text-xs mt-1">Inicio</span>
-          </button>
-          <button 
-            onClick={() => window.location.href = "/cliente/profile"}
-            className="flex flex-col items-center p-2 rounded-lg transition-colors text-[#F26D1F] bg-orange-50"
-          >
-            <UserIcon className="w-6 h-6" />
-            <span className="text-xs mt-1">Perfil</span>
-          </button>
-        </div>
+        <BottomNavigation />
       </div>
     </div>
   );
