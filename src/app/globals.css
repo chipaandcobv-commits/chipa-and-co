@@ -48,24 +48,5 @@ input[type="password"] {
   input::placeholder {
     color: rgb(156, 163, 175) !important;
     opacity: 1 !important;
-    -webkit-text-fill-color: rgb(156, 163, 175) !important;
-  }
-  
-  input[type="password"]::placeholder {
-    color: rgb(156, 163, 175) !important;
-    opacity: 1 !important;
-    -webkit-text-fill-color: rgb(156, 163, 175) !important;
-  }
-  
-  input[type="email"]::placeholder {
-    color: rgb(156, 163, 175) !important;
-    opacity: 1 !important;
-    -webkit-text-fill-color: rgb(156, 163, 175) !important;
-  }
-  
-  input[type="text"]::placeholder {
-    color: rgb(156, 163, 175) !important;
-    opacity: 1 !important;
-    -webkit-text-fill-color: rgb(156, 163, 175) !important;
   }
 }
