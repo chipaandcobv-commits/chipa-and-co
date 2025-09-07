@@ -42,3 +42,30 @@ input[type="password"] {
 .font-urbanist {
   font-family: var(--urbanist), sans-serif;
 }
+
+/* Fix específico para Safari/iOS - placeholder visible */
+@supports (-webkit-touch-callout: none) {
+  input::placeholder {
+    color: rgb(156, 163, 175) !important;
+    opacity: 1 !important;
+    -webkit-text-fill-color: rgb(156, 163, 175) !important;
+  }
+  
+  input[type="password"]::placeholder {
+    color: rgb(156, 163, 175) !important;
+    opacity: 1 !important;
+    -webkit-text-fill-color: rgb(156, 163, 175) !important;
+  }
+  
+  input[type="email"]::placeholder {
+    color: rgb(156, 163, 175) !important;
+    opacity: 1 !important;
+    -webkit-text-fill-color: rgb(156, 163, 175) !important;
+  }
+  
+  input[type="text"]::placeholder {
+    color: rgb(156, 163, 175) !important;
+    opacity: 1 !important;
+    -webkit-text-fill-color: rgb(156, 163, 175) !important;
+  }
+}

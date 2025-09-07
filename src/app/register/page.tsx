@@ -126,9 +126,7 @@ export default function RegisterPage() {
               required
               className="placeholder:text-gray-400 text-gray-700"
               style={{ 
-                fontSize: '16px',
-                WebkitAppearance: 'none',
-                borderRadius: '8px'
+                fontSize: '16px'
               }}
             />
 
@@ -144,9 +142,7 @@ export default function RegisterPage() {
               required
               className="placeholder:text-gray-400 text-gray-700"
               style={{ 
-                fontSize: '16px',
-                WebkitAppearance: 'none',
-                borderRadius: '8px'
+                fontSize: '16px'
               }}
             />
 
@@ -162,9 +158,7 @@ export default function RegisterPage() {
               required
               className="placeholder:text-gray-400 text-gray-700"
               style={{ 
-                fontSize: '16px',
-                WebkitAppearance: 'none',
-                borderRadius: '8px'
+                fontSize: '16px'
               }}
             />
 
