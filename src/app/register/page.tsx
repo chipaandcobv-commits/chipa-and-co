@@ -170,17 +170,22 @@ export default function RegisterPage() {
                 <Input
                   type={showPassword ? "text" : "password"}
                   name="password"
+                  id="password" // obligatorio para iOS
+                  autoComplete="new-password" // ⚡ clave para iOS
+                  placeholder="Mínimo 8 caracteres"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="Mínimo 8 caracteres"
                   error={errors.password}
                   required
                   className="pr-12 placeholder:text-gray-400 text-gray-700"
-                  autoComplete="new-password"
                   style={{ 
-                    fontSize: '16px',
-                    WebkitAppearance: 'none',
-                    borderRadius: '8px'
+                    fontSize: '16px'
+                  }}
+                  onFocus={(e) => {
+                    // Forzar re-render en Safari para inputs controlados
+                    const val = e.target.value;
+                    e.target.value = '';
+                    e.target.value = val;
                   }}
                 />
                 <button
@@ -202,17 +207,22 @@ export default function RegisterPage() {
                 <Input
                   type={showConfirmPassword ? "text" : "password"}
                   name="confirmPassword"
+                  id="confirmPassword" // obligatorio para iOS
+                  autoComplete="new-password" // ⚡ clave para iOS
+                  placeholder="Repite tu contraseña"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  placeholder="Repite tu contraseña"
                   error={errors.confirmPassword}
                   required
                   className="pr-12 placeholder:text-gray-400 text-gray-700"
-                  autoComplete="new-password"
                   style={{ 
-                    fontSize: '16px',
-                    WebkitAppearance: 'none',
-                    borderRadius: '8px'
+                    fontSize: '16px'
+                  }}
+                  onFocus={(e) => {
+                    // Forzar re-render en Safari para inputs controlados
+                    const val = e.target.value;
+                    e.target.value = '';
+                    e.target.value = val;
                   }}
                 />
                 <button

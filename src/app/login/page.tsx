@@ -128,15 +128,22 @@ export default function LoginPage() {
                 <Input
                   type={showPassword ? "text" : "password"}
                   name="password"
+                  id="password" // obligatorio para iOS
+                  autoComplete="current-password" // ⚡ clave para iOS
+                  placeholder="Tu contraseña"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="Tu contraseña"
                   error={errors.password}
                   required
                   className="pr-12 placeholder:text-gray-400 text-gray-700"
-                  autoComplete="current-password"
                   style={{ 
                     fontSize: '16px'
+                  }}
+                  onFocus={(e) => {
+                    // Forzar re-render en Safari para inputs controlados
+                    const val = e.target.value;
+                    e.target.value = '';
+                    e.target.value = val;
                   }}
                 />
                 <button
