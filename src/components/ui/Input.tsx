@@ -25,7 +25,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent
       transition-all duration-200
       min-h-[48px] h-[48px] text-base
-      relative z-10
       ${error ? "border-red-500 focus:ring-red-500" : ""}
       ${icon ? "pl-12" : "pl-4"}
       ${rightIcon ? "pr-12" : "pr-4"}
@@ -36,7 +35,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const placeholderLeftClass = icon ? "left-12" : "left-4";
 
     // value puede ser '' o undefined; convertimos a string para la condición
-    const hasValue = value !== undefined && value !== null && String(value).length > 0;
+    const hasValue = String(value ?? "").length > 0;
 
     return (
       <div className="w-full">
@@ -58,6 +57,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             value={value}
             {...props}
             className={inputClasses}
+            style={{ 
+              position: 'relative',
+              zIndex: 10,
+              ...props.style 
+            }}
           />
 
           {/* Overlay placeholder solo en iOS (evita el bug nativo) */}
@@ -65,30 +69,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             <span
               aria-hidden="true"
               className={`absolute ${placeholderLeftClass} top-1/2 -translate-y-1/2 text-sm text-gray-400 pointer-events-none select-none`}
-              style={{ 
-                pointerEvents: 'none', 
-                zIndex: 0,
-                color: '#9ca3af',
-                fontSize: '16px',
-                backgroundColor: 'rgba(255,0,0,0.1)' // Debug temporal
-              }}
             >
               {placeholder}
             </span>
-          )}
-          
-          {/* Debug temporal - mostrar info */}
-          {isIOS && (
-            <div style={{ 
-              position: 'absolute', 
-              top: '-20px', 
-              left: '0', 
-              fontSize: '10px', 
-              color: 'red',
-              zIndex: 1000
-            }}>
-              iOS: {isIOS ? 'YES' : 'NO'} | hasValue: {hasValue ? 'YES' : 'NO'} | placeholder: {placeholder || 'NO'}
-            </div>
           )}
 
           {rightIcon && (
