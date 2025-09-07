@@ -115,7 +115,6 @@ export default function LoginPage() {
               value={formData.email}
               onChange={handleChange}
               placeholder="tu@email.com"
-              icon={<EmailIcon />}
               error={errors.email}
               required
               className="placeholder:text-gray-400 text-gray-700"

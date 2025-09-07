@@ -69,10 +69,30 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             <span
               aria-hidden="true"
               className={`absolute ${placeholderLeftClass} top-1/2 -translate-y-1/2 text-sm text-gray-400 pointer-events-none select-none`}
+              style={{
+                color: '#9ca3af',
+                fontSize: '16px',
+                backgroundColor: 'rgba(255,0,0,0.2)', // Debug temporal
+                border: '1px solid red' // Debug temporal
+              }}
             >
               {placeholder}
             </span>
           )}
+          
+          {/* Debug temporal */}
+          <div style={{
+            position: 'absolute',
+            top: '-25px',
+            left: '0',
+            fontSize: '10px',
+            color: 'red',
+            zIndex: 1000,
+            backgroundColor: 'yellow',
+            padding: '2px'
+          }}>
+            iOS: {isIOS ? 'YES' : 'NO'} | hasValue: {hasValue ? 'YES' : 'NO'} | placeholder: {placeholder || 'NO'}
+          </div>
 
           {rightIcon && (
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
