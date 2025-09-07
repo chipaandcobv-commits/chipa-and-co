@@ -16,7 +16,7 @@ export default function HomePage() {
         {/* Hero Section - Optimizado para móvil */}
         <section className="pt-6 pb-8 px-4 sm:pt-8 sm:pb-12 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#F26D1F] mb-4 sm:mb-6 leading-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#F15A25] mb-4 sm:mb-6 leading-tight">
               Gana puntos con cada compra
             </h1>
             <p className="text-base sm:text-lg text-gray-700 mb-6 sm:mb-8 max-w-2xl mx-auto px-2 leading-relaxed">
@@ -28,7 +28,7 @@ export default function HomePage() {
                 <Link href="/register" className="w-full sm:w-auto">
                   <Button 
                     size="lg" 
-                    className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-3 bg-[#F26D1F] hover:bg-[#E55A1A] shadow-lg hover:shadow-xl transition-all duration-300"
+                    className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-3 bg-[#F15A25] hover:bg-[#E55A1A] shadow-lg hover:shadow-xl transition-all duration-300"
                   >
                     Comenzar Ahora
                   </Button>
@@ -37,7 +37,7 @@ export default function HomePage() {
                   <Button
                     variant="outline"
                     size="lg"
-                    className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-3 border-[#F26D1F] text-[#F26D1F] hover:bg-[#FCE6D5] shadow-lg hover:shadow-xl transition-all duration-300"
+                    className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-3 border-[#F15A25] text-[#F15A25] hover:bg-[#FCE6D5] shadow-lg hover:shadow-xl transition-all duration-300"
                   >
                     Ya tengo cuenta
                   </Button>
@@ -51,7 +51,7 @@ export default function HomePage() {
         <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-8 sm:mb-12">
-              <h2 className="text-2xl sm:text-3xl font-bold text-[#F26D1F] mb-3 sm:mb-4">
+              <h2 className="text-2xl sm:text-3xl font-bold text-[#F15A25] mb-3 sm:mb-4">
                 ¿Cómo funciona?
               </h2>
               <p className="text-base sm:text-lg text-gray-600 px-2">
@@ -103,7 +103,7 @@ export default function HomePage() {
         <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-8 sm:mb-12">
-              <h2 className="text-2xl sm:text-3xl font-bold text-[#F26D1F] mb-3 sm:mb-4">
+              <h2 className="text-2xl sm:text-3xl font-bold text-[#F15A25] mb-3 sm:mb-4">
                 Beneficios Exclusivos
               </h2>
               <p className="text-base sm:text-lg text-gray-600 px-2">
@@ -148,7 +148,7 @@ export default function HomePage() {
         {/* CTA Section - Optimizado para móvil */}
         <section className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
-            <div className="bg-[#F26D1F] rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] p-6 sm:p-8 text-center text-white">
+            <div className="bg-[#F15A25] rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] p-6 sm:p-8 text-center text-white">
               <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">¿Listo para comenzar?</h2>
               <p className="text-base sm:text-lg mb-6 sm:mb-8 text-orange-100 px-2 leading-relaxed">
                 Únete a miles de usuarios que ya están ganando puntos y disfrutando de increíbles premios.
@@ -160,7 +160,7 @@ export default function HomePage() {
                     <Button
                       size="lg"
                       variant="outline"
-                      className="w-full sm:w-auto bg-white text-[#F26D1F] hover:bg-orange-50 border-white text-base sm:text-lg px-6 sm:px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300"
+                      className="w-full sm:w-auto bg-white text-[#F15A25] hover:bg-orange-50 border-white text-base sm:text-lg px-6 sm:px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300"
                     >
                       Crear Cuenta Gratis
                     </Button>
@@ -169,7 +169,7 @@ export default function HomePage() {
                     <Button
                       size="lg"
                       variant="outline"
-                      className="w-full sm:w-auto bg-white text-[#F26D1F] hover:bg-orange-50 border-white text-base sm:text-lg px-6 sm:px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300"
+                      className="w-full sm:w-auto bg-white text-[#F15A25] hover:bg-orange-50 border-white text-base sm:text-lg px-6 sm:px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300"
                     >
                       Iniciar Sesión
                     </Button>
@@ -184,7 +184,7 @@ export default function HomePage() {
         <footer className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             <div className="bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 sm:p-8 text-center">
-              <h3 className="text-base sm:text-lg font-semibold text-[#F26D1F] mb-3 sm:mb-4">
+              <h3 className="text-base sm:text-lg font-semibold text-[#F15A25] mb-3 sm:mb-4">
                 Chipa&Co - Sistema de Fidelización
               </h3>
               <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 px-2 leading-relaxed">
@@ -195,25 +195,25 @@ export default function HomePage() {
                 <div className="flex flex-wrap justify-center gap-4 sm:gap-6 text-sm mb-4 sm:mb-6">
                   <Link
                     href={user.role === "ADMIN" ? "/admin" : "/cliente"}
-                    className="text-[#F26D1F] hover:text-[#E55A1A] font-medium px-2 py-1 rounded-lg hover:bg-[#FCE6D5] transition-colors"
+                    className="text-[#F15A25] hover:text-[#E55A1A] font-medium px-2 py-1 rounded-lg hover:bg-[#FCE6D5] transition-colors"
                   >
                     Inicio
                   </Link>
                   <Link 
                     href={user.role === "ADMIN" ? "/admin/rewards" : "/cliente/rewards"} 
-                    className="text-[#F26D1F] hover:text-[#E55A1A] font-medium px-2 py-1 rounded-lg hover:bg-[#FCE6D5] transition-colors"
+                    className="text-[#F15A25] hover:text-[#E55A1A] font-medium px-2 py-1 rounded-lg hover:bg-[#FCE6D5] transition-colors"
                   >
                     Premios
                   </Link>
                   <Link 
                     href={user.role === "ADMIN" ? "/admin/ranking" : "/ranking"} 
-                    className="text-[#F26D1F] hover:text-[#E55A1A] font-medium px-2 py-1 rounded-lg hover:bg-[#FCE6D5] transition-colors"
+                    className="text-[#F15A25] hover:text-[#E55A1A] font-medium px-2 py-1 rounded-lg hover:bg-[#FCE6D5] transition-colors"
                   >
                     Ranking
                   </Link>
                   <Link 
                     href={user.role === "ADMIN" ? "/admin/orders" : "/history"} 
-                    className="text-[#F26D1F] hover:text-[#E55A1A] font-medium px-2 py-1 rounded-lg hover:bg-[#FCE6D5] transition-colors"
+                    className="text-[#F15A25] hover:text-[#E55A1A] font-medium px-2 py-1 rounded-lg hover:bg-[#FCE6D5] transition-colors"
                   >
                     Historial
                   </Link>

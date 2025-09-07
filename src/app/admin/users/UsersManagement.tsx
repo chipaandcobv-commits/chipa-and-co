@@ -96,7 +96,7 @@ export default function UsersManagement() {
     return (
       <div className="min-h-screen w-full bg-[#F7EFE7] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F26D1F] mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F15A25] mx-auto"></div>
           <p className="mt-4 text-gray-600">Cargando usuarios...</p>
         </div>
       </div>
@@ -150,14 +150,14 @@ export default function UsersManagement() {
         {/* Users Table */}
         <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white overflow-hidden hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
           <div className="px-6 py-4 border-b border-white">
-            <h2 className="text-lg font-semibold text-[#F26D1F]">
+            <h2 className="text-lg font-semibold text-[#F15A25]">
               Lista de Usuarios ({filteredUsers.length})
             </h2>
           </div>
 
           {loading ? (
             <div className="p-8 text-center">
-              <div className="animate-spin h-8 w-8 border-2 border-[#F26D1F] border-t-transparent rounded-full mx-auto mb-4"></div>
+              <div className="animate-spin h-8 w-8 border-2 border-[#F15A25] border-t-transparent rounded-full mx-auto mb-4"></div>
               <p className="text-gray-600">Cargando usuarios...</p>
             </div>
           ) : (
@@ -190,7 +190,7 @@ export default function UsersManagement() {
                     <tr key={user.id} className="hover:bg-[#FCE6D5]">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className="h-10 w-10 bg-[#F26D1F] rounded-full flex items-center justify-center">
+                          <div className="h-10 w-10 bg-[#F15A25] rounded-full flex items-center justify-center">
                             <UserIcon className="h-5 w-5 text-white" />
                           </div>
                           <div className="ml-4">
@@ -217,7 +217,7 @@ export default function UsersManagement() {
                           {user.role}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#F26D1F] font-semibold">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#F15A25] font-semibold">
                         {user.puntos} pts
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

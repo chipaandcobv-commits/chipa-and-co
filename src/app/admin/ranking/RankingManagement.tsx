@@ -65,7 +65,7 @@ export default function RankingManagement() {
     return (
       <div className="min-h-screen w-full bg-[#F7EFE7] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F26D1F] mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F15A25] mx-auto"></div>
           <p className="mt-4 text-gray-600">Cargando ranking...</p>
         </div>
       </div>
@@ -91,7 +91,7 @@ export default function RankingManagement() {
         </div>
 
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-[#F26D1F] mb-2">
+          <h1 className="text-3xl font-bold text-[#F15A25] mb-2">
             🏆 Ranking de Usuarios
           </h1>
           <p className="text-gray-700">
@@ -115,7 +115,7 @@ export default function RankingManagement() {
                   <p className="text-sm font-medium text-gray-700">
                     Total Usuarios
                   </p>
-                  <p className="text-2xl font-bold text-[#F26D1F]">
+                  <p className="text-2xl font-bold text-[#F15A25]">
                     {stats.totalUsers}
                   </p>
                 </div>
@@ -129,7 +129,7 @@ export default function RankingManagement() {
                   <p className="text-sm font-medium text-gray-700">
                     Puntos Históricos
                   </p>
-                  <p className="text-2xl font-bold text-[#F26D1F]">
+                  <p className="text-2xl font-bold text-[#F15A25]">
                     {stats.totalHistoricPoints.toLocaleString()}
                   </p>
                 </div>
@@ -143,7 +143,7 @@ export default function RankingManagement() {
                   <p className="text-sm font-medium text-gray-700">
                     Total Compras
                   </p>
-                  <p className="text-2xl font-bold text-[#F26D1F]">
+                  <p className="text-2xl font-bold text-[#F15A25]">
                     {stats.totalOrders}
                   </p>
                 </div>
@@ -157,7 +157,7 @@ export default function RankingManagement() {
                   <p className="text-sm font-medium text-gray-700">
                     Promedio Histórico
                   </p>
-                  <p className="text-2xl font-bold text-[#F26D1F]">
+                  <p className="text-2xl font-bold text-[#F15A25]">
                     {stats.promedioPuntosHistoricos.toLocaleString()}
                   </p>
                 </div>
@@ -169,7 +169,7 @@ export default function RankingManagement() {
         {/* Ranking Table */}
         <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white overflow-hidden hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
           <div className="px-6 py-4 border-b border-white bg-[#FCE6D5]">
-            <h2 className="text-xl font-semibold text-[#F26D1F]">
+            <h2 className="text-xl font-semibold text-[#F15A25]">
               Top Usuarios por Puntos Históricos
             </h2>
           </div>
@@ -235,12 +235,12 @@ export default function RankingManagement() {
                       {user.dni}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm font-medium text-[#F26D1F]">
+                      <span className="text-sm font-medium text-[#F15A25]">
                         {user.puntosActuales.toLocaleString()}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm font-bold text-[#F26D1F]">
+                      <span className="text-sm font-bold text-[#F15A25]">
                         {user.puntosHistoricos.toLocaleString()}
                       </span>
                     </td>

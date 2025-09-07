@@ -35,10 +35,10 @@ export default function RewardConfirmationModal({
       <div className="bg-[#F7EFE7] rounded-2xl max-w-xs w-full max-h-[80vh] overflow-y-auto border border-[#FCE6D5] shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between p-3 border-b border-[#FCE6D5]">
-          <h3 className="text-base font-bold text-[#F26D1F]">Confirmar Canje</h3>
+          <h3 className="text-base font-bold text-[#F15A25]">Confirmar Canje</h3>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-[#F26D1F] transition-colors"
+            className="text-gray-500 hover:text-[#F15A25] transition-colors"
             disabled={loading}
           >
             <XMarkIcon className="h-5 w-5" />
@@ -71,7 +71,7 @@ export default function RewardConfirmationModal({
             )}
 
             {/* Points Info */}
-            <div className="bg-[#FCE6D5] rounded-lg p-2 border border-[#F26D1F]/20">
+            <div className="bg-[#FCE6D5] rounded-lg p-2 border border-[#F15A25]/20">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-gray-700">Costo:</span>
                 <span className="text-lg font-bold text-orange-600">
@@ -87,11 +87,11 @@ export default function RewardConfirmationModal({
             </div>
 
             {/* Warning about 24 hours */}
-            <div className="bg-[#FCE6D5] rounded-lg p-2 border border-[#F26D1F]/30">
+            <div className="bg-[#FCE6D5] rounded-lg p-2 border border-[#F15A25]/30">
               <div className="flex items-start gap-2">
-                <div className="text-[#F26D1F] text-sm">⚠️</div>
+                <div className="text-[#F15A25] text-sm">⚠️</div>
                 <div>
-                  <p className="text-xs font-medium text-[#F26D1F]">
+                  <p className="text-xs font-medium text-[#F15A25]">
                     Tienes 24 horas para reclamar
                   </p>
                   <p className="text-xs text-gray-600 mt-1">
@@ -124,7 +124,7 @@ export default function RewardConfirmationModal({
             <button
               onClick={onConfirm}
               disabled={loading || !canAfford}
-              className="flex-1 px-3 py-2 bg-[#F26D1F] text-white rounded-lg text-sm font-medium hover:bg-[#F26D1F]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-3 py-2 bg-[#F15A25] text-white rounded-lg text-sm font-medium hover:bg-[#F15A25]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <div className="flex items-center justify-center">

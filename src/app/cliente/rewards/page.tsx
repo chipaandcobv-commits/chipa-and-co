@@ -13,9 +13,9 @@ export default function RewardsPage() {
     return (
       <div className="min-h-svh w-full bg-[#F7EFE7] text-gray-900 font-urbanist">
         <div className="mx-auto max-w-[480px] min-h-svh relative pb-28">
-          <div className="flex items-center justify-center h-full">
+          <div className="flex items-center justify-center min-h-[calc(100vh-7rem)]">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F26D1F] mx-auto"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F15A25] mx-auto"></div>
               <p className="mt-4 text-gray-600">Cargando premios canjeados...</p>
             </div>
           </div>
@@ -42,8 +42,8 @@ export default function RewardsPage() {
         {/* Header */}
         <div className="px-4 pt-4">
                      <div className="flex items-center gap-3 mb-4">
-             <GiftCardIcon className="w-8 h-8 text-[#F26D1F]" />
-             <h1 className="text-[24px] font-extrabold text-[#F26D1F]">Mis Premios Canjeados</h1>
+             <GiftCardIcon className="w-8 h-8 text-[#F15A25]" />
+             <h1 className="text-[24px] font-extrabold text-[#F15A25]">Mis Premios Canjeados</h1>
            </div>
         </div>
 

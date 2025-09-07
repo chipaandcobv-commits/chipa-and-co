@@ -177,7 +177,7 @@ export default function ConfigManagement() {
     return (
       <div className="min-h-screen w-full bg-[#F7EFE7] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F26D1F] mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F15A25] mx-auto"></div>
           <p className="mt-4 text-gray-600">Cargando configuración...</p>
         </div>
       </div>
@@ -219,7 +219,7 @@ export default function ConfigManagement() {
           {/* Configuración del Sistema */}
           <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
             <div className="mb-6">
-              <h1 className="text-2xl font-bold text-[#F26D1F] mb-2">
+              <h1 className="text-2xl font-bold text-[#F15A25] mb-2">
                 Configuración del Sistema
               </h1>
               <p className="text-gray-700">
@@ -234,7 +234,7 @@ export default function ConfigManagement() {
                 </label>
                 <p className="text-sm text-gray-500 mb-3">
                   Define cuántos puntos se otorgan por cada peso gastado. 
-                  <strong className="text-[#F26D1F]"> Configuración actual: {config.pointsPerPeso} peso = {config.pointsPerPeso} punto</strong>
+                  <strong className="text-[#F15A25]"> Configuración actual: {config.pointsPerPeso} peso = {config.pointsPerPeso} punto</strong>
                 </p>
                 <div className="relative">
                   <Input
@@ -272,7 +272,7 @@ export default function ConfigManagement() {
                   <Button
                     onClick={handleSave}
                     isLoading={saving}
-                    className="flex-1 bg-[#F26D1F] hover:bg-[#E55A1A] text-white"
+                    className="flex-1 bg-[#F15A25] hover:bg-[#E55A1A] text-white"
                   >
                     Guardar Configuración
                   </Button>
@@ -335,16 +335,16 @@ export default function ConfigManagement() {
 
             {/* Preview */}
             <div className="mt-8 p-4 bg-[#FCE6D5] rounded-lg">
-              <h3 className="font-medium text-[#F26D1F] mb-2">Vista Previa</h3>
+              <h3 className="font-medium text-[#F15A25] mb-2">Vista Previa</h3>
               <div className="text-sm text-gray-700 space-y-1">
                 <p>
-                  • Una compra de $1,000 = <span className="text-[#F26D1F] font-semibold">{Math.round(1000 * config.pointsPerPeso)} punto(s)</span>
+                  • Una compra de $1,000 = <span className="text-[#F15A25] font-semibold">{Math.round(1000 * config.pointsPerPeso)} punto(s)</span>
                 </p>
                 <p>
-                  • Una compra de $5,000 = <span className="text-[#F26D1F] font-semibold">{Math.round(5000 * config.pointsPerPeso)} punto(s)</span>
+                  • Una compra de $5,000 = <span className="text-[#F15A25] font-semibold">{Math.round(5000 * config.pointsPerPeso)} punto(s)</span>
                 </p>
                 <p>
-                  • Una compra de $10,000 = <span className="text-[#F26D1F] font-semibold">{Math.round(10000 * config.pointsPerPeso)} punto(s)</span>
+                  • Una compra de $10,000 = <span className="text-[#F15A25] font-semibold">{Math.round(10000 * config.pointsPerPeso)} punto(s)</span>
                 </p>
               </div>
               
@@ -359,8 +359,8 @@ export default function ConfigManagement() {
                 </div>
               )}
               
-              <div className="mt-3 p-3 bg-white rounded border border-[#F26D1F]">
-                <p className="text-sm text-[#F26D1F] font-medium">
+              <div className="mt-3 p-3 bg-white rounded border border-[#F15A25]">
+                <p className="text-sm text-[#F15A25] font-medium">
                   💡 Configuración de Puntos: Define la relación entre pesos gastados y puntos otorgados
                 </p>
               </div>
@@ -370,7 +370,7 @@ export default function ConfigManagement() {
           {/* Cambio de Contraseña */}
           <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
             <div className="mb-6">
-              <h1 className="text-2xl font-bold text-[#F26D1F] mb-2">
+              <h1 className="text-2xl font-bold text-[#F15A25] mb-2">
                 Cambiar Contraseña
               </h1>
               <p className="text-gray-700">
@@ -383,7 +383,7 @@ export default function ConfigManagement() {
               <Button
                 onClick={() => setIsChangingPassword(!isChangingPassword)}
                 size="sm"
-                className={isChangingPassword ? "border-[#F26D1F] text-[#F26D1F] hover:bg-[#FCE6D5]" : "bg-[#F26D1F] hover:bg-[#E55A1A] text-white"}
+                className={isChangingPassword ? "border-[#F15A25] text-[#F15A25] hover:bg-[#FCE6D5]" : "bg-[#F15A25] hover:bg-[#E55A1A] text-white"}
               >
                 {isChangingPassword ? "Cancelar" : "Cambiar"}
               </Button>
@@ -461,7 +461,7 @@ export default function ConfigManagement() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-[#F26D1F] hover:bg-[#E55A1A] text-white"
+                  className="w-full bg-[#F15A25] hover:bg-[#E55A1A] text-white"
                 >
                   Cambiar Contraseña
                 </Button>
@@ -469,7 +469,7 @@ export default function ConfigManagement() {
             )}
 
             <div className="mt-6 p-4 bg-[#FCE6D5] rounded-lg">
-              <h3 className="font-medium text-[#F26D1F] mb-2">🔐 Seguridad</h3>
+              <h3 className="font-medium text-[#F15A25] mb-2">🔐 Seguridad</h3>
               <div className="text-sm text-gray-700 space-y-1">
                 <p>• Cambia tu contraseña regularmente</p>
                 <p>• Usa una contraseña fuerte y única</p>

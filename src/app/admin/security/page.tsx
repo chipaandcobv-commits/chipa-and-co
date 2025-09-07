@@ -156,7 +156,7 @@ export default function SecurityDashboard() {
     return (
       <div className="min-h-screen w-full bg-[#F7EFE7] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F26D1F] mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F15A25] mx-auto"></div>
           <p className="mt-4 text-gray-600">Cargando dashboard de seguridad...</p>
         </div>
       </div>

@@ -175,7 +175,7 @@ export default function RewardsManagement() {
     return (
       <div className="min-h-screen w-full bg-[#F7EFE7] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F26D1F] mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F15A25] mx-auto"></div>
           <p className="mt-4 text-gray-600">Cargando premios...</p>
         </div>
       </div>
@@ -217,14 +217,14 @@ export default function RewardsManagement() {
           <div className="lg:col-span-1">
             <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold text-[#F26D1F]">
+                <h2 className="text-xl font-semibold text-[#F15A25]">
                   {editingReward ? "Editar Premio" : "Nuevo Premio"}
                 </h2>
                 <Button
                   onClick={() => setShowForm(!showForm)}
                   size="sm"
                   variant={showForm ? "outline" : "primary"}
-                  className={showForm ? "border-[#F26D1F] text-[#F26D1F] hover:bg-[#FCE6D5]" : "bg-[#F26D1F] hover:bg-[#E55A1A] text-white"}
+                  className={showForm ? "border-[#F15A25] text-[#F15A25] hover:bg-[#FCE6D5]" : "bg-[#F15A25] hover:bg-[#E55A1A] text-white"}
                 >
                   {showForm ? "Cancelar" : "Nuevo"}
                 </Button>
@@ -249,7 +249,7 @@ export default function RewardsManagement() {
                         setForm({ ...form, description: e.target.value })
                       }
                       placeholder="Descripción del premio..."
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F26D1F] focus:border-[#F26D1F]"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F15A25] focus:border-[#F15A25]"
                       rows={3}
                     />
                   </div>
@@ -295,12 +295,12 @@ export default function RewardsManagement() {
                     <Button
                       onClick={handleSubmit}
                       isLoading={saving}
-                      className="flex-1 bg-[#F26D1F] hover:bg-[#E55A1A] text-white"
+                      className="flex-1 bg-[#F15A25] hover:bg-[#E55A1A] text-white"
                     >
                       {editingReward ? "Actualizar" : "Crear"}
                     </Button>
                     {editingReward && (
-                      <Button onClick={resetForm} variant="outline" className="border-[#F26D1F] text-[#F26D1F] hover:bg-[#FCE6D5]">
+                      <Button onClick={resetForm} variant="outline" className="border-[#F15A25] text-[#F15A25] hover:bg-[#FCE6D5]">
                         Cancelar
                       </Button>
                     )}
@@ -313,7 +313,7 @@ export default function RewardsManagement() {
           {/* Rewards List */}
           <div className="lg:col-span-2">
             <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
-              <h2 className="text-xl font-semibold text-[#F26D1F] mb-6">
+              <h2 className="text-xl font-semibold text-[#F15A25] mb-6">
                 Premios ({rewards.length})
               </h2>
 
@@ -347,7 +347,7 @@ export default function RewardsManagement() {
 
                     <div className="text-sm text-gray-600 space-y-1">
                       <p>
-                        💎<strong className="text-[#F26D1F]">{reward.pointsCost}</strong> puntos
+                        💎<strong className="text-[#F15A25]">{reward.pointsCost}</strong> puntos
                       </p>
                       <p>
                         📦 Stock:{" "}
@@ -361,7 +361,7 @@ export default function RewardsManagement() {
                         onClick={() => handleEdit(reward)}
                         size="sm"
                         variant="outline"
-                        className="flex-1 border-[#F26D1F] text-[#F26D1F] hover:bg-[#FCE6D5]"
+                        className="flex-1 border-[#F15A25] text-[#F15A25] hover:bg-[#FCE6D5]"
                       >
                         Editar
                       </Button>

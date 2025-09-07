@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";
-import { UserIcon, LogoutIcon, HomeIcon, GiftCardIcon, EyeIcon, EyeOffIcon } from "@/components/icons/Icons";
+import { UserIcon, LogoutIcon, EyeIcon, EyeOffIcon } from "@/components/icons/Icons";
 import BottomNavigation from "@/components/BottomNavigation";
 
 export default function ProfilePage() {
@@ -39,38 +39,22 @@ export default function ProfilePage() {
     }
   }, [user]);
 
-  if (loading) {
+  // Memoizar el mensaje de notificación
+  const notificationMessage = useMemo(() => {
+    if (!message) return null;
+    
     return (
-      <div className="min-h-svh w-full bg-[#F7EFE7] text-gray-900 font-urbanist">
-        <div className="mx-auto max-w-[480px] min-h-svh relative pb-28">
-          <div className="flex items-center justify-center h-full">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F26D1F] mx-auto"></div>
-              <p className="mt-4 text-gray-600">Cargando perfil...</p>
-            </div>
-          </div>
-          <BottomNavigation />
-        </div>
+      <div className={`absolute top-4 left-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
+        message.type === "success" 
+          ? "bg-green-500 text-white" 
+          : "bg-red-500 text-white"
+      }`}>
+        <p className="text-center font-medium">{message.text}</p>
       </div>
     );
-  }
+  }, [message]);
 
-  if (!user) {
-    return (
-      <div className="min-h-svh w-full bg-[#F7EFE7] text-gray-900 font-urbanist">
-        <div className="mx-auto max-w-[480px] min-h-svh relative pb-28">
-          <div className="flex items-center justify-center h-full">
-            <div className="text-center">
-              <p className="text-gray-600">No se pudo cargar la información del usuario</p>
-            </div>
-          </div>
-          <BottomNavigation />
-        </div>
-      </div>
-    );
-  }
-
-  const handleUpdateProfile = async (e: React.FormEvent) => {
+  const handleUpdateProfile = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
@@ -97,9 +81,9 @@ export default function ProfilePage() {
       setMessage({ type: "error", text: "Error de conexión" });
       setTimeout(() => setMessage(null), 5000);
     }
-  };
+  }, [profileData, refetch]);
 
-  const handleChangePassword = async (e: React.FormEvent) => {
+  const handleChangePassword = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (passwordData.newPassword !== passwordData.confirmPassword) {
@@ -145,121 +129,148 @@ export default function ProfilePage() {
       setMessage({ type: "error", text: "Error de conexión" });
       setTimeout(() => setMessage(null), 5000);
     }
-  };
+  }, [passwordData]);
+
+  const handleLogout = useCallback(async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+    }
+  }, [logout]);
+
+  if (loading) {
+    return (
+      <div className="min-h-svh w-full bg-[#F7EFE7] text-gray-900 font-urbanist">
+        <div className="mx-auto max-w-[480px] min-h-svh relative pb-28">
+          <div className="flex items-center justify-center min-h-[calc(100vh-7rem)]">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F15A25] mx-auto"></div>
+              <p className="mt-4 text-gray-600">Cargando perfil...</p>
+            </div>
+          </div>
+          <BottomNavigation />
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-svh w-full bg-[#F7EFE7] text-gray-900 font-urbanist">
+        <div className="mx-auto max-w-[480px] min-h-svh relative pb-28">
+          <div className="flex items-center justify-center min-h-[calc(100vh-7rem)]">
+            <div className="text-center">
+              <p className="text-gray-600">No se pudo cargar la información del usuario</p>
+            </div>
+          </div>
+          <BottomNavigation />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-svh w-full bg-[#F7EFE7] text-gray-900 font-urbanist">
       <div className="mx-auto max-w-[480px] min-h-svh relative pb-28">
         {/* Mensaje de notificación */}
-        {message && (
-          <div className={`absolute top-4 left-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
-            message.type === "success" 
-              ? "bg-green-500 text-white" 
-              : "bg-red-500 text-white"
-          }`}>
-            <p className="text-center font-medium">{message.text}</p>
-          </div>
-        )}
+        {notificationMessage}
 
         {/* Header */}
         <div className="px-4 pt-4">
-          <div className="flex items-center gap-3 mb-6">
-            <UserIcon className="w-8 h-8 text-[#F26D1F]" />
-            <h1 className="text-[24px] font-extrabold text-[#F26D1F]">Mi Perfil</h1>
+          <div className="flex items-center gap-3 mb-4">
+            <UserIcon className="w-8 h-8 text-[#F15A25]" />
+            <h1 className="text-[24px] font-extrabold text-[#F15A25]">Mi Perfil</h1>
           </div>
         </div>
 
-        {/* Información del usuario */}
+        {/* Información del Perfil */}
         <section className="px-4">
-          <div className="bg-[#F2E2D6] rounded-2xl p-6 shadow-sm">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="h-16 w-16 rounded-full bg-neutral-300 flex items-center justify-center text-neutral-600 font-semibold text-xl">
-                <span>👤</span>
-              </div>
-              <div className="flex-1">
-                <h2 className="text-[20px] font-bold text-gray-800">{user.name}</h2>
-                <p className="text-[14px] text-gray-600">{user.email}</p>
-              </div>
-              <button
-                onClick={() => setIsEditing(!isEditing)}
-                className="bg-[#F26D1F] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-orange-600 transition-colors"
-              >
-                {isEditing ? "Cancelar" : "Editar"}
-              </button>
+          <div className="bg-[#F4E7DB] rounded-2xl p-6 shadow-sm border border-white">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-[20px] font-bold text-neutral-800">Información Personal</h2>
+              {!isEditing && (
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="bg-[#F15A25] text-white px-4 py-2 rounded-lg font-medium hover:bg-orange-600 transition-colors"
+                >
+                  Editar
+                </button>
+              )}
             </div>
 
-            {/* Formulario de edición */}
-            {isEditing && (
-              <form onSubmit={handleUpdateProfile} className="mb-6 p-4 bg-white rounded-xl">
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Nombre
-                    </label>
-                    <input
-                      type="text"
-                      value={profileData.name}
-                      onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F26D1F] focus:border-transparent"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      value={profileData.email}
-                      onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F26D1F] focus:border-transparent"
-                      required
-                    />
-                  </div>
+            {isEditing ? (
+              <form onSubmit={handleUpdateProfile} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Nombre
+                  </label>
+                  <input
+                    type="text"
+                    value={profileData.name}
+                    onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F15A25] focus:border-transparent"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={profileData.email}
+                    onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F15A25] focus:border-transparent"
+                    required
+                  />
+                </div>
+
+                <div className="flex gap-3">
                   <button
                     type="submit"
-                    className="w-full bg-[#F26D1F] text-white py-2 px-4 rounded-lg font-medium hover:bg-orange-600 transition-colors"
+                    className="flex-1 bg-[#F15A25] text-white py-2 px-4 rounded-lg font-medium hover:bg-orange-600 transition-colors"
                   >
-                    Guardar Cambios
+                    Guardar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsEditing(false)}
+                    className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg font-medium hover:bg-gray-600 transition-colors"
+                  >
+                    Cancelar
                   </button>
                 </div>
               </form>
+            ) : (
+              <div className="space-y-3">
+                <div>
+                  <span className="text-sm font-medium text-gray-600">Nombre:</span>
+                  <p className="text-lg text-neutral-800">{user.name}</p>
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-gray-600">Email:</span>
+                  <p className="text-lg text-neutral-800">{user.email}</p>
+                </div>
+              </div>
             )}
-
-            <div className="space-y-4">
-              <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                <span className="text-[15px] font-medium text-gray-700">DNI:</span>
-                <span className="text-[15px] font-semibold text-gray-800">{user.dni}</span>
-              </div>
-              
-              <div className="flex justify-between items-center py-3 border-b border-gray-200">
-                <span className="text-[15px] font-medium text-gray-700">Puntos actuales:</span>
-                <span className="text-[15px] font-bold text-[#F26D1F]">
-                  {user.puntos.toLocaleString("es-AR")}
-                </span>
-              </div>
-              
-              <div className="flex justify-between items-center py-3">
-                <span className="text-[15px] font-medium text-gray-700">Miembro desde:</span>
-                <span className="text-[15px] font-semibold text-gray-800">
-                  {new Date(user.createdAt).toLocaleDateString("es-AR")}
-                </span>
-              </div>
-            </div>
           </div>
         </section>
 
-        {/* Cambio de contraseña */}
+        {/* Cambio de Contraseña */}
         <section className="px-4 mt-6">
-          <div className="bg-[#F2E2D6] rounded-2xl p-6 shadow-sm">
+          <div className="bg-[#F4E7DB] rounded-2xl p-6 shadow-sm border border-white">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-[18px] font-bold text-gray-800">Cambiar Contraseña</h3>
-              <button
-                onClick={() => setIsChangingPassword(!isChangingPassword)}
-                className="bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors"
-              >
-                {isChangingPassword ? "Cancelar" : "Cambiar"}
-              </button>
+              <h2 className="text-[20px] font-bold text-neutral-800">Cambiar Contraseña</h2>
+              {!isChangingPassword && (
+                <button
+                  onClick={() => setIsChangingPassword(true)}
+                  className="bg-[#F15A25] text-white px-4 py-2 rounded-lg font-medium hover:bg-orange-600 transition-colors"
+                >
+                  Cambiar
+                </button>
+              )}
             </div>
 
             {isChangingPassword && (
@@ -273,7 +284,7 @@ export default function ProfilePage() {
                       type={showCurrentPassword ? "text" : "password"}
                       value={passwordData.currentPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                      className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F26D1F] focus:border-transparent"
+                      className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F15A25] focus:border-transparent"
                       required
                     />
                     <button
@@ -295,7 +306,7 @@ export default function ProfilePage() {
                       type={showNewPassword ? "text" : "password"}
                       value={passwordData.newPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                      className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F26D1F] focus:border-transparent"
+                      className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F15A25] focus:border-transparent"
                       required
                       minLength={6}
                     />
@@ -318,7 +329,7 @@ export default function ProfilePage() {
                       type={showConfirmPassword ? "text" : "password"}
                       value={passwordData.confirmPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                      className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F26D1F] focus:border-transparent"
+                      className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F15A25] focus:border-transparent"
                       required
                       minLength={6}
                     />
@@ -332,12 +343,21 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                <button
-                  type="submit"
-                  className="w-full bg-[#F26D1F] text-white py-2 px-4 rounded-lg font-medium hover:bg-orange-600 transition-colors"
-                >
-                  Cambiar Contraseña
-                </button>
+                <div className="flex gap-3">
+                  <button
+                    type="submit"
+                    className="flex-1 bg-[#F15A25] text-white py-2 px-4 rounded-lg font-medium hover:bg-orange-600 transition-colors"
+                  >
+                    Cambiar Contraseña
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsChangingPassword(false)}
+                    className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg font-medium hover:bg-gray-600 transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                </div>
               </form>
             )}
           </div>
@@ -346,7 +366,7 @@ export default function ProfilePage() {
         {/* Botón de cerrar sesión */}
         <section className="px-4 mt-6">
           <button
-            onClick={logout}
+            onClick={handleLogout}
             className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-4 px-6 rounded-2xl shadow-lg transition-colors flex items-center justify-center gap-3"
           >
             <LogoutIcon className="w-5 h-5" />

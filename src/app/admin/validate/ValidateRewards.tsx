@@ -119,7 +119,7 @@ export default function ValidateRewards() {
     return (
       <div className="min-h-screen w-full bg-[#F7EFE7] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F26D1F] mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F15A25] mx-auto"></div>
           <p className="mt-4 text-gray-600">Cargando canjes...</p>
         </div>
       </div>
@@ -145,7 +145,7 @@ export default function ValidateRewards() {
         </div>
 
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-[#F26D1F] mb-2">
+          <h1 className="text-3xl font-bold text-[#F15A25] mb-2">
             ✅ Validar Premios Canjeados
           </h1>
           <p className="text-gray-700">
@@ -167,7 +167,7 @@ export default function ValidateRewards() {
                 <div className="text-2xl mr-3">⏳</div>
                 <div>
                   <p className="text-sm font-medium text-gray-700">Pendientes</p>
-                  <p className="text-2xl font-bold text-[#F26D1F]">
+                  <p className="text-2xl font-bold text-[#F15A25]">
                     {stats.pending}
                   </p>
                 </div>
@@ -179,7 +179,7 @@ export default function ValidateRewards() {
                 <div className="text-2xl mr-3">✅</div>
                 <div>
                   <p className="text-sm font-medium text-gray-700">Aprobados</p>
-                  <p className="text-2xl font-bold text-[#F26D1F]">
+                  <p className="text-2xl font-bold text-[#F15A25]">
                     {stats.approved}
                   </p>
                 </div>
@@ -191,7 +191,7 @@ export default function ValidateRewards() {
                 <div className="text-2xl mr-3">❌</div>
                 <div>
                   <p className="text-sm font-medium text-gray-700">Rechazados</p>
-                  <p className="text-2xl font-bold text-[#F26D1F]">
+                  <p className="text-2xl font-bold text-[#F15A25]">
                     {stats.rejected}
                   </p>
                 </div>
@@ -203,7 +203,7 @@ export default function ValidateRewards() {
                 <div className="text-2xl mr-3">📊</div>
                 <div>
                   <p className="text-sm font-medium text-gray-700">Total</p>
-                  <p className="text-2xl font-bold text-[#F26D1F]">
+                  <p className="text-2xl font-bold text-[#F15A25]">
                     {stats.total}
                   </p>
                 </div>
@@ -215,7 +215,7 @@ export default function ValidateRewards() {
         {/* Claims Table */}
         <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white overflow-hidden hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
           <div className="px-6 py-4 border-b border-white bg-[#FCE6D5]">
-            <h2 className="text-xl font-semibold text-[#F26D1F]">
+            <h2 className="text-xl font-semibold text-[#F15A25]">
               Canjes Pendientes de Validación
             </h2>
           </div>
@@ -266,7 +266,7 @@ export default function ValidateRewards() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm font-medium text-[#F26D1F]">
+                      <span className="text-sm font-medium text-[#F15A25]">
                         {'💎' + claim.pointsSpent}
                       </span>
                     </td>

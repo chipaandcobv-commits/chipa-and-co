@@ -296,7 +296,7 @@ export default function OrdersManagement() {
     return (
       <div className="min-h-screen w-full bg-[#F7EFE7] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F26D1F] mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F15A25] mx-auto"></div>
           <p className="mt-4 text-gray-600">Cargando...</p>
         </div>
       </div>
@@ -339,13 +339,13 @@ export default function OrdersManagement() {
           {/* Create Order */}
           <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold text-[#F26D1F]">
+              <h2 className="text-xl font-semibold text-[#F15A25]">
                 Crear Orden
               </h2>
               <Button
                 onClick={() => setShowCreateForm(!showCreateForm)}
                 size="sm"
-                className={showCreateForm ? "border-[#F26D1F] text-[#F26D1F] hover:bg-[#FCE6D5]" : "bg-[#F26D1F] hover:bg-[#E55A1A] text-white"}
+                className={showCreateForm ? "border-[#F15A25] text-[#F15A25] hover:bg-[#FCE6D5]" : "bg-[#F15A25] hover:bg-[#E55A1A] text-white"}
               >
                 {showCreateForm ? "Cancelar" : "Nueva Orden"}
               </Button>
@@ -370,7 +370,7 @@ export default function OrdersManagement() {
                       onClick={searchClient}
                       isLoading={searchingClient}
                       disabled={!clientDni.trim()}
-                      className="bg-[#F26D1F] hover:bg-[#E55A1A] text-white"
+                      className="bg-[#F15A25] hover:bg-[#E55A1A] text-white"
                     >
                       Buscar
                     </Button>
@@ -413,7 +413,7 @@ export default function OrdersManagement() {
                         <Button
                           onClick={() => addOrderItem(product.id)}
                           size="sm"
-                          className="bg-[#F26D1F] hover:bg-[#E55A1A] text-white"
+                          className="bg-[#F15A25] hover:bg-[#E55A1A] text-white"
                         >
                           Agregar
                         </Button>
@@ -468,7 +468,7 @@ export default function OrdersManagement() {
                     <div className="mt-4 p-4 bg-[#FCE6D5] rounded-lg">
                       <div className="flex justify-between items-center text-lg font-semibold text-gray-700">
                         <span>Total: ${getTotalAmount().toLocaleString()}</span>
-                        <span className="text-[#F26D1F]">
+                        <span className="text-[#F15A25]">
                           {getTotalPoints()} puntos
                         </span>
                       </div>
@@ -476,7 +476,7 @@ export default function OrdersManagement() {
                     <Button
                       onClick={createOrder}
                       isLoading={creating}
-                      className="w-full mt-4 bg-[#F26D1F] hover:bg-[#E55A1A] text-white"
+                      className="w-full mt-4 bg-[#F15A25] hover:bg-[#E55A1A] text-white"
                       disabled={!clientInfo || getTotalAmount() === 0}
                     >
                       Crear Orden y Asignar Puntos
@@ -490,14 +490,14 @@ export default function OrdersManagement() {
           {/* Orders List */}
           <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold text-[#F26D1F]">
+              <h2 className="text-xl font-semibold text-[#F15A25]">
                 Órdenes Recientes
               </h2>
               <Button
                 onClick={() => setShowBackupSection(!showBackupSection)}
                 size="sm"
                 variant="outline"
-                className="border-[#F26D1F] text-[#F26D1F] hover:bg-[#FCE6D5]"
+                className="border-[#F15A25] text-[#F15A25] hover:bg-[#FCE6D5]"
               >
                 {showBackupSection ? "Ocultar" : "Backup"}
               </Button>
@@ -505,8 +505,8 @@ export default function OrdersManagement() {
 
             {/* Backup Section */}
             {showBackupSection && (
-              <div className="mb-6 p-4 bg-[#FCE6D5] rounded-lg border border-[#F26D1F]">
-                <h3 className="text-lg font-medium text-[#F26D1F] mb-3">
+              <div className="mb-6 p-4 bg-[#FCE6D5] rounded-lg border border-[#F15A25]">
+                <h3 className="text-lg font-medium text-[#F15A25] mb-3">
                   🔄 Backup y Limpieza de Órdenes
                 </h3>
                 <p className="text-sm text-gray-700 mb-4">
@@ -540,7 +540,7 @@ export default function OrdersManagement() {
                       <p className="font-medium text-green-600">
                         ${order.totalAmount.toLocaleString()}
                       </p>
-                      <p className="text-sm text-[#F26D1F]">
+                      <p className="text-sm text-[#F15A25]">
                         {order.totalPoints} puntos
                       </p>
                     </div>

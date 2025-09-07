@@ -6,10 +6,10 @@ import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import {
   EmailIcon,
-  LockIcon,
   EyeIcon,
   EyeOffIcon,
 } from "../../components/icons/Icons";
+import Image from "next/image";
 import { useAuth } from "../../components/AuthContext";
 
 export default function LoginPage() {
@@ -84,10 +84,16 @@ export default function LoginPage() {
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
-          <div className="mx-auto h-16 w-16 bg-[#F26D1F] rounded-full flex items-center justify-center mb-4">
-            <LockIcon className="h-8 w-8 text-white" />
+          <div className="mx-auto mb-4 flex justify-center">
+            <Image
+              src="/Chipá&Co.png"
+              alt="Chipa&Co Logo"
+              width={180}
+              height={180}
+              className="object-contain"
+            />
           </div>
-          <h2 className="text-3xl font-bold text-[#F26D1F]">Iniciar Sesión</h2>
+          <h2 className="text-3xl font-bold text-black">Iniciar Sesión</h2>
           <p className="mt-2 text-sm text-gray-600">
             Accede a tu cuenta de Chipa&Co
           </p>
@@ -95,7 +101,7 @@ export default function LoginPage() {
 
         {/* Form */}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-8 space-y-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
+          <div className="relative rounded-2xl bg-[#FFE4CC] shadow-[0_4px_4px_rgba(0,0,0,0.25)] p-8 space-y-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
             {errors.general && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 text-sm">
                 {errors.general}
@@ -128,6 +134,12 @@ export default function LoginPage() {
                   error={errors.password}
                   required
                   className="pr-12"
+                  autoComplete="current-password"
+                  style={{ 
+                    fontSize: '16px',
+                    WebkitAppearance: 'none',
+                    borderRadius: '8px'
+                  }}
                 />
                 <button
                   type="button"
@@ -142,7 +154,8 @@ export default function LoginPage() {
 
             <Button
               type="submit"
-              className="w-full bg-[#F26D1F] hover:bg-[#E55A1A] text-white"
+              variant="outline"
+              className="w-full !bg-[#F15A25] !hover:bg-[#FF6B35] !text-white !border-[#F15A25] transition-colors duration-200"
               size="lg"
               isLoading={isLoading}
             >
@@ -156,7 +169,7 @@ export default function LoginPage() {
               ¿No tienes cuenta?{" "}
               <Link
                 href="/register"
-                className="font-medium text-[#F26D1F] hover:text-[#E55A1A] transition-colors"
+                className="font-medium text-[#F15A25] hover:text-[#E55A1A] transition-colors"
               >
                 Regístrate aquí
               </Link>

@@ -6,11 +6,11 @@ import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import {
   EmailIcon,
-  LockIcon,
   UserIcon,
   EyeIcon,
   EyeOffIcon,
 } from "../../components/icons/Icons";
+import Image from "next/image";
 import { useAuth } from "../../components/AuthContext";
 
 export default function RegisterPage() {
@@ -86,14 +86,20 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white flex items-center justify-center p-4">
+    <div className="min-h-screen w-full bg-[#F7EFE7] text-gray-900 font-urbanist flex items-center justify-center p-4">
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
-          <div className="mx-auto h-16 w-16 bg-orange-500 rounded-full flex items-center justify-center mb-4">
-            <UserIcon className="h-8 w-8 text-white" />
+          <div className="mx-auto mb-4 flex justify-center">
+            <Image
+              src="/Chipá&Co.png"
+              alt="Chipa&Co Logo"
+              width={180}
+              height={180}
+              className="object-contain"
+            />
           </div>
-          <h2 className="text-3xl font-bold text-gray-900">Crear Cuenta</h2>
+          <h2 className="text-3xl font-bold text-black">Crear Cuenta</h2>
           <p className="mt-2 text-sm text-gray-600">
             Únete al programa de fidelización de Chipa&Co
           </p>
@@ -101,7 +107,7 @@ export default function RegisterPage() {
 
         {/* Form */}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="bg-white rounded-2xl shadow-xl p-8 space-y-6">
+          <div className="relative rounded-2xl bg-[#FFE4CC] shadow-[0_4px_4px_rgba(0,0,0,0.25)] p-8 space-y-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
             {errors.general && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 text-sm">
                 {errors.general}
@@ -144,49 +150,74 @@ export default function RegisterPage() {
               required
             />
 
-            <Input
-              label="Contraseña"
-              type={showPassword ? "text" : "password"}
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Mínimo 8 caracteres"
-              error={errors.password}
-              required
-              rightIcon={
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Contraseña
+              </label>
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Mínimo 8 caracteres"
+                  error={errors.password}
+                  required
+                  className="pr-12"
+                  autoComplete="new-password"
+                  style={{ 
+                    fontSize: '16px',
+                    WebkitAppearance: 'none',
+                    borderRadius: '8px'
+                  }}
+                />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                  style={{ minHeight: '20px', minWidth: '20px' }}
                 >
                   {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
                 </button>
-              }
-            />
+              </div>
+            </div>
 
-            <Input
-              label="Confirmar contraseña"
-              type={showConfirmPassword ? "text" : "password"}
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              placeholder="Repite tu contraseña"
-              error={errors.confirmPassword}
-              required
-              rightIcon={
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Confirmar contraseña
+              </label>
+              <div className="relative">
+                <Input
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="Repite tu contraseña"
+                  error={errors.confirmPassword}
+                  required
+                  className="pr-12"
+                  autoComplete="new-password"
+                  style={{ 
+                    fontSize: '16px',
+                    WebkitAppearance: 'none',
+                    borderRadius: '8px'
+                  }}
+                />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                  style={{ minHeight: '20px', minWidth: '20px' }}
                 >
                   {showConfirmPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
                 </button>
-              }
-            />
+              </div>
+            </div>
 
             <Button
               type="submit"
-              className="w-full"
+              variant="outline"
+              className="w-full !bg-[#F15A25] !hover:bg-[#FF6B35] !text-white !border-[#F15A25] transition-colors duration-200"
               size="lg"
               isLoading={isLoading}
             >
@@ -200,7 +231,7 @@ export default function RegisterPage() {
               ¿Ya tienes cuenta?{" "}
               <Link
                 href="/login"
-                className="font-medium text-orange-600 hover:text-orange-500 transition-colors"
+                className="font-medium text-[#F15A25] hover:text-[#E55A1A] transition-colors"
               >
                 Inicia sesión
               </Link>

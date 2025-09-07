@@ -179,7 +179,7 @@ export default function ProductsManagement() {
     return (
       <div className="min-h-screen w-full bg-[#F7EFE7] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F26D1F] mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F15A25] mx-auto"></div>
           <p className="mt-4 text-gray-600">Cargando productos...</p>
         </div>
       </div>
@@ -206,7 +206,7 @@ export default function ProductsManagement() {
 
         {/* Add Product Button */}
         <div className="mb-6">
-          <Button onClick={() => setShowForm(true)} disabled={showForm} className="bg-[#F26D1F] hover:bg-[#E55A1A] text-white">
+          <Button onClick={() => setShowForm(true)} disabled={showForm} className="bg-[#F15A25] hover:bg-[#E55A1A] text-white">
             + Agregar Producto
           </Button>
         </div>
@@ -214,7 +214,7 @@ export default function ProductsManagement() {
         {/* Product Form */}
         {showForm && (
           <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 mb-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
-            <h2 className="text-lg font-semibold text-[#F26D1F] mb-4">
+            <h2 className="text-lg font-semibold text-[#F15A25] mb-4">
               {editingProduct ? "Editar Producto" : "Nuevo Producto"}
             </h2>
 
@@ -254,7 +254,7 @@ export default function ProductsManagement() {
                   type="submit"
                   isLoading={savingProduct}
                   disabled={savingProduct}
-                  className="bg-[#F26D1F] hover:bg-[#E55A1A] text-white"
+                  className="bg-[#F15A25] hover:bg-[#E55A1A] text-white"
                 >
                   {editingProduct ? "Actualizar" : "Crear"} Producto
                 </Button>
@@ -264,7 +264,7 @@ export default function ProductsManagement() {
                   variant="outline"
                   onClick={handleCancelForm}
                   disabled={savingProduct}
-                  className="border-[#F26D1F] text-[#F26D1F] hover:bg-[#FCE6D5]"
+                  className="border-[#F15A25] text-[#F15A25] hover:bg-[#FCE6D5]"
                 >
                   Cancelar
                 </Button>
@@ -276,14 +276,14 @@ export default function ProductsManagement() {
         {/* Products Table */}
         <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white overflow-hidden hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
           <div className="px-6 py-4 border-b border-white">
-            <h2 className="text-lg font-semibold text-[#F26D1F]">
+            <h2 className="text-lg font-semibold text-[#F15A25]">
               Lista de Productos ({products.length})
             </h2>
           </div>
 
           {loading ? (
             <div className="p-8 text-center">
-              <div className="animate-spin h-8 w-8 border-2 border-[#F26D1F] border-t-transparent rounded-full mx-auto mb-4"></div>
+              <div className="animate-spin h-8 w-8 border-2 border-[#F15A25] border-t-transparent rounded-full mx-auto mb-4"></div>
               <p className="text-gray-600">Cargando productos...</p>
             </div>
           ) : (
@@ -355,7 +355,7 @@ export default function ProductsManagement() {
                             size="sm"
                             onClick={() => handleEdit(product)}
                             disabled={showForm}
-                            className="bg-[#F26D1F] hover:bg-[#E55A1A] text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="bg-[#F15A25] hover:bg-[#E55A1A] text-white disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             Editar
                           </Button>
@@ -366,7 +366,7 @@ export default function ProductsManagement() {
                             onClick={() => handleDelete(product.id)}
                             isLoading={deletingProductId === product.id}
                             disabled={deletingProductId !== null || showForm}
-                            className="border-[#F26D1F] text-[#F26D1F] hover:bg-[#FCE6D5]"
+                            className="border-[#F15A25] text-[#F15A25] hover:bg-[#FCE6D5]"
                           >
                             Eliminar
                           </Button>
@@ -381,7 +381,7 @@ export default function ProductsManagement() {
                 <div className="p-8 text-center">
                   <DashboardIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-gray-500">No hay productos registrados</p>
-                  <Button onClick={() => setShowForm(true)} className="mt-4 bg-[#F26D1F] hover:bg-[#E55A1A] text-white">
+                  <Button onClick={() => setShowForm(true)} className="mt-4 bg-[#F15A25] hover:bg-[#E55A1A] text-white">
                     Crear el primer producto
                   </Button>
                 </div>
