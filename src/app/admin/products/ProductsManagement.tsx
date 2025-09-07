@@ -190,20 +190,6 @@ export default function ProductsManagement() {
     <div className="min-h-screen w-full bg-[#F7EFE7] text-gray-900 font-urbanist">
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header de bienvenida */}
-        <div className="pt-4 mb-8">
-          <div className="ml-4 rounded-l-full rounded-r-none bg-[#FCE6D5] py-3 pr-2 pl-4 shadow-sm flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-neutral-300 flex items-center justify-center text-neutral-600 text-sm">
-              <span>📦</span>
-            </div>
-            <div className="leading-tight">
-              <p className="text-[14px] font-medium text-neutral-800">
-                Gestión de Productos
-              </p>
-            </div>
-          </div>
-        </div>
-
         {/* Add Product Button */}
         <div className="mb-6">
           <Button onClick={() => setShowForm(true)} disabled={showForm} className="bg-[#F15A25] hover:bg-[#E55A1A] text-white">

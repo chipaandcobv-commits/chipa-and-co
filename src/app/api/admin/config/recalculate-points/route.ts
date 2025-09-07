@@ -55,29 +55,58 @@ export async function POST(request: NextRequest) {
 
     console.log(`👥 Encontrados ${users.length} usuarios para recalcular`);
 
-    // Recalcular puntos usando transacción para asegurar consistencia
-    const result = await prisma.$transaction(async (tx) => {
-      let recalculatedUsers = 0;
+    // Recalcular puntos usando una estrategia más eficiente
+    let recalculatedUsers = 0;
+    const batchSize = 100; // Lotes más grandes para updateMany
 
-      for (const user of users) {
-        // Calcular nuevos puntos basados en el factor de multiplicación
-        const newCurrentPoints = Math.round(user.puntos * multiplier);
-        const newHistoricPoints = Math.round(user.puntosHistoricos * multiplier);
+    console.log(`🔄 Procesando ${users.length} usuarios en lotes de ${batchSize}...`);
 
-        // Actualizar usuario
-        await tx.user.update({
-          where: { id: user.id },
-          data: {
-            puntos: newCurrentPoints,
-            puntosHistoricos: newHistoricPoints,
-          },
+    // Si el multiplicador es 1, no hay cambios necesarios
+    if (multiplier === 1) {
+      console.log("ℹ️ El multiplicador es 1, no se requieren cambios");
+      recalculatedUsers = users.length;
+    } else {
+      // Procesar en lotes usando updateMany para mayor eficiencia
+      for (let i = 0; i < users.length; i += batchSize) {
+        const batch = users.slice(i, i + batchSize);
+        
+        // Usar transacción para cada lote
+        const batchResult = await prisma.$transaction(async (tx) => {
+          let processed = 0;
+          
+          // Procesar cada usuario del lote individualmente para mantener precisión
+          for (const user of batch) {
+            const newCurrentPoints = Math.round(user.puntos * multiplier);
+            const newHistoricPoints = Math.round(user.puntosHistoricos * multiplier);
+
+            await tx.user.update({
+              where: { id: user.id },
+              data: {
+                puntos: newCurrentPoints,
+                puntosHistoricos: newHistoricPoints,
+              },
+            });
+            
+            processed++;
+          }
+          
+          return processed;
+        }, {
+          timeout: 20000, // 20 segundos por transacción
         });
-
-        recalculatedUsers++;
+        
+        recalculatedUsers += batchResult;
+        const progress = Math.round((recalculatedUsers/users.length)*100);
+        console.log(`📊 Procesados ${recalculatedUsers}/${users.length} usuarios (${progress}%)`);
+        
+        // Pausa más larga entre lotes para evitar sobrecarga
+        if (i + batchSize < users.length) {
+          await new Promise(resolve => setTimeout(resolve, 200));
+        }
       }
+    }
 
-      return recalculatedUsers;
-    });
+    const result = recalculatedUsers;
 
     console.log(`✅ Recalculados ${result} usuarios exitosamente`);
 
@@ -107,7 +136,5 @@ export async function POST(request: NextRequest) {
             : 500,
       }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

@@ -17,7 +17,19 @@ export default function ConfigManagement() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [recalculating, setRecalculating] = useState(false);
+  const [cleaning, setCleaning] = useState(false);
   const [message, setMessage] = useState("");
+  const [recalculationProgress, setRecalculationProgress] = useState<{
+    isRunning: boolean;
+    progress: number;
+    total: number;
+    processed: number;
+  }>({
+    isRunning: false,
+    progress: 0,
+    total: 0,
+    processed: 0,
+  });
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
@@ -85,10 +97,16 @@ export default function ConfigManagement() {
     }
 
     setRecalculating(true);
-    setMessage("");
+    setRecalculationProgress({
+      isRunning: true,
+      progress: 0,
+      total: 0,
+      processed: 0,
+    });
+    setMessage("🔄 Iniciando recálculo de puntos...");
 
     try {
-      const response = await fetch("/api/admin/config/recalculate-points", {
+      const response = await fetch("/api/admin/config/recalculate-points-async", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -104,7 +122,7 @@ export default function ConfigManagement() {
       if (data.success) {
         setMessage(`✅ ${data.message}`);
         setOriginalConfig(config); // Actualizar configuración original
-        setTimeout(() => setMessage(""), 5000);
+        setTimeout(() => setMessage(""), 8000);
       } else {
         setMessage(`❌ ${data.error || "Error al recalcular puntos"}`);
       }
@@ -112,6 +130,43 @@ export default function ConfigManagement() {
       setMessage("❌ Error de conexión al recalcular puntos");
     } finally {
       setRecalculating(false);
+      setRecalculationProgress({
+        isRunning: false,
+        progress: 100,
+        total: 0,
+        processed: 0,
+      });
+    }
+  };
+
+  const handleCleanupRewards = async () => {
+    if (!confirm("¿Estás seguro de que quieres ejecutar la limpieza de premios vencidos? Esta acción eliminará permanentemente los premios que han caducado.")) {
+      return;
+    }
+
+    setCleaning(true);
+    setMessage("");
+
+    try {
+      const response = await fetch("/api/admin/cleanup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage(`✅ ${data.message}`);
+        setTimeout(() => setMessage(""), 5000);
+      } else {
+        setMessage(`❌ ${data.error || "Error al ejecutar limpieza"}`);
+      }
+    } catch (error) {
+      setMessage("❌ Error de conexión al ejecutar limpieza");
+    } finally {
+      setCleaning(false);
     }
   };
 
@@ -189,19 +244,6 @@ export default function ConfigManagement() {
      
       {/* Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header de bienvenida */}
-        <div className="pt-4 mb-8">
-          <div className="ml-4 rounded-l-full rounded-r-none bg-[#FCE6D5] py-3 pr-2 pl-4 shadow-sm flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-neutral-300 flex items-center justify-center text-neutral-600 text-sm">
-              <span>⚙️</span>
-            </div>
-            <div className="leading-tight">
-              <p className="text-[14px] font-medium text-neutral-800">
-                Configuración del Sistema
-              </p>
-            </div>
-          </div>
-        </div>
 
         {message && (
           <div
@@ -296,6 +338,29 @@ export default function ConfigManagement() {
                   )}
                 </div>
                 
+                {/* Indicador de progreso */}
+                {recalculationProgress.isRunning && (
+                  <div className="mt-4 p-4 bg-[#F0F9FF] border border-blue-200 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-blue-800">🔄 Recalculando puntos...</span>
+                      <span className="text-sm text-blue-600">
+                        {recalculationProgress.processed > 0 && (
+                          `${recalculationProgress.processed}/${recalculationProgress.total} usuarios`
+                        )}
+                      </span>
+                    </div>
+                    <div className="w-full bg-blue-200 rounded-full h-2">
+                      <div 
+                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${recalculationProgress.progress}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-xs text-blue-600 mt-2">
+                      ⏱️ Este proceso puede tomar varios minutos dependiendo del número de usuarios...
+                    </p>
+                  </div>
+                )}
+                
                 {hasConfigChanged && (
                   <div className="mt-4 p-4 bg-[#FEF3C7] border border-[#F59E0B] rounded-lg">
                     <div className="flex items-center justify-between mb-3">
@@ -363,6 +428,58 @@ export default function ConfigManagement() {
                 <p className="text-sm text-[#F15A25] font-medium">
                   💡 Configuración de Puntos: Define la relación entre pesos gastados y puntos otorgados
                 </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Limpieza del Sistema */}
+          <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
+            <div className="mb-6">
+              <h1 className="text-2xl font-bold text-[#F15A25] mb-2">
+                🧹 Limpieza del Sistema
+              </h1>
+              <p className="text-gray-700">
+                Gestiona la limpieza automática de premios vencidos y datos obsoletos
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              <div className="p-4 bg-[#FCE6D5] rounded-lg border border-[#F15A25]/20">
+                <h3 className="font-medium text-[#F15A25] mb-2">🗑️ Limpieza de Premios Vencidos</h3>
+                <p className="text-sm text-gray-700 mb-4">
+                  Ejecuta la limpieza manual de premios que han caducado. Esta acción:
+                </p>
+                <ul className="text-sm text-gray-600 space-y-1 mb-4">
+                  <li>• Marca como vencidos los premios PENDING que han expirado (24h)</li>
+                  <li>• Elimina permanentemente los premios EXPIRED antiguos (48h adicionales)</li>
+                  <li>• Libera espacio en la base de datos</li>
+                </ul>
+                
+                <Button
+                  onClick={handleCleanupRewards}
+                  isLoading={cleaning}
+                  disabled={cleaning}
+                  className="w-full bg-[#DC2626] hover:bg-[#B91C1C] text-white disabled:opacity-50"
+                >
+                  {cleaning ? (
+                    <div className="flex items-center gap-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      Limpiando...
+                    </div>
+                  ) : (
+                    "🧹 Ejecutar Limpieza de Premios"
+                  )}
+                </Button>
+              </div>
+
+              <div className="p-4 bg-[#F0F9FF] rounded-lg border border-blue-200">
+                <h3 className="font-medium text-blue-800 mb-2">ℹ️ Información del Sistema</h3>
+                <div className="text-sm text-blue-700 space-y-1">
+                  <p>• La limpieza automática se ejecuta cada 6 horas</p>
+                  <p>• Los premios vencen después de 24 horas sin reclamar</p>
+                  <p>• Los premios vencidos se eliminan después de 48 horas adicionales</p>
+                  <p>• Puedes ejecutar la limpieza manual en cualquier momento</p>
+                </div>
               </div>
             </div>
           </div>

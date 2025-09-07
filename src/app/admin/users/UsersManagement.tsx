@@ -116,20 +116,6 @@ export default function UsersManagement() {
     <div className="min-h-screen w-full bg-[#F7EFE7] text-gray-900 font-urbanist">
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header de bienvenida */}
-        <div className="pt-4 mb-8">
-          <div className="ml-4 rounded-l-full rounded-r-none bg-[#FCE6D5] py-3 pr-2 pl-4 shadow-sm flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-neutral-300 flex items-center justify-center text-neutral-600 text-sm">
-              <span>👥</span>
-            </div>
-            <div className="leading-tight">
-              <p className="text-[14px] font-medium text-neutral-800">
-                Gestión de Usuarios
-              </p>
-            </div>
-          </div>
-        </div>
-
         {/* Filters */}
         <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 mb-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

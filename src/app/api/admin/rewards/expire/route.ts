@@ -89,6 +89,8 @@ export async function GET(request: NextRequest) {
       { success: false, error: "Error interno del servidor" },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
@@ -110,5 +112,7 @@ export async function POST(request: NextRequest) {
       { success: false, error: "Error interno del servidor" },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }
