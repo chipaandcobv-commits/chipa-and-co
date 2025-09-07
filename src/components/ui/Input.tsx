@@ -25,6 +25,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent
       transition-all duration-200
       min-h-[48px] h-[48px] text-base
+      relative z-10
       ${error ? "border-red-500 focus:ring-red-500" : ""}
       ${icon ? "pl-12" : "pl-4"}
       ${rightIcon ? "pr-12" : "pr-4"}
@@ -63,7 +64,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           {isIOS && !hasValue && placeholder && (
             <span
               aria-hidden="true"
-              className={`absolute ${placeholderLeftClass} top-1/2 -translate-y-1/2 text-sm text-gray-400 pointer-events-none select-none`}
+              className={`absolute ${placeholderLeftClass} top-1/2 -translate-y-1/2 text-sm text-gray-400 pointer-events-none select-none z-0`}
+              style={{ pointerEvents: 'none', zIndex: 0 }}
             >
               {placeholder}
             </span>
