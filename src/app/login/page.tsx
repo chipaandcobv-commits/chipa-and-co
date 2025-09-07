@@ -118,12 +118,11 @@ export default function LoginPage() {
               icon={<EmailIcon />}
               error={errors.email}
               required
+              className="placeholder:text-gray-400 text-gray-700"
               style={{ 
                 fontSize: '16px',
                 WebkitAppearance: 'none',
-                borderRadius: '8px',
-                WebkitTextFillColor: 'rgb(107, 114, 128)',
-                color: 'rgb(107, 114, 128)'
+                borderRadius: '8px'
               }}
             />
 
@@ -137,14 +136,12 @@ export default function LoginPage() {
                   placeholder="Tu contraseña"
                   error={errors.password}
                   required
-                  className="pr-12"
+                  className="pr-12 placeholder:text-gray-400 text-gray-700"
                   autoComplete="current-password"
                   style={{ 
                     fontSize: '16px',
                     WebkitAppearance: 'none',
-                    borderRadius: '8px',
-                    WebkitTextFillColor: 'rgb(107, 114, 128)',
-                    color: 'rgb(107, 114, 128)'
+                    borderRadius: '8px'
                   }}
                 />
                 <button
