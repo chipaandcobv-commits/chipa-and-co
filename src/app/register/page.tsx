@@ -168,7 +168,9 @@ export default function RegisterPage() {
                   style={{ 
                     fontSize: '16px',
                     WebkitAppearance: 'none',
-                    borderRadius: '8px'
+                    borderRadius: '8px',
+                    WebkitTextFillColor: 'rgb(107, 114, 128)',
+                    color: 'rgb(107, 114, 128)'
                   }}
                 />
                 <button
@@ -200,7 +202,9 @@ export default function RegisterPage() {
                   style={{ 
                     fontSize: '16px',
                     WebkitAppearance: 'none',
-                    borderRadius: '8px'
+                    borderRadius: '8px',
+                    WebkitTextFillColor: 'rgb(107, 114, 128)',
+                    color: 'rgb(107, 114, 128)'
                   }}
                 />
                 <button

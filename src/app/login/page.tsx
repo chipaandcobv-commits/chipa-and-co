@@ -109,7 +109,7 @@ export default function LoginPage() {
             )}
 
             <Input
-              label="Email"
+              label=""
               type="email"
               name="email"
               value={formData.email}
@@ -121,9 +121,6 @@ export default function LoginPage() {
             />
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Contraseña
-              </label>
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
@@ -138,7 +135,9 @@ export default function LoginPage() {
                   style={{ 
                     fontSize: '16px',
                     WebkitAppearance: 'none',
-                    borderRadius: '8px'
+                    borderRadius: '8px',
+                    WebkitTextFillColor: 'rgb(107, 114, 128)',
+                    color: 'rgb(107, 114, 128)'
                   }}
                 />
                 <button
