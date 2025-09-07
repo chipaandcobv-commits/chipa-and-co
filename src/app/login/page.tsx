@@ -118,6 +118,13 @@ export default function LoginPage() {
               icon={<EmailIcon />}
               error={errors.email}
               required
+              style={{ 
+                fontSize: '16px',
+                WebkitAppearance: 'none',
+                borderRadius: '8px',
+                WebkitTextFillColor: 'rgb(107, 114, 128)',
+                color: 'rgb(107, 114, 128)'
+              }}
             />
 
             <div>

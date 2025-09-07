@@ -124,6 +124,13 @@ export default function RegisterPage() {
               icon={<UserIcon />}
               error={errors.name}
               required
+              style={{ 
+                fontSize: '16px',
+                WebkitAppearance: 'none',
+                borderRadius: '8px',
+                WebkitTextFillColor: 'rgb(107, 114, 128)',
+                color: 'rgb(107, 114, 128)'
+              }}
             />
 
             <Input
@@ -136,6 +143,13 @@ export default function RegisterPage() {
               icon={<UserIcon />}
               error={errors.dni}
               required
+              style={{ 
+                fontSize: '16px',
+                WebkitAppearance: 'none',
+                borderRadius: '8px',
+                WebkitTextFillColor: 'rgb(107, 114, 128)',
+                color: 'rgb(107, 114, 128)'
+              }}
             />
 
             <Input
@@ -148,6 +162,13 @@ export default function RegisterPage() {
               icon={<EmailIcon />}
               error={errors.email}
               required
+              style={{ 
+                fontSize: '16px',
+                WebkitAppearance: 'none',
+                borderRadius: '8px',
+                WebkitTextFillColor: 'rgb(107, 114, 128)',
+                color: 'rgb(107, 114, 128)'
+              }}
             />
 
             <div>
