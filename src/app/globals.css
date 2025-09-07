@@ -48,5 +48,34 @@ input[type="password"] {
   input::placeholder {
     color: rgb(156, 163, 175) !important;
     opacity: 1 !important;
+    -webkit-text-fill-color: initial !important;
+  }
+  
+  input[type="password"] {
+    -webkit-text-fill-color: transparent !important;
+  }
+  
+  input[type="password"]::placeholder {
+    -webkit-text-fill-color: rgb(156, 163, 175) !important;
+    color: rgb(156, 163, 175) !important;
+    opacity: 1 !important;
+  }
+  
+  input[type="password"]:focus {
+    -webkit-text-fill-color: rgb(55, 65, 81) !important;
+  }
+  
+  .safari-password-fix {
+    -webkit-text-fill-color: transparent !important;
+  }
+  
+  .safari-password-fix::placeholder {
+    -webkit-text-fill-color: rgb(156, 163, 175) !important;
+    color: rgb(156, 163, 175) !important;
+    opacity: 1 !important;
+  }
+  
+  .safari-password-fix:focus {
+    -webkit-text-fill-color: rgb(55, 65, 81) !important;
   }
 }

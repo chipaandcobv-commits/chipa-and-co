@@ -135,7 +135,7 @@ export default function LoginPage() {
                   placeholder="Tu contraseña"
                   error={errors.password}
                   required
-                  className="pr-12 placeholder:text-gray-400 text-gray-700"
+                  className="pr-12 placeholder:text-gray-400 text-gray-700 safari-password-fix"
                   autoComplete="current-password"
                   style={{ 
                     fontSize: '16px',
