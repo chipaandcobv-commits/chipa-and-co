@@ -253,78 +253,71 @@ export default function AdminDashboard() {
 
         {/* Quick Actions */}
         <div className="mt-6 sm:mt-8 relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-4 sm:p-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
-          <h2 className="text-base sm:text-lg font-semibold text-[#F15A25] mb-4">
+          <h2 className="text-lg font-semibold text-[#F15A25] mb-6">
             Acciones Rápidas
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             <Link href="/admin/users">
-              <Button
-                variant="outline"
-                className="w-full h-16 sm:h-20 flex flex-col items-center justify-center bg-white hover:bg-[#FCE6D5] border-[#F15A25] text-[#F15A25] hover:text-[#F15A25]"
-              >
-                <div className="text-xl sm:text-2xl mb-1">👥</div>
-                <span className="text-xs sm:text-sm">Usuarios</span>
-              </Button>
+              <div className="relative rounded-xl bg-white shadow-[0_2px_4px_rgba(0,0,0,0.1)] border border-white/50 p-4 hover:shadow-[0_4px_8px_rgba(0,0,0,0.15)] hover:bg-[#FCE6D5] transition-all duration-300 group cursor-pointer">
+                <div className="flex flex-col items-center justify-center h-20">
+                  <div className="text-2xl mb-2 group-hover:scale-110 transition-transform duration-300">👥</div>
+                  <span className="text-sm font-medium text-gray-700 group-hover:text-[#F15A25] transition-colors duration-300">Usuarios</span>
+                </div>
+              </div>
             </Link>
 
             <Link href="/admin/orders">
-              <Button
-                variant="outline"
-                className="w-full h-16 sm:h-20 flex flex-col items-center justify-center bg-white hover:bg-[#FCE6D5] border-[#F15A25] text-[#F15A25] hover:text-[#F15A25]"
-              >
-                <div className="text-xl sm:text-2xl mb-1">🛒</div>
-                <span className="text-xs sm:text-sm">Crear Órdenes</span>
-              </Button>
+              <div className="relative rounded-xl bg-white shadow-[0_2px_4px_rgba(0,0,0,0.1)] border border-white/50 p-4 hover:shadow-[0_4px_8px_rgba(0,0,0,0.15)] hover:bg-[#FCE6D5] transition-all duration-300 group cursor-pointer">
+                <div className="flex flex-col items-center justify-center h-20">
+                  <div className="text-2xl mb-2 group-hover:scale-110 transition-transform duration-300">🛒</div>
+                  <span className="text-sm font-medium text-gray-700 group-hover:text-[#F15A25] transition-colors duration-300">Crear Órdenes</span>
+                </div>
+              </div>
             </Link>
 
             <Link href="/admin/products">
-              <Button
-                variant="outline"
-                className="w-full h-16 sm:h-20 flex flex-col items-center justify-center bg-white hover:bg-[#FCE6D5] border-[#F15A25] text-[#F15A25] hover:text-[#F15A25]"
-              >
-                <div className="text-xl sm:text-2xl mb-1">📦</div>
-                <span className="text-xs sm:text-sm">Gestionar Productos</span>
-              </Button>
+              <div className="relative rounded-xl bg-white shadow-[0_2px_4px_rgba(0,0,0,0.1)] border border-white/50 p-4 hover:shadow-[0_4px_8px_rgba(0,0,0,0.15)] hover:bg-[#FCE6D5] transition-all duration-300 group cursor-pointer">
+                <div className="flex flex-col items-center justify-center h-20">
+                  <div className="text-2xl mb-2 group-hover:scale-110 transition-transform duration-300">📦</div>
+                  <span className="text-sm font-medium text-gray-700 group-hover:text-[#F15A25] transition-colors duration-300">Gestionar Productos</span>
+                </div>
+              </div>
             </Link>
 
             <Link href="/admin/rewards">
-              <Button
-                variant="outline"
-                className="w-full h-16 sm:h-20 flex flex-col items-center justify-center bg-white hover:bg-[#FCE6D5] border-[#F15A25] text-[#F15A25] hover:text-[#F15A25]"
-              >
-                <div className="text-xl sm:text-2xl mb-1">🎁</div>
-                <span className="text-xs sm:text-sm">Gestionar Premios</span>
-              </Button>
+              <div className="relative rounded-xl bg-white shadow-[0_2px_4px_rgba(0,0,0,0.1)] border border-white/50 p-4 hover:shadow-[0_4px_8px_rgba(0,0,0,0.15)] hover:bg-[#FCE6D5] transition-all duration-300 group cursor-pointer">
+                <div className="flex flex-col items-center justify-center h-20">
+                  <div className="text-2xl mb-2 group-hover:scale-110 transition-transform duration-300">🎁</div>
+                  <span className="text-sm font-medium text-gray-700 group-hover:text-[#F15A25] transition-colors duration-300">Gestionar Premios</span>
+                </div>
+              </div>
             </Link>
 
             <Link href="/admin/ranking">
-              <Button
-                variant="outline"
-                className="w-full h-16 sm:h-20 flex flex-col items-center justify-center bg-white hover:bg-[#FCE6D5] border-[#F15A25] text-[#F15A25] hover:text-[#F15A25]"
-              >
-                <div className="text-xl sm:text-2xl mb-1">🏆</div>
-                <span className="text-xs sm:text-sm">Ranking</span>
-              </Button>
+              <div className="relative rounded-xl bg-white shadow-[0_2px_4px_rgba(0,0,0,0.1)] border border-white/50 p-4 hover:shadow-[0_4px_8px_rgba(0,0,0,0.15)] hover:bg-[#FCE6D5] transition-all duration-300 group cursor-pointer">
+                <div className="flex flex-col items-center justify-center h-20">
+                  <div className="text-2xl mb-2 group-hover:scale-110 transition-transform duration-300">🏆</div>
+                  <span className="text-sm font-medium text-gray-700 group-hover:text-[#F15A25] transition-colors duration-300">Ranking</span>
+                </div>
+              </div>
             </Link>
 
             <Link href="/admin/validate">
-              <Button
-                variant="outline"
-                className="w-full h-16 sm:h-20 flex flex-col items-center justify-center bg-white hover:bg-[#FCE6D5] border-[#F15A25] text-[#F15A25] hover:text-[#F15A25]"
-              >
-                <div className="text-xl sm:text-2xl mb-1">✅</div>
-                <span className="text-xs sm:text-sm">Validar Premios</span>
-              </Button>
+              <div className="relative rounded-xl bg-white shadow-[0_2px_4px_rgba(0,0,0,0.1)] border border-white/50 p-4 hover:shadow-[0_4px_8px_rgba(0,0,0,0.15)] hover:bg-[#FCE6D5] transition-all duration-300 group cursor-pointer">
+                <div className="flex flex-col items-center justify-center h-20">
+                  <div className="text-2xl mb-2 group-hover:scale-110 transition-transform duration-300">✅</div>
+                  <span className="text-sm font-medium text-gray-700 group-hover:text-[#F15A25] transition-colors duration-300">Validar Premios</span>
+                </div>
+              </div>
             </Link>
 
             <Link href="/admin/config">
-              <Button
-                variant="outline"
-                className="w-full h-16 sm:h-20 flex flex-col items-center justify-center bg-white hover:bg-[#FCE6D5] border-[#F15A25] text-[#F15A25] hover:text-[#F15A25]"
-              >
-                <div className="text-xl sm:text-2xl mb-1">⚙️</div>
-                <span className="text-xs sm:text-sm">Configuración</span>
-              </Button>
+              <div className="relative rounded-xl bg-white shadow-[0_2px_4px_rgba(0,0,0,0.1)] border border-white/50 p-4 hover:shadow-[0_4px_8px_rgba(0,0,0,0.15)] hover:bg-[#FCE6D5] transition-all duration-300 group cursor-pointer">
+                <div className="flex flex-col items-center justify-center h-20">
+                  <div className="text-2xl mb-2 group-hover:scale-110 transition-transform duration-300">⚙️</div>
+                  <span className="text-sm font-medium text-gray-700 group-hover:text-[#F15A25] transition-colors duration-300">Configuración</span>
+                </div>
+              </div>
             </Link>
           </div>
         </div>

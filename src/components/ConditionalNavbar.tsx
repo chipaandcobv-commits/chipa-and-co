@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useAuth } from "@/lib/hooks/useAuth";
+import { useAuth } from "./AuthContext";
 import AuthHeader from "./Navbar";
 
 export default function ConditionalNavbar() {

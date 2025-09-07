@@ -36,7 +36,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const placeholderLeftClass = icon ? "left-12" : "left-4";
 
     // value puede ser '' o undefined; convertimos a string para la condición
-    const hasValue = String(value ?? "").length > 0;
+    const hasValue = value !== undefined && value !== null && String(value).length > 0;
 
     return (
       <div className="w-full">
@@ -64,11 +64,31 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           {isIOS && !hasValue && placeholder && (
             <span
               aria-hidden="true"
-              className={`absolute ${placeholderLeftClass} top-1/2 -translate-y-1/2 text-sm text-gray-400 pointer-events-none select-none z-0`}
-              style={{ pointerEvents: 'none', zIndex: 0 }}
+              className={`absolute ${placeholderLeftClass} top-1/2 -translate-y-1/2 text-sm text-gray-400 pointer-events-none select-none`}
+              style={{ 
+                pointerEvents: 'none', 
+                zIndex: 0,
+                color: '#9ca3af',
+                fontSize: '16px',
+                backgroundColor: 'rgba(255,0,0,0.1)' // Debug temporal
+              }}
             >
               {placeholder}
             </span>
+          )}
+          
+          {/* Debug temporal - mostrar info */}
+          {isIOS && (
+            <div style={{ 
+              position: 'absolute', 
+              top: '-20px', 
+              left: '0', 
+              fontSize: '10px', 
+              color: 'red',
+              zIndex: 1000
+            }}>
+              iOS: {isIOS ? 'YES' : 'NO'} | hasValue: {hasValue ? 'YES' : 'NO'} | placeholder: {placeholder || 'NO'}
+            </div>
           )}
 
           {rightIcon && (
