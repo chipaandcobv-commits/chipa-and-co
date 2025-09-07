@@ -92,7 +92,7 @@ export default function ClientePage() {
 
             {/* Badge de puntos centrado abajo */}
             <div className="absolute left-0 bottom-0 w-full flex justify-center pb-3">
-              <span className="inline-flex items-center justify-center rounded-full bg-[#F15A25] px-6 py-1 text-[15px] font-extrabold text-white shadow w-[80%]">
+              <span className="inline-flex items-center justify-center rounded-full bg-[#F15A25] px-6 py-1 text-[15px] text-white shadow w-[80%] font-dela-gothic">
                 {reward.pointsCost.toLocaleString("es-AR")} pts
               </span>
             </div>
@@ -197,11 +197,11 @@ export default function ClientePage() {
             <div className="flex items-center justify-between p-5">
               <div>
                 <div className="flex items-end gap-2 leading-none">
-                  <span className="text-4xl font-black tracking-tight">
+                  <span className="text-4xl font-dela-gothic tracking-tight text-[#FFF5E8]">
                     {userPoints.toLocaleString("es-AR")}
                   </span>
                 </div>
-                <div className="uppercase text-white/90 tracking-wide font-semibold text-[15px] mt-1">
+                <div className="text-[#FFF5E8] font-dela-gothic text-[20px] font-normal leading-[140%] tracking-[-0.4px] mt-1">
                   puntos
                 </div>
               </div>

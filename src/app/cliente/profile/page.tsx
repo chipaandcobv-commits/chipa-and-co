@@ -253,6 +253,10 @@ export default function ProfilePage() {
                   <span className="text-sm font-medium text-gray-600">Email:</span>
                   <p className="text-lg text-neutral-800">{user.email}</p>
                 </div>
+                <div>
+                  <span className="text-sm font-medium text-gray-600">DNI:</span>
+                  <p className="text-lg text-neutral-800">{user.dni}</p>
+                </div>
               </div>
             )}
           </div>

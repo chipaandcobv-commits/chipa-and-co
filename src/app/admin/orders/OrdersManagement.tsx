@@ -321,9 +321,9 @@ export default function OrdersManagement() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Create Order */}
-          <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
+          <div className="lg:col-span-1 relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-semibold text-[#F15A25]">
                 Crear Orden
@@ -474,7 +474,7 @@ export default function OrdersManagement() {
           </div>
 
           {/* Orders List */}
-          <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
+          <div className="lg:col-span-2 relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-semibold text-[#F15A25]">
                 Órdenes Recientes
@@ -515,7 +515,7 @@ export default function OrdersManagement() {
               </div>
             )}
 
-            <div className="space-y-4 max-h-96 overflow-y-auto">
+            <div className="space-y-4 max-h-[600px] overflow-y-auto">
               {orders.map((order) => (
                 <div
                   key={order.id}

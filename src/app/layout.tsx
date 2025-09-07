@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Urbanist } from "next/font/google";
+import { Geist, Geist_Mono, Urbanist, Dela_Gothic_One } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/AuthContext";
 import ConditionalNavbar from "@/components/ConditionalNavbar";
@@ -19,6 +19,12 @@ const urbanist = Urbanist({
   subsets: ["latin"],
 });
 
+const delaGothicOne = Dela_Gothic_One({
+  variable: "--dela-gothic-one",
+  subsets: ["latin"],
+  weight: "400",
+});
+
 export const metadata: Metadata = {
   title: "Chipa&Co - Sistema de Fidelización",
   description: "Sistema de fidelización de Chipa&Co - Gana puntos y canjea premios",
@@ -32,7 +38,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${urbanist.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${urbanist.variable} ${delaGothicOne.variable} antialiased`}
       >
         <AuthProvider>
           <ConditionalNavbar />
