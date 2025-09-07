@@ -120,8 +120,7 @@ export default function LoginPage() {
               required
               className="placeholder:text-gray-400 text-gray-700"
               style={{ 
-                fontSize: '16px',
-                borderRadius: '8px'
+                fontSize: '16px'
               }}
             />
 
@@ -135,12 +134,10 @@ export default function LoginPage() {
                   placeholder="Tu contraseña"
                   error={errors.password}
                   required
-                  className="pr-12 placeholder:text-gray-400 text-gray-700 safari-password-fix"
+                  className="pr-12 placeholder:text-gray-400 text-gray-700"
                   autoComplete="current-password"
                   style={{ 
-                    fontSize: '16px',
-                    WebkitAppearance: 'none',
-                    borderRadius: '8px'
+                    fontSize: '16px'
                   }}
                 />
                 <button

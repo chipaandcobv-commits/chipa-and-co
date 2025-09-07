@@ -43,39 +43,34 @@ input[type="password"] {
   font-family: var(--urbanist), sans-serif;
 }
 
-/* Fix específico para Safari/iOS - placeholder visible */
+/* Fixes para placeholders en iOS (Safari/Chrome en iPhone/iPad) */
+
+/* Forzar placeholder visible en WebKit iOS */
 @supports (-webkit-touch-callout: none) {
-  input::placeholder {
-    color: rgb(156, 163, 175) !important;
-    opacity: 1 !important;
-    -webkit-text-fill-color: initial !important;
-  }
-  
-  input[type="password"] {
-    -webkit-text-fill-color: transparent !important;
-  }
-  
-  input[type="password"]::placeholder {
-    -webkit-text-fill-color: rgb(156, 163, 175) !important;
-    color: rgb(156, 163, 175) !important;
+  input::placeholder,
+  input::-webkit-input-placeholder,
+  input:-ms-input-placeholder {
+    color: #9ca3af !important; /* gray-400-ish */
     opacity: 1 !important;
   }
-  
-  input[type="password"]:focus {
-    -webkit-text-fill-color: rgb(55, 65, 81) !important;
+
+  /* Deshacer text-fill en password (causa típica del bug) */
+  input[type="password"],
+  input[type="password"]:-webkit-autofill {
+    -webkit-text-fill-color: unset !important;
+    -webkit-appearance: none !important;
   }
-  
-  .safari-password-fix {
-    -webkit-text-fill-color: transparent !important;
+
+  /* Clase auxiliar: oculta el placeholder nativo SOLO en iOS
+     (la usamos si renderizamos un overlay de placeholder) */
+  .ios-hide-placeholder::placeholder {
+    color: transparent !important;
+    opacity: 0 !important;
   }
-  
-  .safari-password-fix::placeholder {
-    -webkit-text-fill-color: rgb(156, 163, 175) !important;
-    color: rgb(156, 163, 175) !important;
-    opacity: 1 !important;
-  }
-  
-  .safari-password-fix:focus {
-    -webkit-text-fill-color: rgb(55, 65, 81) !important;
-  }
+}
+
+/* Autofill - forzar color legible si Chrome/Safari autofill */
+input:-webkit-autofill {
+  -webkit-text-fill-color: #374151 !important; /* gray-700 */
+  transition: background-color 5000s ease-in-out 0s;
 }

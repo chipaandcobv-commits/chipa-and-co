@@ -1,4 +1,6 @@
-import { InputHTMLAttributes, forwardRef } from "react";
+"use client";
+import React, { forwardRef, useEffect, useState } from "react";
+import type { InputHTMLAttributes } from "react";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -8,17 +10,32 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, icon, rightIcon, className = "", ...props }, ref) => {
+  ({ label, error, icon, rightIcon, className = "", placeholder, value, ...props }, ref) => {
+    const [isIOS, setIsIOS] = useState(false);
+
+    useEffect(() => {
+      if (typeof navigator === "undefined") return;
+      const ua = navigator.userAgent || navigator.vendor || "";
+      const iOS = /iP(hone|od|ad)/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      setIsIOS(iOS);
+    }, []);
+
     const inputClasses = `
-    w-full px-4 py-3 text-gray-900 bg-[#FFE4CC] border border-gray-400 rounded-lg
-    focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent
-    transition-all duration-200
-    min-h-[48px] h-[48px] text-base
-    ${error ? "border-red-500 focus:ring-red-500" : ""}
-    ${icon ? "pl-12" : "pl-4"}
-    ${rightIcon ? "pr-12" : "pr-4"}
-    ${className}
-  `;
+      w-full px-4 py-3 text-gray-900 bg-[#FFE4CC] border border-gray-400 rounded-lg
+      focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent
+      transition-all duration-200
+      min-h-[48px] h-[48px] text-base
+      ${error ? "border-red-500 focus:ring-red-500" : ""}
+      ${icon ? "pl-12" : "pl-4"}
+      ${rightIcon ? "pr-12" : "pr-4"}
+      ${className}
+      ${isIOS ? " ios-hide-placeholder" : ""}
+    `;
+
+    const placeholderLeftClass = icon ? "left-12" : "left-4";
+
+    // value puede ser '' o undefined; convertimos a string para la condición
+    const hasValue = String(value ?? "").length > 0;
 
     return (
       <div className="w-full">
@@ -33,17 +50,32 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               {icon}
             </div>
           )}
-          <input 
-            ref={ref} 
-            className={inputClasses} 
-            {...props} 
+
+          <input
+            ref={ref}
+            placeholder={placeholder}
+            value={value}
+            {...props}
+            className={inputClasses}
           />
+
+          {/* Overlay placeholder solo en iOS (evita el bug nativo) */}
+          {isIOS && !hasValue && placeholder && (
+            <span
+              aria-hidden="true"
+              className={`absolute ${placeholderLeftClass} top-1/2 -translate-y-1/2 text-sm text-gray-400 pointer-events-none select-none`}
+            >
+              {placeholder}
+            </span>
+          )}
+
           {rightIcon && (
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
               {rightIcon}
             </div>
           )}
         </div>
+
         {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
       </div>
     );

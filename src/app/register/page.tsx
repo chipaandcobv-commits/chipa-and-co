@@ -126,8 +126,7 @@ export default function RegisterPage() {
               required
               className="placeholder:text-gray-400 text-gray-700"
               style={{ 
-                fontSize: '16px',
-                borderRadius: '8px'
+                fontSize: '16px'
               }}
             />
 
@@ -143,8 +142,7 @@ export default function RegisterPage() {
               required
               className="placeholder:text-gray-400 text-gray-700"
               style={{ 
-                fontSize: '16px',
-                borderRadius: '8px'
+                fontSize: '16px'
               }}
             />
 
@@ -160,8 +158,7 @@ export default function RegisterPage() {
               required
               className="placeholder:text-gray-400 text-gray-700"
               style={{ 
-                fontSize: '16px',
-                borderRadius: '8px'
+                fontSize: '16px'
               }}
             />
 
@@ -178,7 +175,7 @@ export default function RegisterPage() {
                   placeholder="Mínimo 8 caracteres"
                   error={errors.password}
                   required
-                  className="pr-12 placeholder:text-gray-400 text-gray-700 safari-password-fix"
+                  className="pr-12 placeholder:text-gray-400 text-gray-700"
                   autoComplete="new-password"
                   style={{ 
                     fontSize: '16px',
@@ -210,7 +207,7 @@ export default function RegisterPage() {
                   placeholder="Repite tu contraseña"
                   error={errors.confirmPassword}
                   required
-                  className="pr-12 placeholder:text-gray-400 text-gray-700 safari-password-fix"
+                  className="pr-12 placeholder:text-gray-400 text-gray-700"
                   autoComplete="new-password"
                   style={{ 
                     fontSize: '16px',
