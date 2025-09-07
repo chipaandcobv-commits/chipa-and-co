@@ -53,46 +53,33 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
           <input
             ref={ref}
-            placeholder={placeholder}
+            id={props.name} // ⚡ necesario en iOS
+            autoComplete={props.type === "password" ? "current-password" : props.type === "email" ? "email" : "on"}
+            placeholder={placeholder} // siempre presente
             value={value}
             {...props}
             className={inputClasses}
-            style={{ 
-              position: 'relative',
-              zIndex: 10,
-              ...props.style 
+            style={{
+              position: "relative",
+              // ⚡ quitamos zIndex alto, dejamos que el span se vea encima
+              ...props.style,
             }}
           />
 
-          {/* Overlay placeholder solo en iOS (evita el bug nativo) */}
+          {/* Overlay placeholder solo en iOS */}
           {isIOS && !hasValue && placeholder && (
             <span
               aria-hidden="true"
-              className={`absolute ${placeholderLeftClass} top-1/2 -translate-y-1/2 text-sm text-gray-400 pointer-events-none select-none`}
+              className={`absolute ${placeholderLeftClass} top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none select-none`}
               style={{
-                color: '#9ca3af',
-                fontSize: '16px',
-                backgroundColor: 'rgba(255,0,0,0.2)', // Debug temporal
-                border: '1px solid red' // Debug temporal
+                zIndex: 20, // ⚡ por encima del input
+                fontSize: "16px",
+                color: "#9ca3af",
               }}
             >
               {placeholder}
             </span>
           )}
-          
-          {/* Debug temporal */}
-          <div style={{
-            position: 'absolute',
-            top: '-25px',
-            left: '0',
-            fontSize: '10px',
-            color: 'red',
-            zIndex: 1000,
-            backgroundColor: 'yellow',
-            padding: '2px'
-          }}>
-            iOS: {isIOS ? 'YES' : 'NO'} | hasValue: {hasValue ? 'YES' : 'NO'} | placeholder: {placeholder || 'NO'}
-          </div>
 
           {rightIcon && (
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
