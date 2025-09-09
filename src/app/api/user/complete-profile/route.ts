@@ -20,17 +20,17 @@ export async function POST(request: NextRequest) {
 
     const { dni, password, confirmPassword } = await request.json();
 
-    // Validaciones
+    // Validaciones OBLIGATORIAS - No se puede continuar sin estos datos
     const errors: Record<string, string> = {};
 
     if (!dni || dni.trim().length === 0) {
-      errors.dni = "El DNI es requerido";
+      errors.dni = "El DNI es OBLIGATORIO y no puede estar vacío";
     } else if (!/^\d{7,8}$/.test(dni.trim())) {
       errors.dni = "El DNI debe tener entre 7 y 8 dígitos";
     }
 
     if (!password || password.trim().length === 0) {
-      errors.password = "La contraseña es requerida";
+      errors.password = "La contraseña es OBLIGATORIA y no puede estar vacía";
     } else if (password.length < 6) {
       errors.password = "La contraseña debe tener al menos 6 caracteres";
     }

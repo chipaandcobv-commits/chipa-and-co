@@ -43,10 +43,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Si el usuario necesita completar perfil, no generar token
+    // OBLIGATORIO: Si el usuario necesita completar perfil, no generar token
     if (user.needsProfileCompletion) {
       return NextResponse.json(
-        { success: false, error: "Perfil incompleto" },
+        { success: false, error: "Perfil incompleto - Debe completar DNI y contraseña obligatoriamente" },
+        { status: 400 }
+      );
+    }
+
+    // Verificar que el usuario tenga DNI (campo obligatorio)
+    if (!user.dni || user.dni.trim().length === 0) {
+      return NextResponse.json(
+        { success: false, error: "DNI es obligatorio - Debe completar su perfil" },
         { status: 400 }
       );
     }

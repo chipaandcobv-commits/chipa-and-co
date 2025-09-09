@@ -52,12 +52,12 @@ export const authOptions: NextAuthOptions = {
       // Redirigir a la página de callback para manejar el flujo de Google
       return `${baseUrl}/auth-callback`;
     },
-    async jwt({ token, user, account }) {
-      // Si es la primera vez que se crea el token (después del login)
-      if (user) {
+    async jwt({ token, user, account, trigger }) {
+      // Si es la primera vez que se crea el token (después del login) o si se está actualizando
+      if (user || trigger === "update") {
         // Buscar el usuario en nuestra base de datos
         const dbUser = await prisma.user.findUnique({
-          where: { email: user.email! },
+          where: { email: token.email! },
           select: {
             id: true,
             name: true,
@@ -112,7 +112,7 @@ export const authOptions: NextAuthOptions = {
           where: { email: user.email },
           data: {
             isGoogleUser: true,
-            needsProfileCompletion: true, // Necesita completar DNI
+            needsProfileCompletion: true, // OBLIGATORIO: Necesita completar DNI y contraseña
             image: user.image,
             emailVerified: new Date(),
           },

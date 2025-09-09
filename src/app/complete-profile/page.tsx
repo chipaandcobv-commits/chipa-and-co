@@ -72,6 +72,13 @@ export default function CompleteProfilePage() {
           router.replace(target);
           return;
         }
+
+        // Si el usuario necesita completar perfil, permitir que permanezca en esta página
+        if (session.user && session.user.needsProfileCompletion) {
+          // El usuario está en la página correcta para completar su perfil
+          console.log("User is on the correct page to complete profile");
+          return;
+        }
       } catch (error) {
         console.error("Error checking user existence:", error);
         // En caso de error, continuar con el flujo normal
@@ -136,8 +143,9 @@ export default function CompleteProfilePage() {
             // Guardar el token JWT en las cookies
             document.cookie = `auth-token=${tokenData.token}; path=/; max-age=86400; secure; samesite=strict`;
             
-            // Recargar la página para actualizar la sesión
-            window.location.href = data.user.role === "ADMIN" ? "/admin" : "/cliente";
+            // Redirigir según el rol - usar window.location.replace para evitar problemas de navegación
+            const target = data.user.role === "ADMIN" ? "/admin" : "/cliente";
+            window.location.replace(target);
           } else {
             setErrors({ general: "Error al generar token de acceso" });
           }
@@ -200,9 +208,6 @@ export default function CompleteProfilePage() {
             />
           </div>
           <h2 className="text-3xl font-bold text-black">Completar Perfil</h2>
-          <p className="mt-2 text-sm text-gray-600">
-            ¡Hola {session.user?.name}! Necesitamos algunos datos adicionales para completar tu registro.
-          </p>
         </div>
 
         {/* Form */}
@@ -215,13 +220,6 @@ export default function CompleteProfilePage() {
             )}
 
             <div className="text-center mb-6">
-              {session.user?.image && (
-                <img
-                  src={session.user.image}
-                  alt="Avatar"
-                  className="w-16 h-16 rounded-full mx-auto mb-2"
-                />
-              )}
               <p className="text-sm text-gray-600">
                 <strong>Email:</strong> {session.user?.email}
               </p>

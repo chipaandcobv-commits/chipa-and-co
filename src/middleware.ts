@@ -137,6 +137,9 @@ export async function middleware(request: NextRequest) {
         try {
           user = await verifyToken(token);
           if (user) {
+            // Verificar si el usuario necesita completar perfil (para tokens JWT existentes)
+            // Nota: Los tokens JWT solo se generan después de completar el perfil,
+            // pero mantenemos esta verificación por seguridad
             authMethod = "jwt";
           }
         } catch (error) {
@@ -164,6 +167,13 @@ export async function middleware(request: NextRequest) {
           }
           
           if (nextAuthToken && nextAuthToken.email) {
+            // Verificar si el usuario necesita completar perfil
+            if (nextAuthToken.needsProfileCompletion) {
+              // OBLIGATORIO: Redirigir a completar perfil si faltan datos
+              console.log("🔄 [MIDDLEWARE DEBUG] User needs profile completion, redirecting...");
+              return NextResponse.redirect(new URL("/complete-profile", request.url));
+            }
+            
             // Crear objeto user compatible con el formato JWT
             user = {
               userId: nextAuthToken.sub || nextAuthToken.id,

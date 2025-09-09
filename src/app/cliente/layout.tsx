@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ProfileCompletionGuard from "../../components/ProfileCompletionGuard";
 
 export const metadata: Metadata = {
   title: "Chipa&Co - Cliente",
@@ -11,8 +12,10 @@ export default function ClienteLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="cliente-layout">
-      {children}
-    </div>
+    <ProfileCompletionGuard>
+      <div className="cliente-layout">
+        {children}
+      </div>
+    </ProfileCompletionGuard>
   );
 }
