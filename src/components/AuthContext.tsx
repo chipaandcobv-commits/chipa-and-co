@@ -35,7 +35,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       if (!silent) setLoading(true);
       
-      console.log("🔍 [AUTH DEBUG] Checking authentication...");
+      if (process.env.NODE_ENV === 'development') {
+        console.log("🔍 [AUTH DEBUG] Checking authentication...");
+      }
       
       // Intentar con NextAuth.js primero
       try {
@@ -43,7 +45,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (response.ok) {
           const data = await response.json();
           if (data.success) {
-            console.log("✅ [AUTH DEBUG] NextAuth user found:", data.user);
+            if (process.env.NODE_ENV === 'development') {
+              console.log("✅ [AUTH DEBUG] NextAuth user found:", data.user);
+            }
             setUser(data.user);
             return;
           }
@@ -58,7 +62,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (response.ok) {
           const data = await response.json();
           if (data.success) {
-            console.log("✅ [AUTH DEBUG] JWT user found:", data.user);
+            if (process.env.NODE_ENV === 'development') {
+              console.log("✅ [AUTH DEBUG] JWT user found:", data.user);
+            }
             setUser(data.user);
             return;
           }
@@ -68,7 +74,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       
       // Si ambos fallan, usuario no autenticado
-      console.log("🔍 [AUTH DEBUG] No user found");
+      if (process.env.NODE_ENV === 'development') {
+        console.log("🔍 [AUTH DEBUG] No user found");
+      }
       setUser(null);
       
     } catch (error) {

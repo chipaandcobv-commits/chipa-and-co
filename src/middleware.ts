@@ -5,13 +5,13 @@ import { securityLogger, SecurityEventType } from "./lib/securityLogger";
 import { getToken } from "next-auth/jwt";
 
 // Rutas que requieren autenticación
-const protectedRoutes = ["/dashboard", "/admin", "/rewards", "/ranking", "/history", "/profile", "/cliente"];
+const protectedRoutes = ["/dashboard", "/admin", "/ranking", "/profile", "/cliente"];
 
 // Rutas específicas para administradores
 const adminOnlyRoutes = ["/admin"];
 
 // Rutas específicas para usuarios normales (redirigir al cliente)
-const userRoutes = ["/dashboard", "/rewards", "/ranking", "/history", "/profile"];
+const userRoutes = ["/dashboard", "/ranking", "/profile"];
 
 // Rutas que redirigen al dashboard si el usuario ya está autenticado
 const authRoutes = ["/login", "/register"];
@@ -107,9 +107,11 @@ export async function middleware(request: NextRequest) {
     // 4. AUTENTICACIÓN Y AUTORIZACIÓN
     const token = request.cookies.get("auth-token")?.value;
     
-    // Debug: mostrar todas las cookies disponibles
-    console.log("🍪 [MIDDLEWARE DEBUG] All cookies:", request.cookies.getAll().map(c => `${c.name}=${c.value.substring(0, 20)}...`));
-    console.log("🍪 [MIDDLEWARE DEBUG] JWT token:", token ? "Found" : "Not found");
+    // Debug: mostrar todas las cookies disponibles (solo en desarrollo)
+    if (process.env.NODE_ENV === 'development') {
+      console.log("🍪 [MIDDLEWARE DEBUG] All cookies:", request.cookies.getAll().map(c => `${c.name}=${c.value.substring(0, 20)}...`));
+      console.log("🍪 [MIDDLEWARE DEBUG] JWT token:", token ? "Found" : "Not found");
+    }
     
     // Verificar si la ruta requiere autenticación
     const isProtectedRoute = protectedRoutes.some((route) =>
@@ -150,27 +152,33 @@ export async function middleware(request: NextRequest) {
       // Si no hay JWT válido, verificar NextAuth.js
       if (!user) {
         try {
-          console.log("🔍 [MIDDLEWARE DEBUG] Checking NextAuth.js token...");
+          if (process.env.NODE_ENV === 'development') {
+            console.log("🔍 [MIDDLEWARE DEBUG] Checking NextAuth.js token...");
+          }
           const nextAuthToken = await getToken({ 
             req: request, 
             secret: process.env.NEXTAUTH_SECRET 
           });
           
-          console.log("🔍 [MIDDLEWARE DEBUG] NextAuth token:", nextAuthToken ? "Found" : "Not found");
-          if (nextAuthToken) {
-            console.log("🔍 [MIDDLEWARE DEBUG] Token details:", {
-              email: nextAuthToken.email,
-              sub: nextAuthToken.sub,
-              id: nextAuthToken.id,
-              role: nextAuthToken.role
-            });
+          if (process.env.NODE_ENV === 'development') {
+            console.log("🔍 [MIDDLEWARE DEBUG] NextAuth token:", nextAuthToken ? "Found" : "Not found");
+            if (nextAuthToken) {
+              console.log("🔍 [MIDDLEWARE DEBUG] Token details:", {
+                email: nextAuthToken.email,
+                sub: nextAuthToken.sub,
+                id: nextAuthToken.id,
+                role: nextAuthToken.role
+              });
+            }
           }
           
           if (nextAuthToken && nextAuthToken.email) {
             // Verificar si el usuario necesita completar perfil
             if (nextAuthToken.needsProfileCompletion) {
               // OBLIGATORIO: Redirigir a completar perfil si faltan datos
-              console.log("🔄 [MIDDLEWARE DEBUG] User needs profile completion, redirecting...");
+              if (process.env.NODE_ENV === 'development') {
+                console.log("🔄 [MIDDLEWARE DEBUG] User needs profile completion, redirecting...");
+              }
               return NextResponse.redirect(new URL("/complete-profile", request.url));
             }
             
@@ -183,10 +191,14 @@ export async function middleware(request: NextRequest) {
               name: nextAuthToken.name
             };
             authMethod = "nextauth";
-            console.log("✅ [MIDDLEWARE DEBUG] NextAuth user created:", user);
+            if (process.env.NODE_ENV === 'development') {
+              console.log("✅ [MIDDLEWARE DEBUG] NextAuth user created:", user);
+            }
           }
         } catch (error) {
-          console.log("❌ [MIDDLEWARE DEBUG] NextAuth error:", error);
+          if (process.env.NODE_ENV === 'development') {
+            console.log("❌ [MIDDLEWARE DEBUG] NextAuth error:", error);
+          }
         }
       }
       

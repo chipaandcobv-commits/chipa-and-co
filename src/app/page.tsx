@@ -212,7 +212,7 @@ export default function HomePage() {
                     Ranking
                   </Link>
                   <Link 
-                    href={user.role === "ADMIN" ? "/admin/orders" : "/history"} 
+                    href={user.role === "ADMIN" ? "/admin/orders" : "/cliente/rewards"} 
                     className="text-[#F15A25] hover:text-[#E55A1A] font-medium px-2 py-1 rounded-lg hover:bg-[#FCE6D5] transition-colors"
                   >
                     Historial

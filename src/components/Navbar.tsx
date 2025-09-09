@@ -256,7 +256,7 @@ export default function AuthHeader() {
 
                   {/* Premios (todos los usuarios) */}
                   {user.role !== "ADMIN" && (
-                    <Link href="/rewards" onClick={closeMobileMenu}>
+                    <Link href="/cliente/rewards" onClick={closeMobileMenu}>
                       <div className="block px-4 py-3 text-sm text-gray-700 hover:bg-[#FCE6D5] rounded-xl transition-all duration-300">
                         <Gift className="h-4 w-4 inline mr-2 text-red-500" />
                         Premios
