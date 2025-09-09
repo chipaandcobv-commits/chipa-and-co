@@ -19,9 +19,8 @@ export default function GoogleButton({
     try {
       if (onLoadingChange) onLoadingChange(true);
       
-      // Usar el endpoint de redirección personalizado
+      // Usar el callback estándar de NextAuth
       const result = await signIn("google", { 
-        callbackUrl: "/api/auth/google-redirect",
         redirect: true 
       });
       

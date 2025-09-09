@@ -49,9 +49,8 @@ export const authOptions: NextAuthOptions = {
       // Si la URL es del mismo dominio, permitirla
       else if (new URL(url).origin === baseUrl) return url;
       
-      // Si no hay URL específica, verificar el estado del usuario
-      // Esto se manejará en el middleware o en la página de destino
-      return `${baseUrl}/complete-profile`;
+      // Redirigir a la página de callback para manejar el flujo de Google
+      return `${baseUrl}/auth-callback`;
     },
     async jwt({ token, user, account }) {
       // Si es la primera vez que se crea el token (después del login)
