@@ -85,7 +85,12 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
     domains: [],
-    remotePatterns: [],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
+    ],
   },
 };
 ``

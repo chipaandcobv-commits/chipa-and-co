@@ -1,13 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { DashboardIcon, LogoutIcon } from "../../../components/icons/Icons";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
-import { DiamondIcon } from "lucide-react";
+import SimpleImageUpload from "@/components/ui/SimpleImageUpload";
 
 interface Reward {
   id: string;
@@ -29,6 +27,12 @@ interface RewardForm {
   pointsCost: number;
   stock: number | null;
   imageUrl: string;
+}
+
+interface UploadResponse {
+  success: boolean;
+  imageUrl?: string;
+  error?: string;
 }
 
 export default function RewardsManagement() {
@@ -88,6 +92,10 @@ export default function RewardsManagement() {
     });
     setEditingReward(reward);
     setShowForm(true);
+  };
+
+  const handleImageUploaded = (imageUrl: string) => {
+    setForm(prev => ({ ...prev, imageUrl }));
   };
 
   const handleSubmit = async () => {
@@ -268,13 +276,9 @@ export default function RewardsManagement() {
                     min="0"
                   />
 
-                  <Input
-                    label="URL de Imagen (opcional)"
-                    value={form.imageUrl}
-                    onChange={(e) =>
-                      setForm({ ...form, imageUrl: e.target.value })
-                    }
-                    placeholder="https://ejemplo.com/imagen.jpg"
+                  <SimpleImageUpload
+                    onImageUploaded={handleImageUploaded}
+                    currentImageUrl={form.imageUrl}
                   />
 
                   <div className="flex space-x-2">

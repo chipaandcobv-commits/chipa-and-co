@@ -7,6 +7,7 @@ import { useClaimReward } from "@/lib/hooks/useClaimReward";
 import { GiftCardIcon } from "@/components/icons/Icons";
 import RewardConfirmationModal from "@/components/RewardConfirmationModal";
 import BottomNavigation from "@/components/BottomNavigation";
+import { CldImage } from "next-cloudinary";
 
 export default function ClientePage() {
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -69,7 +70,7 @@ export default function ClientePage() {
 
   // Memoizar la sección de premios
   const rewardsSection = useMemo(() => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="grid grid-cols-2 gap-4">
       {rewards.map((reward) => (
         <div key={reward.id} className="">
           <div 
@@ -78,15 +79,37 @@ export default function ClientePage() {
           >
             {/* Imagen del premio */}
             {reward.imageUrl ? (
-              <img
-                src={reward.imageUrl}
-                alt={reward.name}
-                className="h-full w-full object-cover"
-                loading="lazy"
-              />
+              reward.imageUrl.startsWith('data:') ? (
+                <img
+                  src={reward.imageUrl}
+                  alt={reward.name}
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                  onError={() => {
+                    console.error('Error loading reward image:', reward.imageUrl);
+                  }}
+                />
+              ) : (
+                <CldImage
+                  src={reward.imageUrl}
+                  alt={reward.name}
+                  width={400}
+                  height={300}
+                  className="h-full w-full object-cover"
+                  crop="fill"
+                  gravity="auto"
+                  loading="lazy"
+                  onError={() => {
+                    console.error('Error loading reward image:', reward.imageUrl);
+                  }}
+                />
+              )
             ) : (
               <div className="h-full w-full flex items-center justify-center text-gray-400">
-                Sin imagen
+                <div className="text-center">
+                  <GiftCardIcon className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                  <p className="text-sm">Sin imagen</p>
+                </div>
               </div>
             )}
 
