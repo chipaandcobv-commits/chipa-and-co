@@ -3,7 +3,6 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { UserIcon, LogoutIcon, EyeIcon, EyeOffIcon } from "@/components/icons/Icons";
-import BottomNavigation from "@/components/BottomNavigation";
 
 export default function ProfilePage() {
   const { user, loading, logout, refetch } = useAuth();
@@ -44,7 +43,7 @@ export default function ProfilePage() {
     if (!message) return null;
     
     return (
-      <div className={`absolute top-4 left-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
+      <div className={`mb-4 p-4 rounded-lg shadow-lg ${
         message.type === "success" 
           ? "bg-green-500 text-white" 
           : "bg-red-500 text-white"
@@ -149,7 +148,6 @@ export default function ProfilePage() {
               <p className="mt-4 text-gray-600">Cargando perfil...</p>
             </div>
           </div>
-          <BottomNavigation />
         </div>
       </div>
     );
@@ -164,7 +162,6 @@ export default function ProfilePage() {
               <p className="text-gray-600">No se pudo cargar la información del usuario</p>
             </div>
           </div>
-          <BottomNavigation />
         </div>
       </div>
     );
@@ -394,9 +391,6 @@ export default function ProfilePage() {
             Cerrar Sesión
           </button>
         </section>
-
-        {/* Bottom Navigation */}
-        <BottomNavigation />
       </div>
     </div>
   );

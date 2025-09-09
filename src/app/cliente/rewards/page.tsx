@@ -3,7 +3,6 @@
 import { useUserClaims } from "@/lib/hooks/useUserClaims";
 import { useState } from "react";
 import { GiftCardIcon, CheckIcon, ClockIcon } from "@/components/icons/Icons";
-import BottomNavigation from "@/components/BottomNavigation";
 
 export default function RewardsPage() {
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -19,7 +18,6 @@ export default function RewardsPage() {
               <p className="mt-4 text-gray-600">Cargando premios canjeados...</p>
             </div>
           </div>
-          <BottomNavigation />
         </div>
       </div>
     );
@@ -41,20 +39,20 @@ export default function RewardsPage() {
 
         {/* Header */}
         <div className="px-4 pt-4">
-                     <div className="flex items-center gap-3 mb-4">
-             <GiftCardIcon className="w-8 h-8 text-[#F15A25]" />
-             <h1 className="text-[24px] font-extrabold text-[#F15A25]">Mis Premios Canjeados</h1>
-           </div>
+          <div className="flex items-center gap-3 mb-4">
+            <GiftCardIcon className="w-8 h-8 text-[#F15A25]" />
+            <h1 className="text-[24px] font-extrabold text-[#F15A25]">Mis Premios Canjeados</h1>
+          </div>
         </div>
 
         {/* Premios Canjeados */}
         <section className="px-4">
           {claims.length === 0 ? (
-                         <div className="text-center py-8">
-               <GiftCardIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-               <p className="text-gray-500 text-lg">Aún no has canjeado ningún premio</p>
-               <p className="text-gray-400 text-sm mt-2">¡Ve a la página principal para ver los premios disponibles!</p>
-             </div>
+            <div className="text-center py-8">
+              <GiftCardIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500 text-lg">Aún no has canjeado ningún premio</p>
+              <p className="text-gray-400 text-sm mt-2">¡Ve a la página principal para ver los premios disponibles!</p>
+            </div>
           ) : (
             <div className="space-y-4">
               {claims.map((claim) => (
@@ -93,9 +91,6 @@ export default function RewardsPage() {
             </div>
           )}
         </section>
-
-        {/* Bottom Navigation */}
-        <BottomNavigation />
       </div>
     </div>
   );

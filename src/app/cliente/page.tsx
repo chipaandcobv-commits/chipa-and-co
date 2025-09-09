@@ -6,7 +6,6 @@ import { useRewards } from "@/lib/hooks/useRewards";
 import { useClaimReward } from "@/lib/hooks/useClaimReward";
 import { GiftCardIcon } from "@/components/icons/Icons";
 import RewardConfirmationModal from "@/components/RewardConfirmationModal";
-import BottomNavigation from "@/components/BottomNavigation";
 import { CldImage } from "next-cloudinary";
 
 export default function ClientePage() {
@@ -156,7 +155,6 @@ export default function ClientePage() {
               <p className="mt-4 text-gray-600">Cargando...</p>
             </div>
           </div>
-          <BottomNavigation />
         </div>
       </div>
     );
@@ -186,7 +184,6 @@ export default function ClientePage() {
               </div>
             </div>
           </div>
-          <BottomNavigation />
         </div>
       </div>
     );
@@ -203,7 +200,6 @@ export default function ClientePage() {
               <p className="mt-4 text-gray-600">Cargando información del usuario...</p>
             </div>
           </div>
-          <BottomNavigation />
         </div>
       </div>
     );
@@ -271,9 +267,6 @@ export default function ClientePage() {
           </h3>
           {rewardsSection}
         </section>
-
-        {/* Bottom Navigation */}
-        <BottomNavigation />
 
         {/* Modal de confirmación */}
         <RewardConfirmationModal
