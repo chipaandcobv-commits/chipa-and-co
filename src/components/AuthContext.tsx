@@ -35,25 +35,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       if (!silent) setLoading(true);
       
-      // Primero intentar con NextAuth.js
-      let response = await fetch("/api/auth/me-nextauth");
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setUser(data.user);
-          return;
+      console.log("🔍 [AUTH DEBUG] Checking authentication...");
+      
+      // Intentar con NextAuth.js primero
+      try {
+        const response = await fetch("/api/auth/me-nextauth");
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            console.log("✅ [AUTH DEBUG] NextAuth user found:", data.user);
+            setUser(data.user);
+            return;
+          }
         }
+      } catch (nextAuthError) {
+        console.log("NextAuth check failed:", nextAuthError);
       }
       
-      // Si NextAuth falla, intentar con el sistema JWT existente
-      response = await fetch("/api/auth/me");
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data.success ? data.user : null);
-      } else {
-        setUser(null);
+      // Si NextAuth falla, intentar con JWT
+      try {
+        const response = await fetch("/api/auth/me");
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            console.log("✅ [AUTH DEBUG] JWT user found:", data.user);
+            setUser(data.user);
+            return;
+          }
+        }
+      } catch (jwtError) {
+        console.log("JWT check failed:", jwtError);
       }
-    } catch {
+      
+      // Si ambos fallan, usuario no autenticado
+      console.log("🔍 [AUTH DEBUG] No user found");
+      setUser(null);
+      
+    } catch (error) {
+      console.log("Auth check error:", error);
       setUser(null);
     } finally {
       if (!silent) setLoading(false);
@@ -66,27 +85,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
       setLoading(false);
 
-      // Intentar cerrar sesión con NextAuth primero
+      // Usar el endpoint de logout mejorado que limpia todas las cookies
+      try {
+        const response = await fetch("/api/auth/logout", { 
+          method: "POST",
+          credentials: "include" // Incluir cookies en la petición
+        });
+        
+        if (!response.ok) {
+          console.log("Logout endpoint failed, trying NextAuth");
+        }
+      } catch (fetchError) {
+        console.log("Fetch logout failed:", fetchError);
+      }
+
+      // Intentar cerrar sesión con NextAuth como respaldo
       try {
         await signOut({ 
           redirect: false, // No redirigir automáticamente
           callbackUrl: "/login" 
         });
       } catch (nextAuthError) {
-        console.log("NextAuth signOut failed, trying custom logout:", nextAuthError);
-        
-        // Si NextAuth falla, intentar con JWT personalizado
-        try {
-          await fetch("/api/auth/logout", { method: "POST" });
-        } catch (jwtError) {
-          console.log("JWT logout also failed:", jwtError);
-        }
+        console.log("NextAuth signOut failed:", nextAuthError);
       }
+
+      // Limpiar cookies manualmente como último recurso
+      document.cookie = "auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      document.cookie = "next-auth.session-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      document.cookie = "next-auth.csrf-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      document.cookie = "next-auth.callback-url=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+
+      // Forzar recarga completa de la página para limpiar todo el estado
+      window.location.replace("/login");
+      
     } catch (error) {
       console.error("Error during logout:", error);
-      // Aún así limpiar el estado
+      // Aún así limpiar el estado y redirigir
       setUser(null);
       setLoading(false);
+      
+      // Limpiar cookies en caso de error
+      document.cookie = "auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      document.cookie = "next-auth.session-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      document.cookie = "next-auth.csrf-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      document.cookie = "next-auth.callback-url=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      
+      window.location.replace("/login");
     }
   };
 
@@ -99,6 +143,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     checkAuth({ silent: false }); // carga inicial
   }, []);
+
+  // No redirigir automáticamente - dejar que el middleware se encargue
+  // El middleware ya maneja la redirección para usuarios no autenticados
 
   return (
     <AuthContext.Provider

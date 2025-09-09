@@ -24,7 +24,7 @@ export default function AuthCallback() {
       if (session?.user?.email) {
         try {
           // Verificar el estado del usuario en la base de datos
-          const response = await fetch("/api/user/me-nextauth");
+          const response = await fetch("/api/auth/me-nextauth");
           const userData = await response.json();
 
           if (userData.success && userData.user) {

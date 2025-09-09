@@ -115,6 +115,7 @@ export const authOptions: NextAuthOptions = {
             needsProfileCompletion: true, // OBLIGATORIO: Necesita completar DNI y contraseña
             image: user.image,
             emailVerified: new Date(),
+            role: "USER", // Asegurar que los usuarios de Google sean USER por defecto
           },
         });
       }

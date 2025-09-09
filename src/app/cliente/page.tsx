@@ -162,14 +162,28 @@ export default function ClientePage() {
     );
   }
 
-  // Mostrar error si no hay usuario después de cargar
+  // Mostrar mensaje apropiado si no hay usuario después de cargar
   if (!user && !userLoading) {
     return (
       <div className="min-h-svh w-full bg-[#F7EFE7] text-gray-900 font-urbanist">
         <div className="mx-auto max-w-[480px] min-h-svh relative pb-28">
           <div className="flex items-center justify-center min-h-[calc(100vh-7rem)]">
             <div className="text-center">
-              <p className="text-gray-600">No se pudo cargar la información del usuario</p>
+              <div className="mb-4">
+                <div className="w-16 h-16 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center">
+                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+                <h2 className="text-xl font-semibold text-gray-800 mb-2">Sesión no encontrada</h2>
+                <p className="text-gray-600 mb-4">Por favor, inicia sesión para acceder a tu cuenta</p>
+                <button 
+                  onClick={() => window.location.href = '/login'}
+                  className="bg-[#F15A25] text-white px-6 py-2 rounded-lg hover:bg-[#FF6B35] transition-colors"
+                >
+                  Ir a Iniciar Sesión
+                </button>
+              </div>
             </div>
           </div>
           <BottomNavigation />
