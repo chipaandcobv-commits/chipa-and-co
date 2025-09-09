@@ -6,7 +6,7 @@ import Button from "./ui/Button";
 interface LogoutButtonProps {
   className?: string;
   children?: React.ReactNode;
-  variant?: "primary" | "outline" | "ghost";
+  variant?: "primary" | "secondary" | "outline";
   size?: "sm" | "md" | "lg";
 }
 

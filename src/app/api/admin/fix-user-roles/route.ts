@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     // Verificar que el usuario sea administrador
     const adminUser = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { role: true },
+      select: { id: true, role: true },
     });
 
     if (!adminUser || adminUser.role !== "ADMIN") {
