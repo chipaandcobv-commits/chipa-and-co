@@ -33,6 +33,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Verificar contraseña
+    if (!user.password) {
+      return NextResponse.json(
+        { success: false, errors: { email: "Credenciales inválidas" } },
+        { status: 401 }
+      );
+    }
+    
     const isValidPassword = await verifyPassword(password, user.password);
     if (!isValidPassword) {
       return NextResponse.json(
@@ -58,7 +65,7 @@ export async function POST(request: NextRequest) {
         id: user.id,
         name: user.name,
         email: user.email,
-        dni: user.dni,
+        dni: user.dni || null,
         puntos: user.puntos,
         puntosHistoricos: user.puntosHistoricos,
         role: user.role,

@@ -47,7 +47,7 @@ export async function GET() {
         id: user.id,
         name: user.name,
         email: user.email,
-        dni: user.dni,
+        dni: user.dni || null,
         puntosActuales: user.puntos,
         puntosHistoricos: user.puntosHistoricos,
         totalCompras: user._count.orders,

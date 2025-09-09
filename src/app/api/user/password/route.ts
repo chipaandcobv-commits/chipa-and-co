@@ -46,6 +46,13 @@ export async function PUT(request: NextRequest) {
     }
 
     // Verificar contraseña actual
+    if (!user.password) {
+      return NextResponse.json(
+        { success: false, error: "Usuario no encontrado" },
+        { status: 404 }
+      );
+    }
+    
     const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
 
     if (!isCurrentPasswordValid) {

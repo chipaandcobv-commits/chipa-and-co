@@ -230,7 +230,7 @@ async function populateTestData() {
           data: {
             totalAmount,
             totalPoints,
-            clientDni: user.dni,
+            clientDni: user.dni!,
             createdAt: orderDate,
             items: {
               create: orderItems
@@ -307,7 +307,7 @@ async function populateTestData() {
       console.log("📊 Actualizando puntos históricos...");
       for (let i = 0; i < users.length; i++) {
         const user = users[i];
-        const userOrders = orders.filter(order => order.clientDni === user.dni);
+        const userOrders = orders.filter(order => order.clientDni === user.dni!);
         const totalPointsEarned = userOrders.reduce((sum, order) => sum + order.totalPoints, 0);
         
         await prisma.user.update({

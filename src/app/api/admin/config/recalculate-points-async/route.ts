@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
 
           recalculatedUsers++;
         } catch (error) {
-          console.error(`❌ Error actualizando usuario ${user.dni}:`, error);
+          console.error(`❌ Error actualizando usuario ${user.dni || user.id}:`, error);
           // Continuar con el siguiente usuario
         }
       }

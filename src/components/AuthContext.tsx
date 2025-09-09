@@ -1,5 +1,6 @@
 "use client";
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { signOut } from "next-auth/react";
 
 interface User {
   id: string;
@@ -33,7 +34,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const checkAuth = async ({ silent = false }: CheckAuthOptions = {}) => {
     try {
       if (!silent) setLoading(true);
-      const response = await fetch("/api/auth/me");
+      
+      // Primero intentar con NextAuth.js
+      let response = await fetch("/api/auth/me-nextauth");
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setUser(data.user);
+          return;
+        }
+      }
+      
+      // Si NextAuth falla, intentar con el sistema JWT existente
+      response = await fetch("/api/auth/me");
       if (response.ok) {
         const data = await response.json();
         setUser(data.success ? data.user : null);
@@ -49,8 +62,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      await fetch("/api/auth/logout", { method: "POST" });
-    } finally {
+      // Limpiar el estado local primero
+      setUser(null);
+      setLoading(false);
+
+      // Intentar cerrar sesión con NextAuth primero
+      try {
+        await signOut({ 
+          redirect: false, // No redirigir automáticamente
+          callbackUrl: "/login" 
+        });
+      } catch (nextAuthError) {
+        console.log("NextAuth signOut failed, trying custom logout:", nextAuthError);
+        
+        // Si NextAuth falla, intentar con JWT personalizado
+        try {
+          await fetch("/api/auth/logout", { method: "POST" });
+        } catch (jwtError) {
+          console.log("JWT logout also failed:", jwtError);
+        }
+      }
+    } catch (error) {
+      console.error("Error during logout:", error);
+      // Aún así limpiar el estado
       setUser(null);
       setLoading(false);
     }

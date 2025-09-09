@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "./lib/auth";
 import { checkRateLimit, getRateLimitHeaders } from "./lib/rateLimit";
 import { securityLogger, SecurityEventType } from "./lib/securityLogger";
+import { getToken } from "next-auth/jwt";
 
 // Rutas que requieren autenticación
 const protectedRoutes = ["/dashboard", "/admin", "/rewards", "/ranking", "/history", "/profile", "/cliente"];
@@ -15,12 +16,23 @@ const userRoutes = ["/dashboard", "/rewards", "/ranking", "/history", "/profile"
 // Rutas que redirigen al dashboard si el usuario ya está autenticado
 const authRoutes = ["/login", "/register"];
 
+// Rutas que requieren autenticación parcial (como completar perfil)
+const partialAuthRoutes = ["/complete-profile"];
+
+// Rutas de NextAuth.js
+const nextAuthRoutes = ["/api/auth"];
+
 // Rutas que requieren CSRF protection
 const csrfProtectedRoutes = ["/api/admin", "/api/user"];
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const startTime = Date.now();
+  
+  // EXCLUIR COMPLETAMENTE las rutas de NextAuth.js del middleware
+  if (pathname.startsWith("/api/auth")) {
+    return NextResponse.next();
+  }
   
   try {
     // 1. RATE LIMITING - Verificar límites de velocidad
@@ -95,6 +107,10 @@ export async function middleware(request: NextRequest) {
     // 4. AUTENTICACIÓN Y AUTORIZACIÓN
     const token = request.cookies.get("auth-token")?.value;
     
+    // Debug: mostrar todas las cookies disponibles
+    console.log("🍪 [MIDDLEWARE DEBUG] All cookies:", request.cookies.getAll().map(c => `${c.name}=${c.value.substring(0, 20)}...`));
+    console.log("🍪 [MIDDLEWARE DEBUG] JWT token:", token ? "Found" : "Not found");
+    
     // Verificar si la ruta requiere autenticación
     const isProtectedRoute = protectedRoutes.some((route) =>
       pathname.startsWith(route)
@@ -103,102 +119,158 @@ export async function middleware(request: NextRequest) {
     // Verificar si es una ruta de autenticación
     const isAuthRoute = authRoutes.includes(pathname);
     
+    // Verificar si es una ruta de autenticación parcial
+    const isPartialAuthRoute = partialAuthRoutes.includes(pathname);
+    
     // Verificar si es una ruta de usuario normal
     const isUserRoute = userRoutes.some((route) =>
       pathname.startsWith(route)
     );
     
     if (isProtectedRoute) {
-      // Si no hay token, redirigir a login
-      if (!token) {
-        securityLogger.logAccessDenied(request, "No token provided");
+      // Verificar autenticación con JWT o NextAuth.js
+      let user = null;
+      let authMethod = "none";
+      
+      // Primero intentar con JWT
+      if (token) {
+        try {
+          user = await verifyToken(token);
+          if (user) {
+            authMethod = "jwt";
+          }
+        } catch (error) {
+          // Token JWT inválido, continuar con NextAuth.js
+        }
+      }
+      
+      // Si no hay JWT válido, verificar NextAuth.js
+      if (!user) {
+        try {
+          console.log("🔍 [MIDDLEWARE DEBUG] Checking NextAuth.js token...");
+          const nextAuthToken = await getToken({ 
+            req: request, 
+            secret: process.env.NEXTAUTH_SECRET 
+          });
+          
+          console.log("🔍 [MIDDLEWARE DEBUG] NextAuth token:", nextAuthToken ? "Found" : "Not found");
+          if (nextAuthToken) {
+            console.log("🔍 [MIDDLEWARE DEBUG] Token details:", {
+              email: nextAuthToken.email,
+              sub: nextAuthToken.sub,
+              id: nextAuthToken.id,
+              role: nextAuthToken.role
+            });
+          }
+          
+          if (nextAuthToken && nextAuthToken.email) {
+            // Crear objeto user compatible con el formato JWT
+            user = {
+              userId: nextAuthToken.sub || nextAuthToken.id,
+              email: nextAuthToken.email,
+              role: nextAuthToken.role || "USER",
+              dni: nextAuthToken.dni,
+              name: nextAuthToken.name
+            };
+            authMethod = "nextauth";
+            console.log("✅ [MIDDLEWARE DEBUG] NextAuth user created:", user);
+          }
+        } catch (error) {
+          console.log("❌ [MIDDLEWARE DEBUG] NextAuth error:", error);
+        }
+      }
+      
+      // Si no hay autenticación válida
+      if (!user) {
+        // Verificar si es una ruta de autenticación parcial - permitir acceso
+        if (isPartialAuthRoute) {
+          return NextResponse.next();
+        }
+        
+        securityLogger.logAccessDenied(request, "No valid authentication found");
         
         const loginUrl = new URL("/login", request.url);
         loginUrl.searchParams.set("redirect", pathname);
         return NextResponse.redirect(loginUrl);
       }
       
-      try {
-        // Verificar si el token es válido
-        const user = await verifyToken(token);
-        if (!user) {
-          // Token inválido, limpiar cookie y redirigir a login
-          securityLogger.log(
-            SecurityEventType.TOKEN_INVALID,
-            request,
-            undefined,
-            undefined,
-            undefined,
-            { token: token.substring(0, 20) + "..." }
-          );
-          
-          const response = NextResponse.redirect(new URL("/login", request.url));
-          response.cookies.delete("auth-token");
-          return response;
-        }
-        
-        // Log de acceso exitoso
-        securityLogger.log(
-          SecurityEventType.ACCESS_GRANTED,
-          request,
-          user.userId,
-          user.email,
-          user.role || "USER"
+      // Log de acceso exitoso
+      securityLogger.log(
+        SecurityEventType.ACCESS_GRANTED,
+        request,
+        user.userId,
+        user.email || "unknown",
+        user.role || "USER",
+        { authMethod }
+      );
+      
+      // Si es una ruta de usuario normal y el usuario es ADMIN, redirigir al admin
+      if (isUserRoute && user.role === "ADMIN") {
+        return NextResponse.redirect(new URL("/admin", request.url));
+      }
+      
+      // Si es una ruta de usuario normal y el usuario es USER, redirigir al cliente
+      if (isUserRoute && user.role === "USER") {
+        return NextResponse.redirect(new URL("/cliente", request.url));
+      }
+      
+      // Verificar acceso a rutas admin
+      if (adminOnlyRoutes.some(route => pathname.startsWith(route)) && user.role !== "ADMIN") {
+        securityLogger.logAccessDenied(request, "Admin access required", user.userId, user.email || "unknown");
+        return NextResponse.json(
+          { error: "Acceso denegado: Se requieren permisos de administrador" },
+          { status: 403 }
         );
-        
-        // Si es una ruta de usuario normal y el usuario es ADMIN, redirigir al admin
-        if (isUserRoute && user.role === "ADMIN") {
-          return NextResponse.redirect(new URL("/admin", request.url));
-        }
-        
-        // Si es una ruta de usuario normal y el usuario es USER, redirigir al cliente
-        if (isUserRoute && user.role === "USER") {
-          return NextResponse.redirect(new URL("/cliente", request.url));
-        }
-        
-        // Verificar acceso a rutas admin
-        if (adminOnlyRoutes.some(route => pathname.startsWith(route)) && user.role !== "ADMIN") {
-          securityLogger.logAccessDenied(request, "Admin access required", user.userId, user.email);
-          return NextResponse.json(
-            { error: "Acceso denegado: Se requieren permisos de administrador" },
-            { status: 403 }
-          );
-        }
-        
-      } catch (error) {
-        // Error al verificar token, limpiar cookie y redirigir a login
-        securityLogger.log(
-          SecurityEventType.TOKEN_INVALID,
-          request,
-          undefined,
-          undefined,
-          undefined,
-          { error: error instanceof Error ? error.message : "Unknown error" }
-        );
-        
-        const response = NextResponse.redirect(new URL("/login", request.url));
-        response.cookies.delete("auth-token");
-        return response;
       }
     }
     
-    if (isAuthRoute && token) {
+    if (isAuthRoute) {
       // Si está autenticado y trata de acceder a login/register, redirigir según el rol
-      try {
-        const user = await verifyToken(token);
-        if (user) {
-          if (user.role === "ADMIN") {
-            return NextResponse.redirect(new URL("/admin", request.url));
-          } else {
-            return NextResponse.redirect(new URL("/cliente", request.url));
-          }
+      let user = null;
+      
+      // Verificar JWT primero
+      if (token) {
+        try {
+          user = await verifyToken(token);
+        } catch (error) {
+          // Token JWT inválido, continuar con NextAuth.js
         }
-      } catch (error) {
-        // Token inválido, limpiar cookie
-        const response = NextResponse.next();
-        response.cookies.delete("auth-token");
-        return response;
       }
+      
+      // Si no hay JWT válido, verificar NextAuth.js
+      if (!user) {
+        try {
+          const nextAuthToken = await getToken({ 
+            req: request, 
+            secret: process.env.NEXTAUTH_SECRET 
+          });
+          
+          if (nextAuthToken && nextAuthToken.email) {
+            user = {
+              userId: nextAuthToken.sub || nextAuthToken.id,
+              email: nextAuthToken.email,
+              role: nextAuthToken.role || "USER",
+              dni: nextAuthToken.dni,
+              name: nextAuthToken.name
+            };
+          }
+        } catch (error) {
+          // Error al verificar NextAuth.js token
+        }
+      }
+      
+      if (user) {
+        if (user.role === "ADMIN") {
+          return NextResponse.redirect(new URL("/admin", request.url));
+        } else {
+          return NextResponse.redirect(new URL("/cliente", request.url));
+        }
+      }
+    }
+
+    // Permitir acceso a rutas de autenticación parcial sin verificación de token
+    if (isPartialAuthRoute) {
+      return NextResponse.next();
     }
     
     // 5. LOGGING DE PERFORMANCE

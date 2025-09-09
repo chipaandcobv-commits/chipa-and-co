@@ -68,6 +68,16 @@ export default function ClientePage() {
     );
   }, [message]);
 
+  // Función para determinar si mostrar "pts" basándose en la longitud del número
+  const getPointsDisplay = (points: number) => {
+    const pointsStr = points.toLocaleString("es-AR");
+    // Si el número tiene más de 4 dígitos, omitir "pts"
+    if (pointsStr.length > 4) {
+      return pointsStr;
+    }
+    return `${pointsStr} pts`;
+  };
+
   // Memoizar la sección de premios
   const rewardsSection = useMemo(() => (
     <div className="grid grid-cols-2 gap-4">
@@ -115,8 +125,8 @@ export default function ClientePage() {
 
             {/* Badge de puntos centrado abajo */}
             <div className="absolute left-0 bottom-0 w-full flex justify-center pb-3">
-              <span className="inline-flex items-center justify-center rounded-full bg-[#F15A25] px-6 py-1 text-[15px] text-white shadow w-[80%] font-dela-gothic">
-                {reward.pointsCost.toLocaleString("es-AR")} pts
+              <span className="inline-flex items-center justify-center rounded-full bg-[#F15A25] px-3 py-1 text-[14px] text-white shadow w-[80%] font-dela-gothic whitespace-nowrap overflow-hidden">
+                {getPointsDisplay(reward.pointsCost)}
               </span>
             </div>
 

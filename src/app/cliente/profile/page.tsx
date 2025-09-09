@@ -214,17 +214,34 @@ export default function ProfilePage() {
                   />
                 </div>
 
+                {/* Email - Solo lectura */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Email
                   </label>
                   <input
                     type="email"
-                    value={profileData.email}
-                    onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F15A25] focus:border-transparent"
-                    required
+                    value={user.email}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-200 text-gray-700 cursor-not-allowed"
+                    readOnly
+                    disabled
                   />
+                  <p className="text-xs text-gray-500 mt-1">El email no puede ser modificado</p>
+                </div>
+
+                {/* DNI - Solo lectura */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    DNI
+                  </label>
+                  <input
+                    type="text"
+                    value={user.dni || 'No configurado'}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-200 text-gray-700 cursor-not-allowed"
+                    readOnly
+                    disabled
+                  />
+                  <p className="text-xs text-gray-500 mt-1">El DNI no puede ser modificado</p>
                 </div>
 
                 <div className="flex gap-3">
@@ -255,7 +272,7 @@ export default function ProfilePage() {
                 </div>
                 <div>
                   <span className="text-sm font-medium text-gray-600">DNI:</span>
-                  <p className="text-lg text-neutral-800">{user.dni}</p>
+                  <p className="text-lg text-neutral-800">{user.dni || 'No configurado'}</p>
                 </div>
               </div>
             )}

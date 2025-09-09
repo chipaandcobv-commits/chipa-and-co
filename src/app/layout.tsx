@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Urbanist, Dela_Gothic_One } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/AuthContext";
 import ConditionalNavbar from "@/components/ConditionalNavbar";
+import NextAuthSessionProvider from "@/components/SessionProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,10 +41,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${urbanist.variable} ${delaGothicOne.variable} antialiased`}
       >
-        <AuthProvider>
-          <ConditionalNavbar />
-          {children}
-        </AuthProvider>
+        <NextAuthSessionProvider>
+          <AuthProvider>
+            <ConditionalNavbar />
+            {children}
+          </AuthProvider>
+        </NextAuthSessionProvider>
       </body>
     </html>
   );

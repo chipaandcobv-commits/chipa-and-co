@@ -37,11 +37,11 @@ const rateLimitConfigs: Record<string, RateLimitConfig> = {
     maxRequests: 100, // 100 requests por 5 minutos
     blockDuration: 15 * 60 * 1000, // Bloqueo por 15 minutos
   },
-  // APIs generales - menos restrictivo
+  // APIs generales - menos restrictivo (temporalmente más permisivo para pruebas)
   default: {
     windowMs: 1 * 60 * 1000, // 1 minuto
-    maxRequests: 60, // 60 requests por minuto
-    blockDuration: 5 * 60 * 1000, // Bloqueo por 5 minutos
+    maxRequests: 1000, // 1000 requests por minuto (muy permisivo)
+    blockDuration: 30 * 1000, // Bloqueo por 30 segundos
   },
 };
 

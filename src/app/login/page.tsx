@@ -11,6 +11,7 @@ import {
 } from "../../components/icons/Icons";
 import Image from "next/image";
 import { useAuth } from "../../components/AuthContext";
+import GoogleButton from "../../components/ui/GoogleButton";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -21,6 +22,7 @@ export default function LoginPage() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   // Redirección automática si ya está autenticado
@@ -166,6 +168,23 @@ export default function LoginPage() {
             >
               {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
             </Button>
+
+            {/* Divider */}
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-[#FFE4CC] text-gray-500">O continúa con</span>
+              </div>
+            </div>
+
+            {/* Google Button */}
+            <GoogleButton
+              text="Continuar con Google"
+              isLoading={isGoogleLoading}
+              onLoadingChange={setIsGoogleLoading}
+            />
           </div>
 
           {/* Footer */}

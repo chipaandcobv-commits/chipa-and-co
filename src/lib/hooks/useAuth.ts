@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { signOut } from "next-auth/react";
 
 interface User {
   id: string;
@@ -29,8 +30,15 @@ export function useAuth() {
     try {
       setAuthState(prev => ({ ...prev, loading: true, error: null }));
       
-      const response = await fetch("/api/auth/me");
-      const data = await response.json();
+      // Intentar primero con NextAuth, luego con JWT personalizado
+      let response = await fetch("/api/auth/me-nextauth");
+      let data = await response.json();
+
+      // Si NextAuth falla, intentar con JWT personalizado
+      if (!data.success) {
+        response = await fetch("/api/auth/me");
+        data = await response.json();
+      }
 
       if (data.success) {
         // Asegurar que el usuario tenga todas las propiedades necesarias
@@ -67,15 +75,41 @@ export function useAuth() {
 
   const logout = async () => {
     try {
-      await fetch("/api/auth/logout", { method: "POST" });
+      // Limpiar el estado local primero
+      setAuthState({
+        user: null,
+        loading: false,
+        error: null,
+      });
+
+      // Intentar cerrar sesión con NextAuth primero
+      try {
+        await signOut({ 
+          redirect: false, // No redirigir automáticamente
+          callbackUrl: "/login" 
+        });
+      } catch (nextAuthError) {
+        console.log("NextAuth signOut failed, trying custom logout:", nextAuthError);
+        
+        // Si NextAuth falla, intentar con JWT personalizado
+        try {
+          await fetch("/api/auth/logout", { method: "POST" });
+        } catch (jwtError) {
+          console.log("JWT logout also failed:", jwtError);
+        }
+      }
+
+      // Redirigir manualmente a la página de login
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+      // Aún así limpiar el estado y redirigir
       setAuthState({
         user: null,
         loading: false,
         error: null,
       });
       window.location.href = "/login";
-    } catch (error) {
-      console.error("Error al cerrar sesión:", error);
     }
   };
 

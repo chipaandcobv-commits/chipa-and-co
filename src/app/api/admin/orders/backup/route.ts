@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
         itemsDetail.push({
           'ID de Orden': order.orderId,
           'Cliente': order.clientName,
-          'DNI': order.clientDni,
+          'DNI': order.clientDni || 'N/A',
           'Producto': item.productName,
           'Cantidad': item.quantity,
           'Precio Unitario': `$${item.unitPrice.toLocaleString()}`,

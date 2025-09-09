@@ -48,6 +48,13 @@ export async function GET(request: NextRequest) {
 
     // Obtener órdenes si se solicita
     if (type === "orders" || type === "all" || !type) {
+      if (!currentUser.dni) {
+        return NextResponse.json({
+          success: false,
+          error: "Usuario no tiene DNI configurado",
+        }, { status: 400 });
+      }
+      
       console.log(`🔍 Buscando órdenes para DNI: ${currentUser.dni}`);
       const ordersData = await prisma.order.findMany({
         where: {
@@ -142,7 +149,7 @@ export async function GET(request: NextRequest) {
     });
 
     const totalPointsEarned = await prisma.order.aggregate({
-      where: { clientDni: currentUser.dni },
+      where: { clientDni: currentUser.dni! },
       _sum: { totalPoints: true },
     });
 

@@ -107,7 +107,7 @@ export default function UsersManagement() {
     const matchesSearch =
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.dni.toLowerCase().includes(searchTerm.toLowerCase());
+      (user.dni || '').toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = roleFilter === "ALL" || user.role === roleFilter;
     return matchesSearch && matchesRole;
   });
@@ -190,7 +190,7 @@ export default function UsersManagement() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {user.dni}
+                        {user.dni || 'N/A'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
