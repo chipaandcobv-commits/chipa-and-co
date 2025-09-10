@@ -128,7 +128,7 @@ export default function ForgotPasswordPage() {
               ← Volver al inicio de sesión
             </Link>
             <Link
-              href="/"
+              href="/login"
               className="inline-block mt-4 text-sm text-gray-500 hover:text-gray-700 transition-colors"
             >
               ← Volver al inicio

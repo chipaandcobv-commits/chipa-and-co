@@ -8,7 +8,7 @@ export default async function AdminOrdersPage() {
   const isAdmin = await isCurrentUserAdmin();
 
   if (!isAdmin) {
-    redirect("/dashboard");
+    redirect("/admin");
   }
 
   return <OrdersManagement />;

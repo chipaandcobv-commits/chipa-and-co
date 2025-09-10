@@ -8,7 +8,7 @@ export default async function AdminRewardsPage() {
   const isAdmin = await isCurrentUserAdmin();
 
   if (!isAdmin) {
-    redirect("/dashboard");
+    redirect("/admin");
   }
 
   return <RewardsManagement />;

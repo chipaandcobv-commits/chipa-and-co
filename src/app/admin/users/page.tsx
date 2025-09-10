@@ -9,7 +9,7 @@ export default async function AdminUsersPage() {
   const isAdmin = await isCurrentUserAdmin();
 
   if (!isAdmin) {
-    redirect("/dashboard");
+    redirect("/admin");
   }
 
   return <UsersManagement />;

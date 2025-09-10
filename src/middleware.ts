@@ -29,6 +29,11 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const startTime = Date.now();
   
+  // Redirigir la raíz a login
+  if (pathname === "/") {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+  
   // EXCLUIR COMPLETAMENTE las rutas de NextAuth.js del middleware
   if (pathname.startsWith("/api/auth")) {
     return NextResponse.next();
