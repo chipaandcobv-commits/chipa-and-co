@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "./lib/auth";
+import { verifyToken } from "./lib/auth-server";
 import { checkRateLimit, getRateLimitHeaders } from "./lib/rateLimit";
 import { securityLogger, SecurityEventType } from "./lib/securityLogger";
 import { getToken } from "next-auth/jwt";
@@ -247,6 +247,29 @@ export async function middleware(request: NextRequest) {
     }
     
     if (isAuthRoute) {
+      // Verificar si viene de un logout (no redirigir automáticamente)
+      const referer = request.headers.get("referer") || "";
+      const url = new URL(request.url);
+      const fromLogout = url.searchParams.get("from") === "logout";
+      const isFromLogout = fromLogout || referer.includes("/cliente") || referer.includes("/admin");
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log("🔍 [MIDDLEWARE DEBUG] Auth route access:", { 
+          pathname, 
+          referer, 
+          fromLogout,
+          isFromLogout 
+        });
+      }
+      
+      // Si viene de logout, permitir acceso a login sin redirección
+      if (isFromLogout) {
+        if (process.env.NODE_ENV === 'development') {
+          console.log("🔄 [MIDDLEWARE DEBUG] Allowing login access after logout");
+        }
+        return NextResponse.next();
+      }
+      
       // Si está autenticado y trata de acceder a login/register, redirigir según el rol
       let user = null;
       

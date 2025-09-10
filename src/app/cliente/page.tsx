@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { useAuth } from "@/components/AuthContext";
+import { useAuth } from "@/lib/auth";
 import { useRewards } from "@/lib/hooks/useRewards";
 import { useClaimReward } from "@/lib/hooks/useClaimReward";
 import { GiftCardIcon } from "@/components/icons/Icons";

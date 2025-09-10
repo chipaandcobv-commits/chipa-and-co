@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "@/lib/auth";
 import Button from "./ui/Button";
 
 interface LogoutButtonProps {

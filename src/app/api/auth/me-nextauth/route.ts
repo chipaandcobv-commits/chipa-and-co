@@ -4,9 +4,24 @@ import { authOptions } from "../../../../lib/auth-config";
 
 export async function GET(request: NextRequest) {
   try {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔍 [ME-NEXTAUTH] Checking NextAuth session...');
+    }
+    
     const session = await getServerSession(authOptions);
     
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔍 [ME-NEXTAUTH] Session result:', {
+        hasSession: !!session,
+        hasUser: !!session?.user,
+        userEmail: session?.user?.email
+      });
+    }
+    
     if (!session?.user) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('❌ [ME-NEXTAUTH] No session or user found');
+      }
       return NextResponse.json(
         { success: false, error: "No autorizado" },
         { status: 401 }

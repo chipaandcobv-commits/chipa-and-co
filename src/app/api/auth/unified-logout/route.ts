@@ -5,21 +5,33 @@ import { authOptions } from "../../../../lib/auth-config";
 
 export async function POST(request: NextRequest) {
   try {
+    // Verificar si hay sesión NextAuth
+    const session = await getServerSession(authOptions);
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log("🔍 [UNIFIED LOGOUT] Session found:", !!session);
+      if (session) {
+        console.log("🔍 [UNIFIED LOGOUT] Session user:", session.user?.email);
+      }
+    }
+    
     // Limpiar cookie JWT personalizada
     await clearAuthCookie();
 
-    // Crear respuesta con cookies limpiadas
+    // Crear respuesta
     const response = NextResponse.json({
       success: true,
       message: "Sesión cerrada exitosamente",
+      hadNextAuthSession: !!session,
     });
 
-    // Lista de cookies de autenticación a limpiar
+    // Lista completa de cookies de autenticación
     const authCookies = [
       "auth-token",
       "next-auth.session-token",
       "next-auth.csrf-token", 
-      "next-auth.callback-url"
+      "next-auth.callback-url",
+      "next-auth.state"
     ];
 
     // Limpiar todas las cookies de autenticación
@@ -33,9 +45,13 @@ export async function POST(request: NextRequest) {
       });
     });
 
+    if (process.env.NODE_ENV === 'development') {
+      console.log("✅ [UNIFIED LOGOUT] All cookies cleared");
+    }
+
     return response;
   } catch (error) {
-    console.error("Logout error:", error);
+    console.error("Unified logout error:", error);
     return NextResponse.json(
       { success: false, error: "Error al cerrar sesión" },
       { status: 500 }

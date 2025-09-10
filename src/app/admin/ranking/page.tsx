@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser } from "../../../lib/auth";
+import { getCurrentUser } from "../../../lib/auth-server";
 import RankingManagement from "./RankingManagement";
 
 export const dynamic = "force-dynamic";

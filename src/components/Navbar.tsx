@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Button from "./ui/Button";
 import { UserIcon, DashboardIcon, LogoutIcon } from "./icons/Icons";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "@/lib/auth";
 import { useRouter, usePathname } from "next/navigation";
 import { Gift, BadgeCheck, Trophy, User, ShoppingCart, Package, Settings, Menu, X, Crown } from "lucide-react";
 import { useState } from "react";
@@ -265,16 +265,16 @@ export default function AuthHeader() {
                   )}
 
                   {/* Logout */}
-                  <div className="border-t-2 border-[#F15A25]/20 pt-4">
+                  <div className="border-t-2 border-[#F15A25]/20 pt-4 text-red-500">
                     <Button
                       onClick={handleLogout}
-                      variant="outline"
+                      variant="primary"
                       size="sm"
-                      className="w-full justify-center bg-[#FF2F00] hover:bg-[#e62900] border-[#FF2F00] hover:border-[#e62900] text-white transition-all duration-300 shadow-sm hover:shadow-md"
+                      className="w-full justify-center !bg-transparent hover:!bg-red-50 !border-red-500 hover:!border-red-600 !text-red-500 hover:!text-red-600 transition-all duration-300 shadow-sm hover:shadow-md"
 
 
                     >
-                      <LogoutIcon className="h-4 w-4 mr-2" />
+                      <LogoutIcon className="h-4 w-4 mr-2 !text-red-500" />
                       Salir
                     </Button>
                   </div>

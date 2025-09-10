@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../../../lib/auth-config";
 import { PrismaClient } from "../../../../generated/prisma";
-import { signToken } from "../../../../lib/auth";
+import { signToken } from "../../../../lib/auth-server";
 import { securityLogger, SecurityEventType } from "../../../../lib/securityLogger";
 
 const prisma = new PrismaClient();

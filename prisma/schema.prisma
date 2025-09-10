@@ -28,6 +28,9 @@ model User {
   emailVerified DateTime?    // Verificación de email de Google
   isGoogleUser Boolean       @default(false) // Flag para identificar usuarios de Google
   needsProfileCompletion Boolean @default(false) // Flag para completar perfil
+  // Campos para recuperación de contraseña
+  resetPasswordToken String? // Token para recuperación de contraseña
+  resetPasswordExpires DateTime? // Expiración del token de recuperación
 }
 
 model Product {

@@ -30,6 +30,10 @@ export enum SecurityEventType {
   TOKEN_EXPIRED = "TOKEN_EXPIRED",
   TOKEN_INVALID = "TOKEN_INVALID",
   SESSION_HIJACKING_ATTEMPT = "SESSION_HIJACKING_ATTEMPT",
+  
+  // Recuperación de contraseña
+  PASSWORD_RESET_REQUESTED = "PASSWORD_RESET_REQUESTED",
+  PASSWORD_RESET_COMPLETED = "PASSWORD_RESET_COMPLETED",
 }
 
 export interface SecurityLogEntry {
@@ -73,6 +77,7 @@ class SecurityLogger {
       case SecurityEventType.LOGIN_SUCCESS:
       case SecurityEventType.LOGOUT:
       case SecurityEventType.ACCESS_GRANTED:
+      case SecurityEventType.PASSWORD_RESET_COMPLETED:
         return "LOW";
         
       case SecurityEventType.LOGIN_FAILED:
@@ -83,6 +88,7 @@ class SecurityLogger {
       case SecurityEventType.RATE_LIMIT_EXCEEDED:
       case SecurityEventType.ACCESS_DENIED:
       case SecurityEventType.TOKEN_INVALID:
+      case SecurityEventType.PASSWORD_RESET_REQUESTED:
         return "HIGH";
         
       case SecurityEventType.BRUTE_FORCE_ATTEMPT:

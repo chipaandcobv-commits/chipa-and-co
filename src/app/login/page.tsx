@@ -10,7 +10,7 @@ import {
   EyeOffIcon,
 } from "../../components/icons/Icons";
 import Image from "next/image";
-import { useAuth } from "../../components/AuthContext";
+import { useAuth } from "@/lib/auth";
 import GoogleButton from "../../components/ui/GoogleButton";
 
 export default function LoginPage() {
@@ -168,6 +168,16 @@ export default function LoginPage() {
             >
               {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
             </Button>
+
+            {/* Forgot Password Link */}
+            <div className="text-center">
+              <Link
+                href="/forgot-password"
+                className="text-sm text-[#F15A25] hover:text-[#E55A1A] transition-colors"
+              >
+                ¿Olvidaste tu contraseña?
+              </Link>
+            </div>
 
             {/* Divider */}
             <div className="relative my-6">

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Urbanist, Dela_Gothic_One } from "next/font/google";
 import "./globals.css";
-import { AuthProvider } from "@/components/AuthContext";
+import { AuthProvider } from "@/lib/auth";
 import ConditionalNavbar from "@/components/ConditionalNavbar";
 import NextAuthSessionProvider from "@/components/SessionProvider";
 

@@ -1,17 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { useAuth } from "@/lib/hooks/useAuth";
+import { useAuth } from "@/lib/auth";
 import Button from "../components/ui/Button";
 import { DashboardIcon } from "../components/icons/Icons";
 import AutoRedirect from "../components/AutoRedirect";
+import { Suspense } from "react";
 
 export default function HomePage() {
   const { user, loading } = useAuth();
 
   return (
     <>
-      <AutoRedirect />
+      <Suspense fallback={null}>
+        <AutoRedirect />
+      </Suspense>
       <div className="min-h-screen w-full bg-[#F7EFE7] text-gray-900 font-urbanist">
         {/* Hero Section - Optimizado para móvil */}
         <section className="pt-6 pb-8 px-4 sm:pt-8 sm:pb-12 sm:px-6 lg:px-8">

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "../../../../generated/prisma";
-import { verifyPassword, signToken, setAuthCookie } from "../../../../lib/auth";
+import { verifyPassword, signToken, setAuthCookie } from "../../../../lib/auth-server";
 import { validateLoginForm } from "../../../../lib/validations";
 
 const prisma = new PrismaClient();

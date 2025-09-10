@@ -2,7 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { PrismaClient } from "../generated/prisma";
-import { signToken } from "./auth";
+import { signToken } from "./auth-server";
 
 const prisma = new PrismaClient();
 

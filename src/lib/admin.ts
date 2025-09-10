@@ -1,5 +1,5 @@
 
-import { getCurrentUser } from "./auth";
+import { getCurrentUser } from "./auth-server";
 import { PrismaClient } from "../generated/prisma";
 
 const prisma = new PrismaClient();
