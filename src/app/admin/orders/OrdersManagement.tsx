@@ -313,6 +313,8 @@ export default function OrdersManagement() {
             className={`mb-6 p-4 rounded-lg ${
               message.includes("Error") || message.includes("no encontrado")
                 ? "bg-red-50 text-red-700 border border-red-200"
+                : message.includes("límite máximo")
+                ? "bg-yellow-50 text-yellow-800 border border-yellow-200"
                 : "bg-green-50 text-green-700 border border-green-200"
             }`}
           >

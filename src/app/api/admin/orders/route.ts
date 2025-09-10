@@ -167,13 +167,37 @@ export async function POST(request: NextRequest) {
         },
       });
 
+      // Obtener el cliente actual para verificar sus puntos
+      const currentClient = await tx.user.findUnique({
+        where: { dni: clientDni.trim() },
+        select: { puntos: true }
+      });
+
+      if (!currentClient) {
+        throw new Error("Cliente no encontrado");
+      }
+
+      // Obtener el límite de puntos configurado
+      const pointsLimitConfig = await tx.systemConfig.findUnique({
+        where: { key: 'pointsLimit' }
+      });
+      
+      const pointsLimit = pointsLimitConfig ? parseInt(pointsLimitConfig.value) : 10000;
+
+      // Verificar si el cliente ya tiene el límite máximo de puntos
+      const hasReachedLimit = currentClient.puntos >= pointsLimit;
+
       // Actualizar puntos del cliente
       const updatedClient = await tx.user.update({
         where: { dni: clientDni.trim() },
         data: {
-          puntos: {
-            increment: totalPoints,
-          },
+          // Solo sumar a puntos actuales si no ha alcanzado el límite
+          ...(hasReachedLimit ? {} : {
+            puntos: {
+              increment: totalPoints,
+            },
+          }),
+          // Siempre sumar a puntos históricos
           puntosHistoricos: {
             increment: totalPoints,
           },
@@ -183,11 +207,29 @@ export async function POST(request: NextRequest) {
       return { order, updatedClient };
     });
 
+    // Determinar si se aplicó el límite de puntos
+    const pointsLimitConfig = await prisma.systemConfig.findUnique({
+      where: { key: 'pointsLimit' }
+    });
+    const pointsLimit = pointsLimitConfig ? parseInt(pointsLimitConfig.value) : 10000;
+    const hasReachedLimit = result.updatedClient.puntos >= pointsLimit;
+
+    const message = hasReachedLimit 
+      ? `Orden creada exitosamente. Cliente ${result.updatedClient.name} ya tiene el límite máximo de puntos (${pointsLimit}). Los ${totalPoints} puntos se agregaron solo al historial.`
+      : `Orden creada exitosamente. ${totalPoints} puntos agregados al cliente ${result.updatedClient.name}`;
+
     return NextResponse.json({
       success: true,
       order: result.order,
       client: result.updatedClient,
-      message: `Orden creada exitosamente. ${totalPoints} puntos agregados al cliente ${result.updatedClient.name}`,
+      message,
+      pointsInfo: {
+        pointsEarned: totalPoints,
+        currentPoints: result.updatedClient.puntos,
+        historicalPoints: result.updatedClient.puntosHistoricos,
+        limitReached: hasReachedLimit,
+        pointsLimit: pointsLimit
+      }
     });
   } catch (error: any) {
     console.error("Create order error:", error);
