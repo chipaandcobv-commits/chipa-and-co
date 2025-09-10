@@ -267,15 +267,6 @@ export default function RegisterPage() {
               {isLoading ? "Creando cuenta..." : "Crear Cuenta"}
             </Button>
 
-            {/* Forgot Password Link */}
-            <div className="text-center">
-              <Link
-                href="/forgot-password"
-                className="text-sm text-[#F15A25] hover:text-[#E55A1A] transition-colors"
-              >
-                ¿Olvidaste tu contraseña?
-              </Link>
-            </div>
 
             {/* Divider */}
             <div className="relative my-6">

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "../../../../generated/prisma";
 import { verifyPassword, signToken, setAuthCookie } from "../../../../lib/auth-server";
 import { validateLoginForm } from "../../../../lib/validations";
+import { securityLogger, SecurityEventType } from "../../../../lib/securityLogger";
 
 const prisma = new PrismaClient();
 
@@ -34,6 +35,7 @@ export async function POST(request: NextRequest) {
 
     // Verificar contraseña
     if (!user.password) {
+      securityLogger.logLoginFailed(request, email, "No password set (Google user)");
       return NextResponse.json(
         { success: false, errors: { email: "Credenciales inválidas" } },
         { status: 401 }
@@ -42,11 +44,13 @@ export async function POST(request: NextRequest) {
     
     const isValidPassword = await verifyPassword(password, user.password);
     if (!isValidPassword) {
+      securityLogger.logLoginFailed(request, email, "Invalid password");
       return NextResponse.json(
         { success: false, errors: { password: "Credenciales inválidas" } },
         { status: 401 }
       );
     }
+
 
     // Generar token JWT
     const token = await signToken({
@@ -58,6 +62,9 @@ export async function POST(request: NextRequest) {
 
     // Configurar cookie
     await setAuthCookie(token);
+
+    // Log del login exitoso
+    securityLogger.logLoginSuccess(request, user.id, user.email, user.role);
 
     return NextResponse.json({
       success: true,

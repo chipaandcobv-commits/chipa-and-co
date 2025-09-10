@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "./lib/auth-server";
-import { checkRateLimit, getRateLimitHeaders } from "./lib/rateLimit";
+import { checkAdvancedRateLimit, getRateLimitHeaders } from "./lib/rateLimitAdvanced";
 import { securityLogger, SecurityEventType } from "./lib/securityLogger";
 import { getToken } from "next-auth/jwt";
 
@@ -40,28 +40,36 @@ export async function middleware(request: NextRequest) {
   }
   
   try {
-    // 1. RATE LIMITING - Verificar límites de velocidad
-    const rateLimitResult = checkRateLimit(request, pathname);
+    // 1. RATE LIMITING AVANZADO - Verificar límites de velocidad
+    const rateLimitResult = await checkAdvancedRateLimit(request, pathname);
     
     if (!rateLimitResult.allowed) {
       // Log del ataque de rate limiting
-      securityLogger.logRateLimitExceeded(
+      securityLogger.log(
+        SecurityEventType.RATE_LIMIT_EXCEEDED,
         request,
-        rateLimitResult.remaining,
-        rateLimitResult.resetTime - Date.now()
+        undefined,
+        undefined,
+        undefined,
+        {
+          reason: 'Advanced rate limit exceeded',
+          totalRequests: rateLimitResult.totalRequests,
+          windowStart: new Date(rateLimitResult.windowStart).toISOString(),
+          path: pathname,
+        }
       );
       
       // Retornar error 429 (Too Many Requests)
       const response = NextResponse.json(
         { 
           error: "Demasiadas solicitudes", 
-          retryAfter: Math.ceil((rateLimitResult.blockedUntil! - Date.now()) / 1000) 
+          retryAfter: rateLimitResult.blockedUntil ? Math.ceil((rateLimitResult.blockedUntil - Date.now()) / 1000) : 3600
         },
         { status: 429 }
       );
       
       // Agregar headers de rate limiting
-      Object.entries(getRateLimitHeaders(rateLimitResult.remaining, rateLimitResult.resetTime))
+      Object.entries(getRateLimitHeaders(rateLimitResult))
         .forEach(([key, value]) => response.headers.set(key, value));
       
       return response;
@@ -344,7 +352,7 @@ export async function middleware(request: NextRequest) {
     const response = NextResponse.next();
     
     // Agregar headers de rate limiting
-    Object.entries(getRateLimitHeaders(rateLimitResult.remaining, rateLimitResult.resetTime))
+    Object.entries(getRateLimitHeaders(rateLimitResult))
       .forEach(([key, value]) => response.headers.set(key, value));
     
     // Agregar header de request ID para tracking

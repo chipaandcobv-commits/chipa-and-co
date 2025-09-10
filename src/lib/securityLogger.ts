@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { processSecurityEvent } from "./securityMonitoring";
 
 export enum SecurityEventType {
   // Autenticación
@@ -149,6 +150,14 @@ class SecurityLogger {
         details,
       });
     }
+    
+    // Procesar evento en el sistema de monitoreo
+    processSecurityEvent(
+      eventType,
+      details,
+      clientInfo.ipAddress,
+      clientInfo.userAgent
+    );
     
     // En producción, enviar a sistema de logging externo
     if (process.env.NODE_ENV === "production") {

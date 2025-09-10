@@ -24,6 +24,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
 
   // Redirección automática si ya está autenticado
   useEffect(() => {
@@ -173,12 +174,12 @@ export default function LoginPage() {
 
             {/* Forgot Password Link */}
             <div className="text-center">
-              <Link
-                href="/forgot-password"
+              <button
+                onClick={() => setShowForgotPasswordModal(true)}
                 className="text-sm text-[#F15A25] hover:text-[#E55A1A] transition-colors"
               >
                 ¿Olvidaste tu contraseña?
-              </Link>
+              </button>
             </div>
 
             {/* Divider */}
@@ -276,6 +277,69 @@ export default function LoginPage() {
           </footer>
         </div>
       </div>
+
+      {/* Modal para información de recuperación de contraseña */}
+      {showForgotPasswordModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-[#F4E7DB] rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 max-w-md w-full mx-4">
+            <div className="text-center mb-6">
+              <h3 className="text-xl font-semibold text-[#F15A25] mb-2">
+                🔑 Recuperar Contraseña
+              </h3>
+              <p className="text-sm text-gray-600">
+                Para restablecer tu contraseña, necesitas asistir al local
+              </p>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="bg-[#FCE6D5] rounded-lg p-4">
+                <div className="flex items-start space-x-3">
+                  <div className="text-2xl">📍</div>
+                  <div>
+                    <h4 className="font-medium text-[#F15A25] mb-1">Asistir al Local</h4>
+                    <p className="text-sm text-gray-700">
+                      Visita nuestro local con tu DNI físico para que nuestro personal pueda restablecer tu contraseña de forma segura.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-[#FCE6D5] rounded-lg p-4">
+                <div className="flex items-start space-x-3">
+                  <div className="text-2xl">🆔</div>
+                  <div>
+                    <h4 className="font-medium text-[#F15A25] mb-1">Documento Requerido</h4>
+                    <p className="text-sm text-gray-700">
+                      Es necesario presentar tu DNI físico para verificar tu identidad y proteger tu cuenta.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-[#FCE6D5] rounded-lg p-4">
+                <div className="flex items-start space-x-3">
+                  <div className="text-2xl">⏰</div>
+                  <div>
+                    <h4 className="font-medium text-[#F15A25] mb-1">Horarios de Atención</h4>
+                    <p className="text-sm text-gray-700">
+                      Puedes asistir durante nuestro horario de atención al cliente para recibir asistencia inmediata.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-6 flex justify-center">
+              <Button
+                onClick={() => setShowForgotPasswordModal(false)}
+                className="bg-[#F15A25] hover:bg-[#E55A1A] text-white px-6 py-2 rounded-lg transition-colors"
+              >
+                ✅ Entendido
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

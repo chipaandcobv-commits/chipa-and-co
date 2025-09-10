@@ -21,9 +21,7 @@ export default function AutoRedirect() {
     // No redirigir si viene de logout o si está en una ruta de autenticación
     const fromLogout = searchParams.get("from") === "logout";
     const isAuthRoute = window.location.pathname === "/login" || 
-                       window.location.pathname === "/register" ||
-                       window.location.pathname === "/forgot-password" ||
-                       window.location.pathname === "/reset-password";
+                       window.location.pathname === "/register";
 
     if (process.env.NODE_ENV === 'development') {
       console.log("🔍 [AUTO REDIRECT] Checking redirect:", { 

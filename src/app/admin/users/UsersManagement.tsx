@@ -29,24 +29,32 @@ export default function UsersManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState<"ALL" | "USER" | "ADMIN">("ALL");
   const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
+  const [resettingPasswordUserId, setResettingPasswordUserId] = useState<string | null>(null);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [resetPasswordData, setResetPasswordData] = useState<{
+    userId: string;
+    userName: string;
+    userEmail: string;
+    newPassword: string;
+  } | null>(null);
 
   useEffect(() => {
     fetchUsers();
   }, []);
 
   const fetchUsers = async () => {
+    setLoading(true);
+    
     try {
-      setLoading(true);
       const params = new URLSearchParams();
       if (roleFilter !== "ALL") params.append("role", roleFilter);
       if (searchTerm) params.append("search", searchTerm);
 
       const response = await fetch(`/api/admin/users?${params}`);
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setUsers(data.users);
-        }
+      const data = await response.json();
+      
+      if (data.success) {
+        setUsers(data.users);
       }
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -55,30 +63,24 @@ export default function UsersManagement() {
     }
   };
 
-  const handleRoleChange = async (
-    userId: string,
-    newRole: "USER" | "ADMIN"
-  ) => {
+  const handleRoleChange = async (userId: string, newRole: "USER" | "ADMIN") => {
+    setUpdatingUserId(userId);
+    
     try {
-      setUpdatingUserId(userId);
       const response = await fetch("/api/admin/users", {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, role: newRole }),
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          // Actualizar usuario en la lista
-          setUsers((prev) =>
-            prev.map((user) =>
-              user.id === userId ? { ...user, role: newRole } : user
-            )
-          );
-        }
+      const data = await response.json();
+      
+      if (data.success) {
+        setUsers((prev) =>
+          prev.map((user) =>
+            user.id === userId ? { ...user, role: newRole } : user
+          )
+        );
       }
     } catch (error) {
       console.error("Error updating user role:", error);
@@ -89,6 +91,42 @@ export default function UsersManagement() {
 
   const handleSearch = () => {
     fetchUsers();
+  };
+
+  const handleResetPassword = async (userId: string) => {
+    setResettingPasswordUserId(userId);
+    
+    try {
+      const response = await fetch("/api/admin/users/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setResetPasswordData({
+          userId: data.data.userId,
+          userName: data.data.userName,
+          userEmail: data.data.userEmail,
+          newPassword: data.data.newPassword,
+        });
+        setShowPasswordModal(true);
+      } else {
+        alert(`Error: ${data.error || "Error al resetear contraseña"}`);
+      }
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      alert("Error al resetear contraseña");
+    } finally {
+      setResettingPasswordUserId(null);
+    }
+  };
+
+  const closePasswordModal = () => {
+    setShowPasswordModal(false);
+    setResetPasswordData(null);
   };
 
   if (loading) {
@@ -168,6 +206,9 @@ export default function UsersManagement() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-neutral-800 uppercase tracking-wider">
                       Fecha de Registro
                     </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-neutral-800 uppercase tracking-wider">
+                      Acciones
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-[#F4E7DB] divide-y divide-white">
@@ -214,6 +255,15 @@ export default function UsersManagement() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {new Date(user.createdAt).toLocaleDateString("es-ES")}
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <Button
+                          onClick={() => handleResetPassword(user.id)}
+                          disabled={resettingPasswordUserId === user.id}
+                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 text-xs"
+                        >
+                          {resettingPasswordUserId === user.id ? "Reseteando..." : "Resetear Contraseña"}
+                        </Button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -229,6 +279,61 @@ export default function UsersManagement() {
           )}
         </div>
       </main>
+
+      {/* Modal para mostrar nueva contraseña */}
+      {showPasswordModal && resetPasswordData && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-[#F4E7DB] rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 max-w-md w-full mx-4">
+            <div className="text-center mb-6">
+              <h3 className="text-xl font-semibold text-[#F15A25] mb-2">
+                🔑 Contraseña Reseteada
+              </h3>
+              <p className="text-sm text-gray-600">
+                La contraseña ha sido reseteada exitosamente
+              </p>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="bg-[#FCE6D5] rounded-lg p-4">
+                <label className="block text-sm font-medium text-[#F15A25] mb-1">Usuario:</label>
+                <p className="text-sm text-gray-900 font-medium">{resetPasswordData.userName}</p>
+              </div>
+              
+              <div className="bg-[#FCE6D5] rounded-lg p-4">
+                <label className="block text-sm font-medium text-[#F15A25] mb-1">Email:</label>
+                <p className="text-sm text-gray-900">{resetPasswordData.userEmail}</p>
+              </div>
+              
+              <div className="bg-[#FCE6D5] rounded-lg p-4">
+                <label className="block text-sm font-medium text-[#F15A25] mb-2">Nueva Contraseña:</label>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={resetPasswordData.newPassword}
+                    readOnly
+                    className="flex-1 px-3 py-2 border border-[#F15A25] rounded-lg bg-white text-sm font-mono text-[#F15A25] font-semibold"
+                  />
+                  <Button
+                    onClick={() => navigator.clipboard.writeText(resetPasswordData.newPassword)}
+                    className="bg-[#F15A25] hover:bg-[#E55A1A] text-white px-3 py-2 text-xs rounded-lg transition-colors"
+                  >
+                    📋 Copiar
+                  </Button>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-6 flex justify-center">
+              <Button
+                onClick={closePasswordModal}
+                className="bg-[#F15A25] hover:bg-[#E55A1A] text-white px-6 py-2 rounded-lg transition-colors"
+              >
+                ✅ Cerrar
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
