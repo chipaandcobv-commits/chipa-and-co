@@ -105,8 +105,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log('✅ [AUTH CONTEXT] Logout completed, redirecting...');
       }
 
+      // Limpiar el estado local inmediatamente
+      setUser(null);
+      setLoading(false);
+      
       // Redirigir al login con parámetros para evitar redirección automática
-      window.location.href = '/login?from=logout&t=' + Date.now();
+      window.location.href = '/login?from=logout&t=' + Date.now() + '&force=true';
       
     } catch (error) {
       console.error('❌ [AUTH CONTEXT] Logout error:', error);

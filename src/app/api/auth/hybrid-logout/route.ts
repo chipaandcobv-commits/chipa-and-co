@@ -88,12 +88,21 @@ export async function POST(request: NextRequest) {
       "next-auth.state"
     ];
 
-    // Limpiar todas las cookies de autenticación
+    // Limpiar todas las cookies de autenticación con múltiples configuraciones
     authCookies.forEach(cookieName => {
+      // Limpiar con diferentes configuraciones para asegurar que se elimine
       response.cookies.set(cookieName, "", {
         path: "/",
         expires: new Date(0),
         httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+      });
+      
+      // También limpiar sin httpOnly para cookies que puedan estar en el cliente
+      response.cookies.set(cookieName, "", {
+        path: "/",
+        expires: new Date(0),
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
       });

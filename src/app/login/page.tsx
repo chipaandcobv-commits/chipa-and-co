@@ -83,9 +83,9 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen w-full bg-[#F7EFE7] text-gray-900 font-urbanist flex items-center justify-center p-4">
-      <div className="max-w-md w-full space-y-8">
+      <div className="max-w-md lg:max-w-7xl w-full space-y-8">
         {/* Header */}
-        <div className="text-center">
+        <div className="text-center lg:max-w-md lg:mx-auto">
           <div className="mx-auto mb-4 flex justify-center">
             <Image
               src="/chipa-logo.png"
@@ -104,7 +104,7 @@ export default function LoginPage() {
         </div>
 
         {/* Form */}
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6 lg:max-w-md lg:mx-auto" onSubmit={handleSubmit}>
           <div className="relative rounded-2xl bg-[#FFE4CC] shadow-[0_4px_4px_rgba(0,0,0,0.25)] p-8 space-y-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
             {errors.general && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 text-sm">
@@ -214,7 +214,7 @@ export default function LoginPage() {
         </form>
 
         {/* Información del Sistema - Responsiva */}
-        <div className="mt-12 max-w-6xl mx-auto">
+        <div className="mt-12 w-full">
           {/* Benefits Section - Responsiva */}
           <section className="py-8 px-4">
             <div className="text-center mb-8">
@@ -226,33 +226,33 @@ export default function LoginPage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-              <div className="bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 text-center hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
-                <div className="text-3xl md:text-4xl mb-4">💎</div>
-                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
+              <div className="bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 md:p-8 text-center hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow aspect-[4/3] lg:aspect-[2/1] flex flex-col justify-center">
+                <div className="text-4xl md:text-5xl mb-4">💎</div>
+                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3 px-2">
                   Puntos por Compra
                 </h3>
-                <p className="text-sm md:text-base text-gray-600 leading-relaxed">
+                <p className="text-sm md:text-base text-gray-600 leading-relaxed px-2">
                   Gana puntos automáticamente con cada compra
                 </p>
               </div>
 
-              <div className="bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 text-center hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
-                <div className="text-3xl md:text-4xl mb-4">🎯</div>
-                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3">
+              <div className="bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 md:p-8 text-center hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow aspect-[4/3] lg:aspect-[2/1] flex flex-col justify-center">
+                <div className="text-4xl md:text-5xl mb-4">🎯</div>
+                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3 px-2">
                   Premios Variados
                 </h3>
-                <p className="text-sm md:text-base text-gray-600 leading-relaxed">
+                <p className="text-sm md:text-base text-gray-600 leading-relaxed px-2">
                   Descuentos, productos gratis y experiencias únicas
                 </p>
               </div>
 
-              <div className="bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 text-center hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow sm:col-span-2 lg:col-span-1">
-                <div className="text-3xl md:text-4xl mb-4">📱</div>
-                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3">
+              <div className="bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 md:p-8 text-center hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow sm:col-span-2 lg:col-span-1 aspect-[4/3] lg:aspect-[2/1] flex flex-col justify-center">
+                <div className="text-4xl md:text-5xl mb-4">📱</div>
+                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3 px-2">
                   Fácil de Usar
                 </h3>
-                <p className="text-sm md:text-base text-gray-600 leading-relaxed">
+                <p className="text-sm md:text-base text-gray-600 leading-relaxed px-2">
                   Solo presenta tu DNI y disfruta, sin complicaciones
                 </p>
               </div>
@@ -270,7 +270,7 @@ export default function LoginPage() {
               </p>
 
               <div className="pt-4 border-t border-gray-200 text-gray-500 text-xs md:text-sm">
-                <p>© 2025 Chipa&Co. Todos los derechos reservados.</p>
+                <p>© 2025 Chipa&Co</p>
               </div>
             </div>
           </footer>

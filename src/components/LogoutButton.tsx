@@ -30,13 +30,8 @@ export default function LogoutButton({
         return;
       }
 
-      // Ejecutar logout
+      // Ejecutar logout (ya maneja la redirección)
       await logout();
-      
-      // El logout ya maneja la redirección, pero por si acaso
-      setTimeout(() => {
-        window.location.replace("/login");
-      }, 1000);
       
     } catch (error) {
       console.error("Error during logout:", error);
