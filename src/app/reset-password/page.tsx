@@ -109,11 +109,13 @@ function ResetPasswordContent() {
         <div className="text-center">
           <div className="mx-auto mb-4 flex justify-center">
             <Image
-              src="/Chipá&Co.png"
+              src="/chipa-logo.png"
               alt="Chipa&Co Logo"
               width={120}
               height={120}
               className="object-contain"
+              priority
+              style={{ width: "auto", height: "auto" }}
             />
           </div>
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F15A25] mx-auto"></div>
@@ -130,11 +132,13 @@ function ResetPasswordContent() {
         <div className="text-center">
           <div className="mx-auto mb-4 flex justify-center">
             <Image
-              src="/Chipá&Co.png"
+              src="/chipa-logo.png"
               alt="Chipa&Co Logo"
               width={180}
               height={180}
               className="object-contain"
+              priority
+              style={{ width: "auto", height: "auto" }}
             />
           </div>
           <h2 className="text-3xl font-bold text-black">Restablecer contraseña</h2>
@@ -227,11 +231,13 @@ export default function ResetPasswordPage() {
         <div className="text-center">
           <div className="mx-auto mb-4 flex justify-center">
             <Image
-              src="/Chipá&Co.png"
+              src="/chipa-logo.png"
               alt="Chipa&Co Logo"
               width={120}
               height={120}
               className="object-contain"
+              priority
+              style={{ width: "auto", height: "auto" }}
             />
           </div>
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F15A25] mx-auto"></div>

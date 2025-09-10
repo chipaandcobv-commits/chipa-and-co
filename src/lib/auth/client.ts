@@ -21,16 +21,16 @@ export class AuthClient {
   /**
    * Verifica la autenticación usando el método más apropiado
    */
-  async checkAuth(): Promise<AuthResult> {
+  async checkAuth(forceRefresh = false): Promise<AuthResult> {
     if (process.env.NODE_ENV === 'development') {
-      console.log('🔍 [AUTH CLIENT] Starting auth check...');
+      console.log('🔍 [AUTH CLIENT] Starting auth check...', forceRefresh ? '(force refresh)' : '');
     }
 
     // Estrategia: Intentar NextAuth primero (para usuarios de Google)
     // Si falla, intentar JWT (para usuarios normales)
     
     // 1. Intentar NextAuth primero
-    const nextAuthResult = await this.checkNextAuth();
+    const nextAuthResult = await this.checkNextAuth(forceRefresh);
     if (nextAuthResult.success) {
       if (process.env.NODE_ENV === 'development') {
         console.log('✅ [AUTH CLIENT] NextAuth successful');
@@ -61,14 +61,37 @@ export class AuthClient {
   /**
    * Verifica autenticación NextAuth
    */
-  private async checkNextAuth(): Promise<AuthResult> {
+  private async checkNextAuth(forceRefresh = false): Promise<AuthResult> {
     try {
-      const response = await fetch('/api/auth/me-nextauth');
+      // Intentar con el endpoint específico de NextAuth primero
+      let url = '/api/auth/me-nextauth';
+      if (forceRefresh) {
+        url += `?t=${Date.now()}`;
+      }
+      let response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
           if (process.env.NODE_ENV === 'development') {
             console.log('✅ [AUTH CLIENT] NextAuth user found:', data.user);
+          }
+          return { success: true, user: data.user, method: 'nextauth' };
+        }
+      }
+
+      // Si falla, intentar con el endpoint unificado
+      url = '/api/user/me';
+      if (forceRefresh) {
+        url += `?t=${Date.now()}`;
+      }
+      response = await fetch(url, {
+        credentials: 'include'
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          if (process.env.NODE_ENV === 'development') {
+            console.log('✅ [AUTH CLIENT] Unified user found:', data.user);
           }
           return { success: true, user: data.user, method: 'nextauth' };
         }

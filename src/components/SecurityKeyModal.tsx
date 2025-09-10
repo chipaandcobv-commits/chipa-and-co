@@ -86,7 +86,7 @@ export default function SecurityKeyModal({ isOpen, onSuccess, onClose }: Securit
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
         <div className="text-center mb-6">
           <div className="w-16 h-16 bg-[#F15A25] rounded-full flex items-center justify-center mx-auto mb-4">

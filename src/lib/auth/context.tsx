@@ -4,7 +4,7 @@
 
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { AuthClient } from './client';
 import { User, AuthContextType } from './types';
 
@@ -17,7 +17,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   
   const authClient = AuthClient.getInstance();
 
-  const checkAuth = async ({ silent = false }: { silent?: boolean } = {}) => {
+  const checkAuth = async ({ silent = false, forceRefresh = false }: { silent?: boolean; forceRefresh?: boolean } = {}) => {
     try {
       // No verificar autenticación si estamos en proceso de logout
       if (isLoggingOut) {
@@ -30,10 +30,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!silent) setLoading(true);
       
       if (process.env.NODE_ENV === 'development') {
-        console.log('🔍 [AUTH CONTEXT] Checking authentication...');
+        console.log('🔍 [AUTH CONTEXT] Checking authentication...', forceRefresh ? '(force refresh)' : '');
       }
 
-      const result = await authClient.checkAuth();
+      const result = await authClient.checkAuth(forceRefresh);
       
       if (result.success && result.user) {
         setUser(result.user);
@@ -105,8 +105,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log('✅ [AUTH CONTEXT] Logout completed, redirecting...');
       }
 
-      // Redirigir al login
-      window.location.href = '/login?from=logout';
+      // Redirigir al login con parámetros para evitar redirección automática
+      window.location.href = '/login?from=logout&t=' + Date.now();
       
     } catch (error) {
       console.error('❌ [AUTH CONTEXT] Logout error:', error);
@@ -121,6 +121,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(newUser);
     setLoading(false);
   };
+
+  const refetch = useCallback(async () => {
+    // Forzar actualización de datos del usuario
+    await checkAuth({ silent: true, forceRefresh: true });
+  }, [checkAuth]);
 
   // Verificar autenticación al montar el componente
   useEffect(() => {
@@ -139,7 +144,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     login,
     logout,
     checkAuth,
-    refetch: checkAuth,
+    refetch,
     setAuthUser,
   };
 

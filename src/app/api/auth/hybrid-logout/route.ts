@@ -56,8 +56,13 @@ export async function POST(request: NextRequest) {
             where: { userId: user.id }
           });
 
+          // También eliminar todos los tokens de NextAuth del usuario
+          const deletedTokens = await prisma.account.deleteMany({
+            where: { userId: user.id }
+          });
+
           if (process.env.NODE_ENV === 'development') {
-            console.log(`✅ [HYBRID LOGOUT] Deleted ${deletedSessions.count} NextAuth sessions for user:`, user.email);
+            console.log(`✅ [HYBRID LOGOUT] Deleted ${deletedSessions.count} NextAuth sessions and ${deletedTokens.count} accounts for user:`, user.email);
           }
         }
       }

@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser } from "../../../../lib/auth-server";
+import { getCurrentUserUnified } from "../../../../lib/auth-helper";
 import { PrismaClient } from "../../../../generated/prisma";
 
 const prisma = new PrismaClient();
 
 export async function PUT(request: NextRequest) {
   try {
-    const currentUser = await getCurrentUser();
+    const currentUser = await getCurrentUserUnified();
 
     if (!currentUser) {
       return NextResponse.json(

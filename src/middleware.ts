@@ -256,13 +256,15 @@ export async function middleware(request: NextRequest) {
       const referer = request.headers.get("referer") || "";
       const url = new URL(request.url);
       const fromLogout = url.searchParams.get("from") === "logout";
-      const isFromLogout = fromLogout || referer.includes("/cliente") || referer.includes("/admin");
+      const hasTimestamp = url.searchParams.get("t");
+      const isFromLogout = fromLogout || hasTimestamp || referer.includes("/cliente") || referer.includes("/admin");
       
       if (process.env.NODE_ENV === 'development') {
         console.log("🔍 [MIDDLEWARE DEBUG] Auth route access:", { 
           pathname, 
           referer, 
           fromLogout,
+          hasTimestamp,
           isFromLogout 
         });
       }

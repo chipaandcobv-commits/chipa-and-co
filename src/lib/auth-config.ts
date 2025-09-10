@@ -12,33 +12,83 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      allowDangerousEmailAccountLinking: true, // Permitir vincular cuentas con el mismo email
     }),
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
       if (account?.provider === "google") {
-        // Buscar el usuario en la base de datos
-        const existingUser = await prisma.user.findUnique({
-          where: { email: user.email! },
-          select: {
-            id: true,
-            needsProfileCompletion: true,
-            role: true,
-          },
-        });
+        try {
+          console.log("🔍 [SIGNIN] Google OAuth attempt for:", user.email);
+          
+          // Buscar el usuario en la base de datos
+          const existingUser = await prisma.user.findUnique({
+            where: { email: user.email! },
+            select: {
+              id: true,
+              needsProfileCompletion: true,
+              role: true,
+              isGoogleUser: true,
+            },
+          });
 
-        if (existingUser) {
-          // El usuario ya existe, verificar si necesita completar perfil
-          if (!existingUser.needsProfileCompletion) {
-            // Usuario completo, redirigir según su rol
+          if (existingUser) {
+            console.log("✅ [SIGNIN] User exists, updating Google OAuth info");
+            
+            // Actualizar el usuario existente para permitir Google OAuth
+            await prisma.user.update({
+              where: { id: existingUser.id },
+              data: {
+                isGoogleUser: true,
+                image: user.image,
+                emailVerified: new Date(),
+              },
+            });
+            
+            // Crear o actualizar la cuenta de NextAuth
+            await prisma.account.upsert({
+              where: {
+                provider_providerAccountId: {
+                  provider: "google",
+                  providerAccountId: account.providerAccountId,
+                },
+              },
+              update: {
+                userId: existingUser.id,
+                type: account.type,
+                access_token: account.access_token,
+                refresh_token: account.refresh_token,
+                expires_at: account.expires_at,
+                token_type: account.token_type,
+                scope: account.scope,
+                id_token: account.id_token,
+                session_state: account.session_state,
+              },
+              create: {
+                userId: existingUser.id,
+                type: account.type,
+                provider: "google",
+                providerAccountId: account.providerAccountId,
+                access_token: account.access_token,
+                refresh_token: account.refresh_token,
+                expires_at: account.expires_at,
+                token_type: account.token_type,
+                scope: account.scope,
+                id_token: account.id_token,
+                session_state: account.session_state,
+              },
+            });
+            
+            console.log("✅ [SIGNIN] Account linked successfully");
             return true;
           }
-          // Usuario necesita completar perfil
+          
+          console.log("🆕 [SIGNIN] New user, allowing registration");
           return true;
+        } catch (error) {
+          console.error("❌ [SIGNIN] Error:", error);
+          return true; // Permitir el login incluso si hay error
         }
-        
-        // Usuario nuevo, permitir registro
-        return true;
       }
       
       return true;
@@ -125,6 +175,7 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
     error: "/login",
   },
+  debug: true,
   session: {
     strategy: "jwt",
   },

@@ -31,7 +31,7 @@ export function usePointsWarning(userPoints: number) {
           let warningMessage = '';
           if (shouldShowWarning) {
             const percentage = Math.round((userPoints / pointsLimit) * 100);
-            warningMessage = `¡Tienes ${userPoints.toLocaleString('es-AR')} puntos! Te recomendamos canjear algunos premios para aprovechar al máximo tu fidelización.`;
+            warningMessage = `¡Tienes ${userPoints.toLocaleString('es-AR')} puntos! Te recomendamos canjear algunos premios.`;
           }
 
           setState({

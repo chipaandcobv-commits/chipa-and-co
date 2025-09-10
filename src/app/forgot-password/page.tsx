@@ -66,11 +66,13 @@ export default function ForgotPasswordPage() {
         <div className="text-center">
           <div className="mx-auto mb-4 flex justify-center">
             <Image
-              src="/Chipá&Co.png"
+              src="/chipa-logo.png"
               alt="Chipa&Co Logo"
               width={180}
               height={180}
               className="object-contain"
+              priority
+              style={{ width: "auto", height: "auto" }}
             />
           </div>
           <h2 className="text-3xl font-bold text-black">Recuperar contraseña</h2>

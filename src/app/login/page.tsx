@@ -88,11 +88,13 @@ export default function LoginPage() {
         <div className="text-center">
           <div className="mx-auto mb-4 flex justify-center">
             <Image
-              src="/Chipá&Co.png"
+              src="/chipa-logo.png"
               alt="Chipa&Co Logo"
               width={180}
               height={180}
               className="object-contain"
+              priority
+              style={{ width: "auto", height: "auto" }}
             />
           </div>
           <h2 className="text-3xl font-bold text-black">Iniciar Sesión</h2>
@@ -211,66 +213,64 @@ export default function LoginPage() {
           </div>
         </form>
 
-        {/* Información del Sistema - Agregada al final */}
-        <div className="mt-12 max-w-4xl mx-auto">
-          {/* Benefits Section */}
+        {/* Información del Sistema - Responsiva */}
+        <div className="mt-12 max-w-6xl mx-auto">
+          {/* Benefits Section - Responsiva */}
           <section className="py-8 px-4">
             <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-[#F15A25] mb-4">
+              <h2 className="text-2xl md:text-3xl font-bold text-[#F15A25] mb-4">
                 Beneficios Exclusivos
               </h2>
-              <p className="text-base text-gray-600">
+              <p className="text-base md:text-lg text-gray-600">
                 Descubre todo lo que puedes obtener
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               <div className="bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 text-center hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
-                <div className="text-2xl mb-3">💎</div>
-                <h3 className="font-semibold text-gray-900 mb-2">
+                <div className="text-3xl md:text-4xl mb-4">💎</div>
+                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3">
                   Puntos por Compra
                 </h3>
-                <p className="text-sm text-gray-600 leading-relaxed">
+                <p className="text-sm md:text-base text-gray-600 leading-relaxed">
                   Gana puntos automáticamente con cada compra
                 </p>
               </div>
 
               <div className="bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 text-center hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
-                <div className="text-2xl mb-3">🎯</div>
-                <h3 className="font-semibold text-gray-900 mb-2">
+                <div className="text-3xl md:text-4xl mb-4">🎯</div>
+                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3">
                   Premios Variados
                 </h3>
-                <p className="text-sm text-gray-600 leading-relaxed">
+                <p className="text-sm md:text-base text-gray-600 leading-relaxed">
                   Descuentos, productos gratis y experiencias únicas
                 </p>
               </div>
 
               <div className="bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 text-center hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow sm:col-span-2 lg:col-span-1">
-                <div className="text-2xl mb-3">📱</div>
-                <h3 className="font-semibold text-gray-900 mb-2">
+                <div className="text-3xl md:text-4xl mb-4">📱</div>
+                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3">
                   Fácil de Usar
                 </h3>
-                <p className="text-sm text-gray-600 leading-relaxed">
+                <p className="text-sm md:text-base text-gray-600 leading-relaxed">
                   Solo presenta tu DNI y disfruta, sin complicaciones
                 </p>
               </div>
             </div>
           </section>
 
-          {/* Footer */}
+          {/* Footer - Responsivo */}
           <footer className="py-8 px-4">
-            <div className="bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 text-center">
-              <h3 className="text-lg font-semibold text-[#F15A25] mb-4">
+            <div className="bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 md:p-8 text-center">
+              <h3 className="text-lg md:text-xl font-semibold text-[#F15A25] mb-4">
                 Chipa&Co - Sistema de Fidelización
               </h3>
-              <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+              <p className="text-sm md:text-base text-gray-600 mb-6 leading-relaxed">
                 La forma más fácil de ganar puntos y obtener premios increíbles.
               </p>
 
-              <div className="pt-4 border-t border-gray-200 text-gray-500 text-xs">
-                <p>
-                  © 2025 Chipa&Co. Todos los derechos reservados.
-                </p>
+              <div className="pt-4 border-t border-gray-200 text-gray-500 text-xs md:text-sm">
+                <p>© 2025 Chipa&Co. Todos los derechos reservados.</p>
               </div>
             </div>
           </footer>

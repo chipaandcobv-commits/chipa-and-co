@@ -31,8 +31,8 @@ export default function RewardConfirmationModal({
   const canAfford = userPoints >= reward.pointsCost;
 
   return (
-    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-[#F7EFE7] rounded-2xl max-w-xs w-full max-h-[80vh] overflow-y-auto border border-[#FCE6D5] shadow-xl">
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-[60] p-4" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
+      <div className="bg-[#F7EFE7] rounded-2xl max-w-xs w-full max-h-[80vh] overflow-y-auto border border-[#FCE6D5] shadow-xl relative">
         {/* Header */}
         <div className="flex items-center justify-between p-3 border-b border-[#FCE6D5]">
           <h3 className="text-base font-bold text-[#F15A25]">Confirmar Canje</h3>

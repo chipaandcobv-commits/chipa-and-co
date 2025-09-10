@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "../../../../generated/prisma";
-import { getCurrentUser } from "../../../../lib/auth-server";
+import { getCurrentUserUnified } from "../../../../lib/auth-helper";
 
 const prisma = new PrismaClient();
 
 // POST - Canjear premio
 export async function POST(request: NextRequest) {
   try {
-    const currentUser = await getCurrentUser();
+    const currentUser = await getCurrentUserUnified();
 
     if (!currentUser) {
       return NextResponse.json(

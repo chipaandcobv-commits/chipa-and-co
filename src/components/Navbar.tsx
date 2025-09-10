@@ -54,9 +54,9 @@ export default function AuthHeader() {
                      {/* Logo + título */}
            <div className="flex items-center space-x-2 md:space-x-3 group">
              <img 
-               src="/Chipá&Co.png" 
+               src="/chipa-logo.png" 
                alt="Chipá & Co. Logo" 
-               className="h-24 w-24 sm:h-28 sm:w-28 md:h-36 md:w-36 lg:h-36 lg:w-36 object-contain group-hover:scale-105 transition-all duration-300"
+               className="h-24 w-24 sm:h-24 sm:w-24 md:h-22 md:w-22 lg:h-24 lg:w-24 object-contain group-hover:scale-105 transition-all duration-300"
              />
            </div>
 
@@ -214,9 +214,9 @@ export default function AuthHeader() {
                   <div className="px-4 py-3 text-sm text-gray-700 border-b-2 border-[#F15A25]/20 bg-[#F4E7DB] rounded-xl">
                     <div className="flex items-center space-x-3">
                       <img 
-                        src="/Chipá&Co.png" 
+                        src="/chipa-logo.png" 
                         alt="Chipá & Co. Logo" 
-                        className="h-18 w-18 object-contain"
+                        className="h-16 w-16 object-contain"
                       />
                       <div>
                         <p className="font-semibold text-[#F15A25]">Panel de Administración</p>
