@@ -13,7 +13,7 @@ interface Product {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
-  totalSales: number;
+  totalSales: number; // Ahora representa cantidad de productos vendidos
   _count: {
     orderItems: number;
   };
@@ -286,7 +286,7 @@ export default function ProductsManagement() {
                       Estado
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-neutral-800 uppercase tracking-wider">
-                      Total Ventas
+                      Productos Vendidos
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-neutral-800 uppercase tracking-wider">
                       Fecha Creación
@@ -326,7 +326,7 @@ export default function ProductsManagement() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        ${product.totalSales.toFixed(2)}
+                        {(product.totalSales || 0).toLocaleString()} unidades
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {new Date(product.createdAt).toLocaleDateString(
@@ -336,7 +336,7 @@ export default function ProductsManagement() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex space-x-2">
                         <Button
-                            variant="secondary"
+                            variant="primary"
                             size="sm"
                             onClick={() => handleEdit(product)}
                             disabled={showForm}

@@ -38,21 +38,29 @@ interface Analytics {
     totalClaims: number;
     pointsSpent: number;
   };
+  products: Array<{
+    id: string;
+    name: string;
+  }>;
 }
 
 export default function AdminDashboard() {
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedProductId, setSelectedProductId] = useState<string>("");
   const router = useRouter();
 
   useEffect(() => {
     fetchAnalytics();
-  }, []);
+  }, [selectedProductId]);
 
   const fetchAnalytics = async () => {
     try {
-      const response = await fetch("/api/admin/analytics?period=30");
+      const url = selectedProductId 
+        ? `/api/admin/analytics?period=30&productId=${selectedProductId}`
+        : "/api/admin/analytics?period=30";
+      const response = await fetch(url);
       const data = await response.json();
 
       if (data.success) {
@@ -94,7 +102,7 @@ export default function AdminDashboard() {
         .reduce((acc, date, index) => {
           const dayValues = Object.values(analytics.ordersByDay).slice(-7)[index];
           acc[date] = {
-            total: dayValues.total,
+            total: dayValues.orders, // Cambiar a cantidad de órdenes
             quantity: dayValues.orders,
             sales: dayValues.orders,
           };
@@ -206,9 +214,23 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Chart */}
           <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
-            <h2 className="text-lg font-semibold text-[#F15A25] mb-4">
-              Ventas de los últimos 7 días
-            </h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold text-[#F15A25]">
+                Ventas de los últimos 7 días
+              </h2>
+              <select
+                value={selectedProductId}
+                onChange={(e) => setSelectedProductId(e.target.value)}
+                className="px-3 py-2 border border-[#F15A25]/20 rounded-lg text-sm bg-[#F4E7DB] text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#F15A25] focus:border-[#F15A25]"
+              >
+                <option value="">Todos los productos</option>
+                {analytics?.products.map((product) => (
+                  <option key={product.id} value={product.id}>
+                    {product.name}
+                  </option>
+                ))}
+              </select>
+            </div>
             <SimpleChart data={chartData} />
           </div>
 
@@ -238,9 +260,6 @@ export default function AdminDashboard() {
                   </div>
                   <div className="text-right">
                     <p className="font-medium text-gray-900">
-                      ${item.totalSales.toLocaleString()}
-                    </p>
-                    <p className="text-sm text-gray-600">
                       {item.totalQuantity} unidades
                     </p>
                   </div>

@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
 
     const url = new URL(request.url);
     const period = url.searchParams.get("period") || "30"; // días por defecto
+    const productId = url.searchParams.get("productId"); // filtro por producto
 
     const periodDays = parseInt(period);
     const startDate = new Date();
@@ -40,6 +41,13 @@ export async function GET(request: NextRequest) {
         createdAt: {
           gte: startDate,
         },
+        ...(productId && {
+          items: {
+            some: {
+              productId: productId,
+            },
+          },
+        }),
       },
       include: {
         items: {
@@ -67,9 +75,21 @@ export async function GET(request: NextRequest) {
         if (!acc[day]) {
           acc[day] = { total: 0, points: 0, orders: 0 };
         }
-        acc[day].total += order.totalAmount;
+        
+        if (productId) {
+          // Si hay filtro por producto, solo contar los items de ese producto
+          const productItems = order.items.filter(item => item.productId === productId);
+          const productTotal = productItems.reduce((sum, item) => sum + item.total, 0);
+          const productQuantity = productItems.reduce((sum, item) => sum + item.quantity, 0);
+          
+          acc[day].total += productTotal;
+          acc[day].orders += productQuantity; // Usar cantidad de productos en lugar de número de órdenes
+        } else {
+          acc[day].total += order.totalAmount;
+          acc[day].orders += 1;
+        }
+        
         acc[day].points += order.totalPoints;
-        acc[day].orders += 1;
         return acc;
       },
       {}
@@ -92,7 +112,7 @@ export async function GET(request: NextRequest) {
       },
       orderBy: {
         _sum: {
-          total: "desc",
+          quantity: "desc",
         },
       },
       take: 5,
@@ -148,6 +168,16 @@ export async function GET(request: NextRequest) {
     const totalHistoricPoints = pointsStats._sum.puntosHistoricos || 0;
     const totalCurrentPoints = pointsStats._sum.puntos || 0;
 
+    // Obtener lista de productos para el filtro
+    const products = await prisma.product.findMany({
+      where: { isActive: true },
+      select: {
+        id: true,
+        name: true,
+      },
+      orderBy: { name: "asc" },
+    });
+
     return NextResponse.json({
       success: true,
       analytics: {
@@ -168,6 +198,7 @@ export async function GET(request: NextRequest) {
           totalClaims: rewardClaims.length,
           pointsSpent: totalPointsSpent,
         },
+        products, // Lista de productos para el filtro
         period: periodDays,
       },
     });

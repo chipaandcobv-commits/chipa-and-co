@@ -156,7 +156,7 @@ export default function AuthHeader() {
                      {/* Logout integrado */}
                      <div
                        onClick={handleLogout}
-                       className="relative px-4 py-3 rounded-xl transition-all duration-300 ease-out group cursor-pointer bg-red hover:bg-red-50 border border-red-200 hover:border-red-300 text-red-600 hover:text-red-700 hover:shadow-md"
+                       className="relative px-4 py-3 rounded-xl transition-all duration-300 ease-out group cursor-pointer bg-[#F7EFE7] hover:bg-red-600 border border-[#F15A25]/20 hover:border-red-600 text-gray-600 hover:text-white hover:shadow-md"
                      >
                        <div className="flex items-center space-x-2">
                          <LogoutIcon className="h-5 w-5" />

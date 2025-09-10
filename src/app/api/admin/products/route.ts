@@ -14,7 +14,7 @@ export async function GET() {
       include: {
         orderItems: {
           select: {
-            total: true,
+            quantity: true,
           },
         },
         _count: {
@@ -25,10 +25,10 @@ export async function GET() {
       },
     });
 
-    // Calcular el total de ventas para cada producto
+    // Calcular el total de productos vendidos para cada producto
     const productsWithSales = products.map(product => ({
       ...product,
-      totalSales: product.orderItems.reduce((sum, item) => sum + item.total, 0),
+      totalSales: product.orderItems.reduce((sum, item) => sum + (item.quantity || 0), 0),
     }));
 
     return NextResponse.json({

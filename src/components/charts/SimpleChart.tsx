@@ -95,8 +95,7 @@ export default function SimpleChart({ data }: SimpleChartProps) {
                   className="hover:r-6 transition-all cursor-pointer"
                 >
                   <title>
-                    {new Date(date).toLocaleDateString("es-ES")}: $
-                    {value.total.toFixed(2)}
+                    {new Date(date).toLocaleDateString("es-ES")}: {value.total} productos
                   </title>
                 </circle>
 
@@ -139,7 +138,7 @@ export default function SimpleChart({ data }: SimpleChartProps) {
                   textAnchor="end"
                   className="text-xs fill-gray-700"
                 >
-                  ${value.toFixed(0)}
+                  {value.toFixed(0)}
                 </text>
               </g>
             );
@@ -152,7 +151,7 @@ export default function SimpleChart({ data }: SimpleChartProps) {
         <div className="flex items-center space-x-4 text-sm text-gray-700">
           <div className="flex items-center">
             <div className="w-3 h-3 bg-orange-500 rounded-full mr-2"></div>
-            Ventas diarias ($)
+            Productos vendidos
           </div>
         </div>
       </div>
