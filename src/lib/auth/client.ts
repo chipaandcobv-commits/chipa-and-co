@@ -201,11 +201,31 @@ export class AuthClient {
       'auth-token',
       'next-auth.session-token',
       'next-auth.csrf-token',
-      'next-auth.callback-url'
+      'next-auth.callback-url',
+      'next-auth.state',
+      '__Secure-next-auth.session-token',
+      '__Host-next-auth.csrf-token'
     ];
 
     authCookies.forEach(cookieName => {
-      document.cookie = `${cookieName}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+      // Limpiar con diferentes configuraciones para asegurar que se elimine
+      const domains = [
+        window.location.hostname,
+        `.${window.location.hostname}`,
+        window.location.hostname.split('.').slice(-2).join('.'),
+        `.${window.location.hostname.split('.').slice(-2).join('.')}`
+      ];
+      
+      const paths = ['/', '/api', '/auth'];
+      
+      domains.forEach(domain => {
+        paths.forEach(path => {
+          document.cookie = `${cookieName}=; path=${path}; domain=${domain}; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+          document.cookie = `${cookieName}=; path=${path}; domain=${domain}; expires=Thu, 01 Jan 1970 00:00:00 GMT; secure`;
+          document.cookie = `${cookieName}=; path=${path}; domain=${domain}; expires=Thu, 01 Jan 1970 00:00:00 GMT; samesite=strict`;
+          document.cookie = `${cookieName}=; path=${path}; domain=${domain}; expires=Thu, 01 Jan 1970 00:00:00 GMT; samesite=lax`;
+        });
+      });
     });
 
     if (process.env.NODE_ENV === 'development') {

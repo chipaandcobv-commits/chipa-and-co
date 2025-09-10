@@ -258,7 +258,8 @@ export async function middleware(request: NextRequest) {
       const fromLogout = url.searchParams.get("from") === "logout";
       const hasTimestamp = url.searchParams.get("t");
       const forceLogout = url.searchParams.get("force") === "true";
-      const isFromLogout = fromLogout || hasTimestamp || forceLogout || referer.includes("/cliente") || referer.includes("/admin");
+      const cleared = url.searchParams.get("cleared") === "true";
+      const isFromLogout = (fromLogout && forceLogout) || (fromLogout && hasTimestamp) || cleared;
       
       if (process.env.NODE_ENV === 'development') {
         console.log("🔍 [MIDDLEWARE DEBUG] Auth route access:", { 

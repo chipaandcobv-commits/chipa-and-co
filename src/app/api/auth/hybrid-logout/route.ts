@@ -85,26 +85,26 @@ export async function POST(request: NextRequest) {
       "next-auth.session-token",
       "next-auth.csrf-token", 
       "next-auth.callback-url",
-      "next-auth.state"
+      "next-auth.state",
+      "__Secure-next-auth.session-token",
+      "__Host-next-auth.csrf-token"
     ];
 
     // Limpiar todas las cookies de autenticación con múltiples configuraciones
     authCookies.forEach(cookieName => {
       // Limpiar con diferentes configuraciones para asegurar que se elimine
-      response.cookies.set(cookieName, "", {
-        path: "/",
-        expires: new Date(0),
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-      });
+      const cookieOptions = [
+        { path: "/", httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax" as const },
+        { path: "/", httpOnly: false, secure: process.env.NODE_ENV === "production", sameSite: "lax" as const },
+        { path: "/", httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict" as const },
+        { path: "/", httpOnly: false, secure: process.env.NODE_ENV === "production", sameSite: "strict" as const }
+      ];
       
-      // También limpiar sin httpOnly para cookies que puedan estar en el cliente
-      response.cookies.set(cookieName, "", {
-        path: "/",
-        expires: new Date(0),
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+      cookieOptions.forEach(options => {
+        response.cookies.set(cookieName, "", {
+          ...options,
+          expires: new Date(0),
+        });
       });
     });
 

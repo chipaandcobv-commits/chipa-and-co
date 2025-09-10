@@ -109,15 +109,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
       setLoading(false);
       
-      // Redirigir al login con parámetros para evitar redirección automática
-      window.location.href = '/login?from=logout&t=' + Date.now() + '&force=true';
+      // Redirigir al login con parámetros más específicos para evitar redirección automática
+      const logoutUrl = `/login?from=logout&t=${Date.now()}&force=true&cleared=true`;
+      window.location.replace(logoutUrl);
       
     } catch (error) {
       console.error('❌ [AUTH CONTEXT] Logout error:', error);
       setUser(null);
       setLoading(false);
       setIsLoggingOut(false);
-      window.location.href = '/login';
+      window.location.replace('/login?from=logout&force=true&error=true');
     }
   };
 
