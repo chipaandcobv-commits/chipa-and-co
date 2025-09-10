@@ -4,15 +4,18 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Button from "../../../components/ui/Button";
 import Input from "../../../components/ui/Input";
+import SecurityKeyModal from "../../../components/SecurityKeyModal";
 import { DashboardIcon, LogoutIcon, EyeIcon, EyeOffIcon } from "../../../components/icons/Icons";
+import { Settings } from "lucide-react";
 
 interface SystemConfig {
   pointsPerPeso: number;
+  pointsLimit: number;
 }
 
 export default function ConfigManagement() {
-  const [config, setConfig] = useState<SystemConfig>({ pointsPerPeso: 1 });
-  const [originalConfig, setOriginalConfig] = useState<SystemConfig>({ pointsPerPeso: 1 });
+  const [config, setConfig] = useState<SystemConfig>({ pointsPerPeso: 1, pointsLimit: 10000 });
+  const [originalConfig, setOriginalConfig] = useState<SystemConfig>({ pointsPerPeso: 1, pointsLimit: 10000 });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [recalculating, setRecalculating] = useState(false);
@@ -38,12 +41,16 @@ export default function ConfigManagement() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showSecurityKeyModal, setShowSecurityKeyModal] = useState(false);
+  const [isSecurityKeyValidated, setIsSecurityKeyValidated] = useState(false);
   const router = useRouter();
 
   // Cargar configuración actual
   useEffect(() => {
     fetchConfig();
   }, []);
+
+  // No mostrar modal automáticamente, solo cuando el usuario haga clic
 
   const fetchConfig = async () => {
     try {
@@ -170,7 +177,9 @@ export default function ConfigManagement() {
   };
 
   // Verificar si la configuración ha cambiado
-  const hasConfigChanged = originalConfig.pointsPerPeso !== config.pointsPerPeso;
+  const hasPointsPerPesoChanged = originalConfig.pointsPerPeso !== config.pointsPerPeso;
+  const hasPointsLimitChanged = originalConfig.pointsLimit !== config.pointsLimit;
+  const hasConfigChanged = hasPointsPerPesoChanged || hasPointsLimitChanged;
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -218,6 +227,16 @@ export default function ConfigManagement() {
     }
   };
 
+  const handleSecurityKeySuccess = () => {
+    setIsSecurityKeyValidated(true);
+    setShowSecurityKeyModal(false);
+  };
+
+  const handleSecurityKeyClose = () => {
+    // Solo cerrar el modal, no redirigir
+    setShowSecurityKeyModal(false);
+  };
+
   const handleLogout = async () => {
     try {
       await fetch("/api/auth/logout", { method: "POST" });
@@ -234,6 +253,54 @@ export default function ConfigManagement() {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F15A25] mx-auto"></div>
           <p className="mt-4 text-gray-600">Cargando configuración...</p>
         </div>
+      </div>
+    );
+  }
+
+  // Si no se ha validado la clave de seguridad, mostrar contenido bloqueado
+  if (!isSecurityKeyValidated) {
+    return (
+      <div className="min-h-screen w-full bg-[#F7EFE7] text-gray-900 font-urbanist">
+        {/* Content */}
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-[#F15A25] mb-4">
+                🔐 Configuración del Sistema
+              </h1>
+              <p className="text-gray-700 text-lg">
+                Esta sección requiere autenticación adicional por seguridad
+              </p>
+            </div>
+            
+            <div className="max-w-md mx-auto">
+              <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-8 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
+                <div className="w-16 h-16 bg-[#F15A25] rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Settings className="w-8 h-8 text-white" />
+                </div>
+                <h2 className="text-xl font-semibold text-[#F15A25] mb-4">
+                  Acceso Restringido
+                </h2>
+                <p className="text-gray-700 mb-6">
+                  Para acceder a la configuración del sistema, necesitas ingresar la clave de seguridad.
+                </p>
+                <Button
+                  onClick={() => setShowSecurityKeyModal(true)}
+                  className="w-full bg-[#F15A25] hover:bg-[#E55A1A] text-white"
+                >
+                  🔑 Ingresar Clave de Seguridad
+                </Button>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        {/* Modal de clave de seguridad */}
+        <SecurityKeyModal
+          isOpen={showSecurityKeyModal}
+          onSuccess={handleSecurityKeySuccess}
+          onClose={() => setShowSecurityKeyModal(false)}
+        />
       </div>
     );
   }
@@ -257,21 +324,21 @@ export default function ConfigManagement() {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Configuración del Sistema */}
+          {/* Configuración de Puntos por Peso */}
           <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
             <div className="mb-6">
               <h1 className="text-2xl font-bold text-[#F15A25] mb-2">
-                Configuración del Sistema
+                💰 Puntos por Peso
               </h1>
               <p className="text-gray-700">
-                Gestiona la configuración general del sistema de puntos
+                Configura cuántos puntos se otorgan por cada peso gastado
               </p>
             </div>
 
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Puntos por Peso
+                  Equivalencia de Puntos
                 </label>
                 <p className="text-sm text-gray-500 mb-3">
                   Define cuántos puntos se otorgan por cada peso gastado. 
@@ -290,9 +357,9 @@ export default function ConfigManagement() {
                     placeholder="1"
                     min="0.01"
                     step="0.01"
-                    className={hasConfigChanged ? "border-[#F59E0B] ring-2 ring-[#F59E0B] ring-opacity-20" : ""}
+                    className={originalConfig.pointsPerPeso !== config.pointsPerPeso ? "border-[#F59E0B] ring-2 ring-[#F59E0B] ring-opacity-20" : ""}
                   />
-                  {hasConfigChanged && (
+                  {originalConfig.pointsPerPeso !== config.pointsPerPeso && (
                     <div className="absolute -top-2 -right-2 bg-[#F59E0B] text-white text-xs px-2 py-1 rounded-full">
                       Cambió
                     </div>
@@ -300,7 +367,7 @@ export default function ConfigManagement() {
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
                   Actual: $1 peso = {config.pointsPerPeso} punto(s)
-                  {hasConfigChanged && (
+                  {originalConfig.pointsPerPeso !== config.pointsPerPeso && (
                     <span className="text-[#F59E0B] font-medium">
                       {" "}(antes: {originalConfig.pointsPerPeso})
                     </span>
@@ -318,7 +385,7 @@ export default function ConfigManagement() {
                     Guardar Configuración
                   </Button>
                   
-                  {hasConfigChanged && (
+                  {originalConfig.pointsPerPeso !== config.pointsPerPeso && (
                     <Button
                       onClick={handleRecalculatePoints}
                       isLoading={recalculating}
@@ -360,7 +427,7 @@ export default function ConfigManagement() {
                   </div>
                 )}
                 
-                {hasConfigChanged && (
+                {originalConfig.pointsPerPeso !== config.pointsPerPeso && (
                   <div className="mt-4 p-4 bg-[#FEF3C7] border border-[#F59E0B] rounded-lg">
                     <div className="flex items-center justify-between mb-3">
                       <h4 className="font-medium text-[#D97706]">⚠️ Cambio en Sistema de Puntos</h4>
@@ -412,7 +479,7 @@ export default function ConfigManagement() {
                 </p>
               </div>
               
-              {hasConfigChanged && (
+              {originalConfig.pointsPerPeso !== config.pointsPerPeso && (
                 <div className="mt-3 p-3 bg-[#FEF3C7] rounded border border-[#F59E0B]">
                   <h4 className="text-sm font-medium text-[#D97706] mb-2">📊 Impacto del Cambio</h4>
                   <div className="text-xs text-[#92400E] space-y-1">
@@ -425,7 +492,115 @@ export default function ConfigManagement() {
               
               <div className="mt-3 p-3 bg-white rounded border border-[#F15A25]">
                 <p className="text-sm text-[#F15A25] font-medium">
-                  💡 Configuración de Puntos: Define la relación entre pesos gastados y puntos otorgados
+                  💡 Define la relación entre pesos gastados y puntos otorgados
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Configuración de Límite de Puntos */}
+          <div className="relative rounded-2xl bg-[#F4E7DB] shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition-shadow">
+            <div className="mb-6">
+              <h1 className="text-2xl font-bold text-[#F15A25] mb-2">
+                ⚠️ Límite de Puntos
+              </h1>
+              <p className="text-gray-700">
+                Configura el límite para mostrar advertencias a los usuarios
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Límite Máximo de Puntos
+                </label>
+                <p className="text-sm text-gray-500 mb-3">
+                  Define el límite máximo de puntos que puede acumular un usuario antes de mostrar una advertencia sutil. 
+                  <strong className="text-[#F15A25]"> Configuración actual: {config.pointsLimit.toLocaleString("es-AR")} puntos</strong>
+                </p>
+                <div className="relative">
+                  <Input
+                    type="number"
+                    value={config.pointsLimit}
+                    onChange={(e) =>
+                      setConfig({
+                        ...config,
+                        pointsLimit: parseInt(e.target.value) || 10000,
+                      })
+                    }
+                    placeholder="10000"
+                    min="1000"
+                    step="1000"
+                    className={originalConfig.pointsLimit !== config.pointsLimit ? "border-[#F59E0B] ring-2 ring-[#F59E0B] ring-opacity-20" : ""}
+                  />
+                  {originalConfig.pointsLimit !== config.pointsLimit && (
+                    <div className="absolute -top-2 -right-2 bg-[#F59E0B] text-white text-xs px-2 py-1 rounded-full">
+                      Cambió
+                    </div>
+                  )}
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Actual: {config.pointsLimit.toLocaleString("es-AR")} puntos máximo
+                  {originalConfig.pointsLimit !== config.pointsLimit && (
+                    <span className="text-[#F59E0B] font-medium">
+                      {" "}(antes: {originalConfig.pointsLimit.toLocaleString("es-AR")})
+                    </span>
+                  )}
+                </p>
+                <div className="mt-2 p-3 bg-[#F0F9FF] rounded-lg border border-blue-200">
+                  <p className="text-sm text-blue-800">
+                    💡 <strong>Advertencia:</strong> Cuando un usuario alcance el 50% del límite ({Math.round(config.pointsLimit * 0.5).toLocaleString("es-AR")} puntos), 
+                    se le mostrará una notificación sutil sugiriendo que use sus puntos.
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-white">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button
+                    onClick={handleSave}
+                    isLoading={saving}
+                    className="flex-1 bg-[#F15A25] hover:bg-[#E55A1A] text-white"
+                  >
+                    Guardar Configuración
+                  </Button>
+                  
+                  {originalConfig.pointsLimit !== config.pointsLimit && (
+                    <Button
+                      onClick={() => {
+                        setConfig(originalConfig);
+                        setMessage("Cambios revertidos");
+                        setTimeout(() => setMessage(""), 3000);
+                      }}
+                      size="sm"
+                      variant="outline"
+                      className="border-[#F59E0B] text-[#F59E0B] hover:bg-[#FEF3C7]"
+                    >
+                      ↩️ Revertir
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Preview */}
+            <div className="mt-8 p-4 bg-[#FCE6D5] rounded-lg">
+              <h3 className="font-medium text-[#F15A25] mb-2">Vista Previa</h3>
+              <div className="text-sm text-gray-700 space-y-1">
+                <p>
+                  • Límite de puntos: <span className="text-[#F15A25] font-semibold">{config.pointsLimit.toLocaleString("es-AR")} puntos</span>
+                </p>
+                <p>
+                  • Advertencia al 50%: <span className="text-[#F59E0B] font-semibold">{Math.round(config.pointsLimit * 0.5).toLocaleString("es-AR")} puntos</span>
+                </p>
+                <p>
+                  • Usuarios con advertencia: <span className="text-[#DC2626] font-semibold">≥ {Math.round(config.pointsLimit * 0.5).toLocaleString("es-AR")} puntos</span>
+                </p>
+              </div>
+              
+              <div className="mt-3 p-3 bg-white rounded border border-[#F15A25]">
+                <p className="text-sm text-[#F15A25] font-medium">
+                  💡 Controla cuándo mostrar advertencias para incentivar el uso de puntos
                 </p>
               </div>
             </div>
@@ -595,6 +770,13 @@ export default function ConfigManagement() {
           </div>
         </div>
       </main>
+
+      {/* Modal de clave de seguridad */}
+      <SecurityKeyModal
+        isOpen={showSecurityKeyModal}
+        onSuccess={handleSecurityKeySuccess}
+        onClose={handleSecurityKeyClose}
+      />
     </div>
   );
 }

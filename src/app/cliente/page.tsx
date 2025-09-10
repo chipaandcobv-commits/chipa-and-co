@@ -4,8 +4,10 @@ import { useState, useCallback, useMemo } from "react";
 import { useAuth } from "@/lib/auth";
 import { useRewards } from "@/lib/hooks/useRewards";
 import { useClaimReward } from "@/lib/hooks/useClaimReward";
+import { usePointsWarning } from "@/lib/hooks/usePointsWarning";
 import { GiftCardIcon } from "@/components/icons/Icons";
 import RewardConfirmationModal from "@/components/RewardConfirmationModal";
+import PointsWarningBanner from "@/components/PointsWarningBanner";
 import { CldImage } from "next-cloudinary";
 
 export default function ClientePage() {
@@ -21,6 +23,9 @@ export default function ClientePage() {
   
   // Memoizar los puntos del usuario
   const userPoints = useMemo(() => (user?.puntos || 0), [user?.puntos]);
+  
+  // Hook para la advertencia de puntos
+  const pointsWarning = usePointsWarning(userPoints);
 
   const handleRewardClick = useCallback((reward: any) => {
     setSelectedReward(reward);
@@ -209,6 +214,14 @@ export default function ClientePage() {
     <div className="min-h-svh w-full bg-[#F7EFE7] text-gray-900 font-urbanist">
       {/* FRAME - viewport centrado como móvil */}
       <div className="mx-auto max-w-[480px] min-h-svh relative pb-28">
+        {/* Banner de advertencia de puntos */}
+        <PointsWarningBanner
+          shouldShow={pointsWarning.shouldShowWarning}
+          message={pointsWarning.warningMessage}
+          userPoints={userPoints}
+          pointsLimit={pointsWarning.pointsLimit}
+        />
+        
         {/* Mensaje de notificación */}
         {notificationMessage}
         

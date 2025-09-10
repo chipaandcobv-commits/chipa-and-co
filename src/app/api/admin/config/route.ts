@@ -14,6 +14,7 @@ export async function GET() {
     // Configuración por defecto si no existe
     const defaultConfigs = {
       pointsPerPeso: "1", // 1 peso = 1 punto por defecto
+      pointsLimit: "10000", // Límite de puntos por defecto
       systemName: "Chipa&Co - Sistema de Fidelización",
       welcomeMessage: "¡Bienvenido a Chipa&Co! Presenta tu DNI para ganar puntos.",
     };
@@ -80,6 +81,19 @@ export async function PUT(request: NextRequest) {
       }
     }
 
+    if (configs.pointsLimit) {
+      const pointsLimit = parseInt(configs.pointsLimit);
+      if (isNaN(pointsLimit) || pointsLimit <= 0) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "El límite de puntos debe ser un número entero mayor a 0",
+          },
+          { status: 400 }
+        );
+      }
+    }
+
     // Actualizar o crear configuraciones
     const updatedConfigs = [];
     for (const [key, value] of Object.entries(configs)) {
@@ -123,6 +137,7 @@ export async function PUT(request: NextRequest) {
 function getConfigDescription(key: string): string {
   const descriptions: Record<string, string> = {
     pointsPerPeso: "Cantidad de puntos que se otorgan por cada peso gastado (1 = 1 peso = 1 punto)",
+    pointsLimit: "Límite máximo de puntos que puede acumular un usuario antes de mostrar advertencia",
     systemName: "Nombre del sistema de fidelización",
     welcomeMessage: "Mensaje de bienvenida para usuarios",
   };
