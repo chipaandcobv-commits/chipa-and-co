@@ -9,10 +9,18 @@ const ClientNavbar = memo(() => {
   const pathname = usePathname();
   const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false);
+  const [hasNavigated, setHasNavigated] = useState(false);
 
   useEffect(() => {
     setIsLoaded(true);
   }, []);
+
+  // Detectar cuando el usuario navega entre páginas
+  useEffect(() => {
+    if (isLoaded) {
+      setHasNavigated(true);
+    }
+  }, [pathname, isLoaded]);
 
   // Precargar todas las páginas del cliente para navegación más rápida
   useEffect(() => {
@@ -61,9 +69,9 @@ const ClientNavbar = memo(() => {
     return 182.4 - 55; // home por defecto
   }, [pathname]);
 
-  // Posición inicial siempre diferente para forzar animación
-  const initialPosition = "48%"; // Siempre empieza en home
-  const initialPathPosition = 182.4 - 55; // Siempre empieza en home
+  // Posición inicial: sin animación en la primera carga, con animación en navegación
+  const initialPosition = hasNavigated ? "18%" : targetPosition; // Sin animación en primera carga
+  const initialPathPosition = hasNavigated ? 68.4 - 55 : targetPathPosition; // Sin animación en primera carga
 
   const navItems = [
     {
@@ -180,7 +188,7 @@ const ClientNavbar = memo(() => {
                   className={`transition-all duration-300 ${
                     activeItem !== item.id
                       ? "text-gray-600 opacity-100"
-                      : "text-gray-600 opacity-0"
+                      : "text-[#F15A25] opacity-0"
                   }`}
                 >
                   {item.icon}
