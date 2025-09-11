@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #fdf6ef;
   --foreground: #171717;
 }
 
@@ -10,6 +10,11 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  
+  /* Colores peach para el navbar */
+  --color-peach-200: #fde6d6;
+  --color-peach-300: #fcd5b7;
+  --color-peach-400: #fbc498;
 }
 
 @media (prefers-color-scheme: dark) {

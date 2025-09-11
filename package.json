@@ -27,6 +27,7 @@
     "@upstash/redis": "^1.35.3",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.7.0",
+    "framer-motion": "^12.23.12",
     "jose": "^5.2.0",
     "lucide-react": "^0.540.0",
     "multer": "^2.0.2",
