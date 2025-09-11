@@ -94,3 +94,63 @@ input:-webkit-autofill {
   backface-visibility: hidden !important;
   -webkit-backface-visibility: hidden !important;
 }
+
+/* Animaciones CSS puras para el navbar */
+.navbar-circle {
+  transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  will-change: left !important;
+}
+
+.navbar-line {
+  transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  will-change: left !important;
+}
+
+.navbar-svg-path {
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  will-change: transform !important;
+}
+
+/* Animaciones para los iconos */
+.navbar-icon {
+  transition: all 0.3s ease-in-out !important;
+}
+
+.navbar-icon-enter {
+  animation: iconEnter 0.3s ease-out forwards !important;
+}
+
+.navbar-icon-exit {
+  animation: iconExit 0.3s ease-in forwards !important;
+}
+
+@keyframes iconEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes iconExit {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+/* Asegurar que las animaciones funcionen en producción */
+@media (prefers-reduced-motion: no-preference) {
+  .navbar-circle,
+  .navbar-line,
+  .navbar-svg-path {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+}

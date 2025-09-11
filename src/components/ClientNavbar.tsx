@@ -17,7 +17,7 @@ const ClientNavbar = memo(() => {
     setIsMounted(true);
     
     // Delay adaptativo según el entorno
-    const delay = 200; // Delay más conservador
+    const delay = process.env.NODE_ENV === 'production' ? 500 : 200;
     
     const timer = setTimeout(() => {
       setIsLoaded(true);
@@ -256,78 +256,32 @@ const ClientNavbar = memo(() => {
       <div className="client-navbar-floating fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
         <div className="relative w-[380px] h-[50px]">
           {/* Círculo flotante animado */}
-              <motion.div
-                  className="motion-safe absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
-                  initial={{ 
-                    left: previousPosition ? `${previousPosition.circle}px` : `${currentPosition.circle}px`
-                  }}
-                  animate={{
-                    left: `${currentPosition.circle}px`
-                  }}
-                  transition={{
-                    duration: 0.8,
-                    ease: "easeInOut",
-                    type: "tween",
-                  }}
+              <div
+                  className="navbar-circle absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
                   style={{ 
-                    transform: "translateX(-50%)",
-                    willChange: "left"
+                    left: `${currentPosition.circle}px`,
+                    transform: "translateX(-50%)"
                   }}
                 >
-                  <AnimatePresence mode="wait">
+                  <div className="navbar-icon">
                     {activeItem === "rewards" && (
-                      <motion.div
-                        key="rewards"
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0.8, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <GiftCardIcon className="w-6 h-6 text-[#F15A25]" />
-                      </motion.div>
+                      <GiftCardIcon className="w-6 h-6 text-[#F15A25] navbar-icon-enter" />
                     )}
                     {activeItem === "home" && (
-                      <motion.div
-                        key="home"
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0.8, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <HomeIcon className="w-6 h-6 text-[#F15A25]" />
-                      </motion.div>
+                      <HomeIcon className="w-6 h-6 text-[#F15A25] navbar-icon-enter" />
                     )}
                     {activeItem === "profile" && (
-                      <motion.div
-                        key="profile"
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0.8, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <UserIcon className="w-6 h-6 text-[#F15A25]" />
-                      </motion.div>
+                      <UserIcon className="w-6 h-6 text-[#F15A25] navbar-icon-enter" />
                     )}
-                  </AnimatePresence>
-                </motion.div>
+                  </div>
+                </div>
 
               {/* Línea negra que se desplaza con la barra */}
-              <motion.div
-                  className="absolute top-11 w-16 h-1 bg-black rounded-full z-10"
-                  initial={{ 
-                    left: previousPosition ? `${previousPosition.circle}px` : `${currentPosition.circle}px`
-                  }}
-                  animate={{
-                    left: `${currentPosition.circle}px`
-                  }}
-                  transition={{
-                    duration: 0.8,
-                    ease: "easeInOut",
-                    type: "tween",
-                  }}
+              <div
+                  className="navbar-line absolute top-11 w-16 h-1 bg-black rounded-full z-10"
                   style={{ 
-                    transform: "translateX(-50%)",
-                    willChange: "left"
+                    left: `${currentPosition.circle}px`,
+                    transform: "translateX(-50%)"
                   }}
                 />
 
@@ -344,21 +298,12 @@ const ClientNavbar = memo(() => {
                   <rect width="380" height="50" fill="white" rx="25" />
 
                   {/* Path del agujero, movido dinámicamente */}
-                  <motion.path
+                  <path
+                    className="navbar-svg-path"
                     d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
                     fill="black"
-                    initial={{ 
-                      x: previousPosition ? previousPosition.svg : currentPosition.svg, 
-                      y: -30
-                    }}
-                    animate={{
-                      x: currentPosition.svg,
-                      y: -30
-                    }}
-                    transition={{
-                      duration: 0.8,
-                      ease: "easeInOut",
-                      type: "tween",
+                    style={{
+                      transform: `translate(${currentPosition.svg}px, -30px)`
                     }}
                   />
                 </mask>
