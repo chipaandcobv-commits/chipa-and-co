@@ -126,15 +126,65 @@ const ClientNavbar = memo(() => {
     }
   }, [currentPosition, previousPosition]);
 
+  // Función para animar elementos con JavaScript puro
+  const animateElement = useCallback((element: HTMLElement, property: string, from: number, to: number, duration: number = 800) => {
+    if (!element) return;
+    
+    const startTime = performance.now();
+    const startValue = from;
+    const endValue = to;
+    
+    const animate = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Función de easing suave
+      const easeProgress = 1 - Math.pow(1 - progress, 3);
+      
+      const currentValue = startValue + (endValue - startValue) * easeProgress;
+      
+      if (property === 'left') {
+        element.style.left = `${currentValue}px`;
+      } else if (property === 'transform') {
+        element.style.transform = `translate(${currentValue}px, -30px)`;
+      }
+      
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+    
+    requestAnimationFrame(animate);
+  }, []);
+
   // Forzar animaciones cuando cambie la posición
   useEffect(() => {
-    if (isLoaded) {
-      // Usar requestAnimationFrame para asegurar que las animaciones se ejecuten
-      requestAnimationFrame(() => {
-        setAnimationKey(prev => prev + 1);
-      });
+    if (isLoaded && previousPosition) {
+      // Animar círculo
+      const circleElement = document.querySelector('.navbar-circle') as HTMLElement;
+      if (circleElement) {
+        const fromLeft = previousPosition.circle;
+        const toLeft = currentPosition.circle;
+        animateElement(circleElement, 'left', fromLeft, toLeft, 800);
+      }
+      
+      // Animar línea
+      const lineElement = document.querySelector('.navbar-line') as HTMLElement;
+      if (lineElement) {
+        const fromLeft = previousPosition.circle;
+        const toLeft = currentPosition.circle;
+        animateElement(lineElement, 'left', fromLeft, toLeft, 800);
+      }
+      
+      // Animar SVG path
+      const pathElement = document.querySelector('.navbar-svg-path') as HTMLElement;
+      if (pathElement) {
+        const fromTransform = previousPosition.svg;
+        const toTransform = currentPosition.svg;
+        animateElement(pathElement, 'transform', fromTransform, toTransform, 800);
+      }
     }
-  }, [currentPosition, isLoaded]);
+  }, [currentPosition, previousPosition, isLoaded, animateElement]);
 
   const navItems = [
     {
