@@ -111,12 +111,16 @@ const ClientNavbar = memo(() => {
     return positions.home;
   }, [isActive, positions]);
 
-  // Actualizar posición anterior cuando cambie la posición actual
+  // Inicializar posición anterior inmediatamente
   useEffect(() => {
     if (previousPosition === null) {
-      // Primera vez, establecer la posición inicial
       setPreviousPosition(currentPosition);
-    } else {
+    }
+  }, [currentPosition, previousPosition]);
+
+  // Actualizar posición anterior cuando cambie la posición actual (solo después de la primera vez)
+  useEffect(() => {
+    if (previousPosition !== null && previousPosition !== currentPosition) {
       // Actualizar la posición anterior después de que termine la animación
       // Timing más largo en producción para asegurar que la animación sea visible
       const animationDuration = isProduction ? 1000 : 800;
@@ -258,7 +262,7 @@ const ClientNavbar = memo(() => {
     }>
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
         <div className="relative w-[380px] h-[50px]">
-          {isLoaded && previousPosition && (
+          {isLoaded && (
             <>
               {/* Círculo flotante animado */}
               <motion.div
