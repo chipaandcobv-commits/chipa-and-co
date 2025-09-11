@@ -10,6 +10,7 @@ const ClientNavbar = memo(() => {
   const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [animationKey, setAnimationKey] = useState(0);
 
   useEffect(() => {
     setIsLoaded(true);
@@ -44,6 +45,7 @@ const ClientNavbar = memo(() => {
     (path: string) => {
       // Activar animación inmediatamente al hacer clic
       setIsAnimating(true);
+      setAnimationKey(prev => prev + 1); // Forzar re-render de animaciones
       router.push(path);
     },
     [router]
@@ -102,6 +104,7 @@ const ClientNavbar = memo(() => {
       <div className="relative w-[380px] h-[50px]">
         {/* Círculo flotante animado */}
         <motion.div
+          key={`circle-${animationKey}`}
           className="absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
           initial={{ left: initialPosition }}
           animate={{
@@ -127,6 +130,7 @@ const ClientNavbar = memo(() => {
 
         {/* Línea negra que se desplaza con la barra */}
         <motion.div
+          key={`line-${animationKey}`}
           className="absolute top-11 w-16 h-1 bg-black rounded-full z-10"
           initial={{ left: initialPosition }}
           animate={{
@@ -154,6 +158,7 @@ const ClientNavbar = memo(() => {
 
                 {/* Path del agujero, movido dinámicamente */}
                 <motion.path
+                  key={`path-${animationKey}`}
                   d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
                   fill="black"
                   initial={{ x: initialPathPosition, y: -30 }}
@@ -162,9 +167,9 @@ const ClientNavbar = memo(() => {
                     y: -30,
                   }}
                   transition={{
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 30,
+                    duration: 0.3,
+                    ease: "easeInOut",
+                    type: "tween",
                   }}
                 />
               </mask>
