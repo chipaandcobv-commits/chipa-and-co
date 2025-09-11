@@ -255,9 +255,7 @@ const ClientNavbar = memo(() => {
     }>
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
         <div className="relative w-[380px] h-[50px]">
-          {isLoaded && (
-            <>
-              {/* Círculo flotante animado */}
+          {/* Círculo flotante animado */}
               <motion.div
                   className="absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
                   initial={{ 
@@ -332,8 +330,6 @@ const ClientNavbar = memo(() => {
                     willChange: "left"
                   }}
                 />
-            </>
-          )}
 
           {/* Barra con corte dinámico */}
           <div className="relative w-full h-full rounded-full shadow-lg overflow-hidden">
