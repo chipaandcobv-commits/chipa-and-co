@@ -5,7 +5,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { GiftCardIcon, HomeIcon, UserIcon } from "./icons/Icons";
 import ClientOnly from "./ClientOnly";
-import FramerMotionProvider from "./FramerMotionProvider";
 
 const ClientNavbar = memo(() => {
   const pathname = usePathname();
@@ -13,28 +12,16 @@ const ClientNavbar = memo(() => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [previousPosition, setPreviousPosition] = useState<{circle: number, svg: number} | null>(null);
-  const [isProduction, setIsProduction] = useState(false);
-  const [showInitialAnimation, setShowInitialAnimation] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
     
-    // Detectar si estamos en producción
-    const isProd = process.env.NODE_ENV === 'production' || 
-                   (typeof window !== 'undefined' && window.location.hostname !== 'localhost');
-    setIsProduction(isProd);
-    
-    // Tiempo fijo para que las animaciones sean visibles
-    // En producción la carga es más rápida, necesitamos tiempo fijo
-    const fixedDelay = 1000; // 1 segundo fijo para ambos entornos
+    // Delay adaptativo según el entorno
+    const delay = 200; // Delay más conservador
     
     const timer = setTimeout(() => {
       setIsLoaded(true);
-      // Mostrar animación inicial después de un pequeño delay adicional
-      setTimeout(() => {
-        setShowInitialAnimation(true);
-      }, 200);
-    }, fixedDelay);
+    }, delay);
     
     return () => clearTimeout(timer);
   }, []);
@@ -129,11 +116,10 @@ const ClientNavbar = memo(() => {
   useEffect(() => {
     if (previousPosition !== null && previousPosition !== currentPosition) {
       // Actualizar la posición anterior después de que termine la animación
-      // Tiempo fijo para que la animación sea visible en ambos entornos
-      const fixedAnimationDuration = 1000; // 1 segundo fijo
+      const animationDuration = 800;
       const timer = setTimeout(() => {
         setPreviousPosition(currentPosition);
-      }, fixedAnimationDuration);
+      }, animationDuration);
       return () => clearTimeout(timer);
     }
   }, [currentPosition, previousPosition]);
@@ -244,33 +230,29 @@ const ClientNavbar = memo(() => {
   }
 
   return (
-    <ClientOnly 
-      delay={200}
-      fallback={
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
-          <div className="relative w-[380px] h-[50px]">
-            <div
-              className="absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
-              style={{ 
-                left: `${currentPosition.circle}px`,
-                transform: "translateX(-50%)" 
-              }}
-            >
-              {activeItem === "rewards" && (
-                <GiftCardIcon className="w-6 h-6 text-[#F15A25]" />
-              )}
-              {activeItem === "home" && (
-                <HomeIcon className="w-6 h-6 text-[#F15A25]" />
-              )}
-              {activeItem === "profile" && (
-                <UserIcon className="w-6 h-6 text-[#F15A25]" />
-              )}
-            </div>
+    <ClientOnly fallback={
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+        <div className="relative w-[380px] h-[50px]">
+          <div
+            className="absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
+            style={{ 
+              left: `${currentPosition.circle}px`,
+              transform: "translateX(-50%)" 
+            }}
+          >
+            {activeItem === "rewards" && (
+              <GiftCardIcon className="w-6 h-6 text-[#F15A25]" />
+            )}
+            {activeItem === "home" && (
+              <HomeIcon className="w-6 h-6 text-[#F15A25]" />
+            )}
+            {activeItem === "profile" && (
+              <UserIcon className="w-6 h-6 text-[#F15A25]" />
+            )}
           </div>
         </div>
-      }
-    >
-      <FramerMotionProvider>
+      </div>
+    }>
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
         <div className="relative w-[380px] h-[50px]">
           {isLoaded && (
@@ -279,23 +261,19 @@ const ClientNavbar = memo(() => {
               <motion.div
                   className="absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
                   initial={{ 
-                    left: previousPosition ? `${previousPosition.circle}px` : `${currentPosition.circle}px`,
-                    opacity: showInitialAnimation ? 0 : 1,
-                    scale: showInitialAnimation ? 0.8 : 1
+                    left: previousPosition ? `${previousPosition.circle}px` : `${currentPosition.circle}px`
                   }}
                   animate={{
-                    left: `${currentPosition.circle}px`,
-                    opacity: 1,
-                    scale: 1
+                    left: `${currentPosition.circle}px`
                   }}
                   transition={{
-                    duration: 1.0, // Tiempo fijo para que sea visible
-                    ease: [0.4, 0.0, 0.2, 1], // Cubic bezier para suavidad
+                    duration: 0.8,
+                    ease: "easeInOut",
                     type: "tween",
                   }}
                   style={{ 
                     transform: "translateX(-50%)",
-                    willChange: "left, opacity, transform"
+                    willChange: "left"
                   }}
                 >
                   <AnimatePresence mode="wait">
@@ -339,23 +317,19 @@ const ClientNavbar = memo(() => {
               <motion.div
                   className="absolute top-11 w-16 h-1 bg-black rounded-full z-10"
                   initial={{ 
-                    left: previousPosition ? `${previousPosition.circle}px` : `${currentPosition.circle}px`,
-                    opacity: showInitialAnimation ? 0 : 1,
-                    scaleX: showInitialAnimation ? 0 : 1
+                    left: previousPosition ? `${previousPosition.circle}px` : `${currentPosition.circle}px`
                   }}
                   animate={{
-                    left: `${currentPosition.circle}px`,
-                    opacity: 1,
-                    scaleX: 1
+                    left: `${currentPosition.circle}px`
                   }}
                   transition={{
-                    duration: 1.0, // Tiempo fijo para que sea visible
-                    ease: [0.4, 0.0, 0.2, 1], // Cubic bezier para suavidad
+                    duration: 0.8,
+                    ease: "easeInOut",
                     type: "tween",
                   }}
                   style={{ 
                     transform: "translateX(-50%)",
-                    willChange: "left, opacity, transform"
+                    willChange: "left"
                   }}
                 />
             </>
@@ -379,19 +353,15 @@ const ClientNavbar = memo(() => {
                     fill="black"
                     initial={{ 
                       x: previousPosition ? previousPosition.svg : currentPosition.svg, 
-                      y: -30,
-                      opacity: showInitialAnimation ? 0 : 1,
-                      scale: showInitialAnimation ? 0.8 : 1
+                      y: -30
                     }}
                     animate={{
                       x: currentPosition.svg,
-                      y: -30,
-                      opacity: 1,
-                      scale: 1
+                      y: -30
                     }}
                     transition={{
-                      duration: 1.0, // Tiempo fijo para que sea visible
-                      ease: [0.4, 0.0, 0.2, 1], // Cubic bezier para suavidad
+                      duration: 0.8,
+                      ease: "easeInOut",
                       type: "tween",
                     }}
                   />
@@ -431,7 +401,6 @@ const ClientNavbar = memo(() => {
           </div>
         </div>
       </div>
-      </FramerMotionProvider>
     </ClientOnly>
   );
 });
