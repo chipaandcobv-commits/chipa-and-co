@@ -81,6 +81,11 @@ const nextConfig: NextConfig = {
     removeConsole: process.env.NODE_ENV === "production",
   },
   
+  // Configuración para mejorar compatibilidad con Framer Motion
+  experimental: {
+    optimizePackageImports: ['framer-motion'],
+  },
+  
   // Configuración de seguridad de imágenes
   images: {
     unoptimized: true,
