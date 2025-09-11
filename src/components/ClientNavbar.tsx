@@ -111,7 +111,7 @@ const ClientNavbar = memo(() => {
             left: targetPosition,
           }}
           transition={{
-            duration: 0.3,
+            duration: 0.6,
             ease: "easeInOut",
             type: "tween",
           }}
@@ -137,7 +137,7 @@ const ClientNavbar = memo(() => {
             left: targetPosition,
           }}
           transition={{
-            duration: 0.3,
+            duration: 0.6,
             ease: "easeInOut",
             type: "tween",
           }}
