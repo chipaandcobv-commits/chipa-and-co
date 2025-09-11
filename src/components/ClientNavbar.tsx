@@ -48,18 +48,22 @@ const ClientNavbar = memo(() => {
 
   const activeItem = getActiveItem();
 
-  // Memoizar las posiciones iniciales para evitar recálculos
-  const initialPosition = useMemo(() => {
+  // Posiciones de destino
+  const targetPosition = useMemo(() => {
     if (isActive("/cliente/rewards")) return "18%";
     if (isActive("/cliente/profile")) return "82%";
     return "48%"; // home por defecto
   }, [pathname]);
 
-  const initialPathPosition = useMemo(() => {
+  const targetPathPosition = useMemo(() => {
     if (isActive("/cliente/rewards")) return 68.4 - 55;
     if (isActive("/cliente/profile")) return 311.6 - 55;
     return 182.4 - 55; // home por defecto
   }, [pathname]);
+
+  // Posición inicial siempre diferente para forzar animación
+  const initialPosition = "48%"; // Siempre empieza en home
+  const initialPathPosition = 182.4 - 55; // Siempre empieza en home
 
   const navItems = [
     {
@@ -91,17 +95,11 @@ const ClientNavbar = memo(() => {
           className="absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
           initial={{ left: initialPosition }}
           animate={{
-            left:
-              activeItem === "rewards"
-                ? "18%"
-                : activeItem === "home"
-                ? "48%"
-                : "82%",
+            left: targetPosition,
           }}
           transition={{
-            type: "spring",
-            stiffness: 300,
-            damping: 30,
+            duration: 0.3,
+            ease: "easeInOut",
           }}
           style={{ transform: "translateX(-50%)" }}
         >
@@ -121,17 +119,11 @@ const ClientNavbar = memo(() => {
           className="absolute top-11 w-16 h-1 bg-black rounded-full z-10"
           initial={{ left: initialPosition }}
           animate={{
-            left:
-              activeItem === "rewards"
-                ? "18%"
-                : activeItem === "home"
-                ? "48%"
-                : "82%",
+            left: targetPosition,
           }}
           transition={{
-            type: "spring",
-            stiffness: 300,
-            damping: 30,
+            duration: 0.3,
+            ease: "easeInOut",
           }}
           style={{ transform: "translateX(-50%)" }}
         />
@@ -154,12 +146,7 @@ const ClientNavbar = memo(() => {
                   fill="black"
                   initial={{ x: initialPathPosition, y: -30 }}
                   animate={{
-                    x:
-                      activeItem === "rewards"
-                        ? 68.4 - 55
-                        : activeItem === "home"
-                        ? 182.4 - 55
-                        : 311.6 - 55,
+                    x: targetPathPosition,
                     y: -30,
                   }}
                   transition={{
