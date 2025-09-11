@@ -11,6 +11,7 @@ const ClientNavbar = memo(() => {
   const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [previousPosition, setPreviousPosition] = useState<{circle: number, svg: number} | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -100,6 +101,20 @@ const ClientNavbar = memo(() => {
     if (isActive("/cliente/profile")) return positions.profile;
     return positions.home;
   }, [isActive, positions]);
+
+  // Actualizar posición anterior cuando cambie la posición actual
+  useEffect(() => {
+    if (previousPosition === null) {
+      // Primera vez, establecer la posición inicial
+      setPreviousPosition(currentPosition);
+    } else {
+      // Actualizar la posición anterior después de un pequeño delay
+      const timer = setTimeout(() => {
+        setPreviousPosition(currentPosition);
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [currentPosition, previousPosition]);
 
   const navItems = [
     {
@@ -238,7 +253,10 @@ const ClientNavbar = memo(() => {
                 {/* Círculo flotante animado */}
                 <motion.div
                   className="absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
-                  initial={{ left: `${currentPosition.circle}px`, opacity: 0 }}
+                  initial={{ 
+                    left: previousPosition ? `${previousPosition.circle}px` : `${currentPosition.circle}px`, 
+                    opacity: 0 
+                  }}
                   animate={{
                     left: `${currentPosition.circle}px`,
                     opacity: 1,
@@ -294,7 +312,10 @@ const ClientNavbar = memo(() => {
                 {/* Línea negra que se desplaza con la barra */}
                 <motion.div
                   className="absolute top-11 w-16 h-1 bg-black rounded-full z-10"
-                  initial={{ left: `${currentPosition.circle}px`, opacity: 0 }}
+                  initial={{ 
+                    left: previousPosition ? `${previousPosition.circle}px` : `${currentPosition.circle}px`, 
+                    opacity: 0 
+                  }}
                   animate={{
                     left: `${currentPosition.circle}px`,
                     opacity: 1,
@@ -330,7 +351,11 @@ const ClientNavbar = memo(() => {
                   <motion.path
                     d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
                     fill="black"
-                    initial={{ x: currentPosition.svg, y: -30, opacity: 0 }}
+                    initial={{ 
+                      x: previousPosition ? previousPosition.svg : currentPosition.svg, 
+                      y: -30, 
+                      opacity: 0 
+                    }}
                     animate={{
                       x: currentPosition.svg,
                       y: -30,
