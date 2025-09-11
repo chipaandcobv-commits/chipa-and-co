@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, memo } from "react";
+import { useCallback, memo, useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { GiftCardIcon, HomeIcon, UserIcon } from "./icons/Icons";
@@ -8,6 +8,11 @@ import { GiftCardIcon, HomeIcon, UserIcon } from "./icons/Icons";
 const ClientNavbar = memo(() => {
   const pathname = usePathname();
   const router = useRouter();
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
 
   const isActive = useCallback(
     (path: string) => {
@@ -51,41 +56,16 @@ const ClientNavbar = memo(() => {
     },
   ];
 
+  if (!isLoaded) {
+    return null;
+  }
+
   return (
     <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
-      {/* Círculo flotante animado */}
-      <motion.div
-        className="absolute -top-7 left-1/2 -translate-x-1/2 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
-        animate={{
-          left:
-            activeItem === "rewards"
-              ? "18%"
-              : activeItem === "home"
-              ? "48%"
-              : "82%",
-        }}
-        transition={{
-          type: "spring",
-          stiffness: 300,
-          damping: 30,
-        }}
-      >
-        {activeItem === "rewards" && (
-          <GiftCardIcon className="w-6 h-6 text-[#F15A25]" />
-        )}
-        {activeItem === "home" && (
-          <HomeIcon className="w-6 h-6 text-[#F15A25]" />
-        )}
-        {activeItem === "profile" && (
-          <UserIcon className="w-6 h-6 text-[#F15A25]" />
-        )}
-      </motion.div>
-
-      {/* Barra fija - sin deformación */}
-      <div className="relative w-[380px] h-[50px] bg-peach-200 rounded-full flex justify-between items-center px-16 shadow-lg">
-        {/* SVG con máscara que corta el rectángulo */}
+      <div className="relative w-[380px] h-[50px]">
+        {/* Círculo flotante animado */}
         <motion.div
-          className="absolute -top-7 left-1/2 -translate-x-1/2"
+          className="absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
           animate={{
             left:
               activeItem === "rewards"
@@ -99,65 +79,103 @@ const ClientNavbar = memo(() => {
             stiffness: 300,
             damping: 30,
           }}
+          style={{ transform: "translateX(-50%)" }}
         >
-          <svg 
-            width="110" 
-            height="70" 
-            viewBox="0 0 110 70" 
-            fill="none"
+          {activeItem === "rewards" && (
+            <GiftCardIcon className="w-6 h-6 text-[#F15A25]" />
+          )}
+          {activeItem === "home" && (
+            <HomeIcon className="w-6 h-6 text-[#F15A25]" />
+          )}
+          {activeItem === "profile" && (
+            <UserIcon className="w-6 h-6 text-[#F15A25]" />
+          )}
+        </motion.div>
+
+        {/* Línea negra que se desplaza con la barra */}
+        <motion.div
+          className="absolute top-11 w-16 h-1 bg-black rounded-full z-10"
+          animate={{
+            left:
+              activeItem === "rewards"
+                ? "18%"
+                : activeItem === "home"
+                ? "48%"
+                : "82%",
+          }}
+          transition={{
+            type: "spring",
+            stiffness: 300,
+            damping: 30,
+          }}
+          style={{ transform: "translateX(-50%)" }}
+        />
+
+        {/* Barra con corte dinámico */}
+        <div className="relative w-full h-full rounded-full shadow-lg overflow-hidden">
+          <svg
+            className="absolute inset-0 w-full h-full"
+            viewBox="0 0 380 50"
+            xmlns="http://www.w3.org/2000/svg"
           >
             <defs>
-              <mask id="ellipse-cut">
-                <rect width="110" height="70" fill="black"/>
-                <path 
-                  d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z" 
-                  fill="white"
+              <mask id="bar-mask">
+                {/* Rectángulo base visible */}
+                <rect width="380" height="50" fill="white" rx="25" />
+
+                {/* Path del agujero, movido dinámicamente */}
+                <motion.path
+                  d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
+                  fill="black"
+                  animate={{
+                    x:
+                      activeItem === "rewards"
+                        ? 68.4 - 55
+                        : activeItem === "home"
+                        ? 182.4 - 55
+                        : 311.6 - 55,
+                    y: -30,
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 30,
+                  }}
                 />
               </mask>
             </defs>
-            <rect 
-              width="110" 
-              height="70" 
-              fill="#f7efe7" 
-              mask="url(#ellipse-cut)"
+
+            {/* Barra pintada con máscara - mismo color que el círculo */}
+            <rect
+              width="380"
+              height="50"
+              rx="25"
+              fill="#fbe3cf"
+              mask="url(#bar-mask)"
             />
           </svg>
-        </motion.div>
 
-        {/* Línea negra que se mueve con el círculo */}
-        <motion.div
-          className="absolute top-10 left-1/2 -translate-x-1/2 w-16 h-1 bg-black rounded-full"
-          animate={{
-            left:
-              activeItem === "rewards"
-                ? "18%"
-                : activeItem === "home"
-                ? "48%"
-                : "82%",
-          }}
-          transition={{
-            type: "spring",
-            stiffness: 300,
-            damping: 30,
-          }}
-        />
-
-        {/* Botones de navegación - mostrar todos los iconos pero con opacidad diferente */}
-        {navItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => handleButtonClick(item.path)}
-            className="z-20"
-          >
-            <div className={`transition-all duration-300 ${
-              activeItem !== item.id 
-                ? "text-gray-600 opacity-100" 
-                : "text-gray-600 opacity-0"
-            }`}>
-              {item.icon}
-            </div>
-          </button>
-        ))}
+          {/* Botones de navegación */}
+          <div className="absolute inset-0 flex justify-between items-center px-16">
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => handleButtonClick(item.path)}
+                className="z-20"
+              >
+                <div
+                  className={`transition-all duration-300 ${
+                    activeItem !== item.id
+                      ? "text-gray-600 opacity-100"
+                      : "text-gray-600 opacity-0"
+                  }`}
+                >
+                  {item.icon}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
