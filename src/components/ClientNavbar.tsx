@@ -18,7 +18,11 @@ const ClientNavbar = memo(() => {
   // Detectar cuando el usuario navega entre páginas
   useEffect(() => {
     if (isLoaded) {
-      setHasNavigated(true);
+      // Pequeño delay para asegurar que la animación funcione en producción
+      const timer = setTimeout(() => {
+        setHasNavigated(true);
+      }, 100);
+      return () => clearTimeout(timer);
     }
   }, [pathname, isLoaded]);
 
@@ -108,6 +112,7 @@ const ClientNavbar = memo(() => {
           transition={{
             duration: 0.3,
             ease: "easeInOut",
+            type: "tween",
           }}
           style={{ transform: "translateX(-50%)" }}
         >
@@ -132,6 +137,7 @@ const ClientNavbar = memo(() => {
           transition={{
             duration: 0.3,
             ease: "easeInOut",
+            type: "tween",
           }}
           style={{ transform: "translateX(-50%)" }}
         />
