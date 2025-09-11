@@ -9,22 +9,18 @@ const ClientNavbar = memo(() => {
   const pathname = usePathname();
   const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false);
-  const [hasNavigated, setHasNavigated] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
     setIsLoaded(true);
   }, []);
 
-  // Detectar cuando el usuario navega entre páginas
+  // Resetear el estado de animación cuando cambie la página
   useEffect(() => {
-    if (isLoaded) {
-      // Pequeño delay para asegurar que la animación funcione en producción
-      const timer = setTimeout(() => {
-        setHasNavigated(true);
-      }, 100);
-      return () => clearTimeout(timer);
+    if (isAnimating) {
+      setIsAnimating(false);
     }
-  }, [pathname, isLoaded]);
+  }, [pathname, isAnimating]);
 
   // Precargar todas las páginas del cliente para navegación más rápida
   useEffect(() => {
@@ -46,6 +42,8 @@ const ClientNavbar = memo(() => {
 
   const handleButtonClick = useCallback(
     (path: string) => {
+      // Activar animación inmediatamente al hacer clic
+      setIsAnimating(true);
       router.push(path);
     },
     [router]
@@ -73,9 +71,9 @@ const ClientNavbar = memo(() => {
     return 182.4 - 55; // home por defecto
   }, [pathname]);
 
-  // Posición inicial: sin animación en la primera carga, con animación en navegación
-  const initialPosition = hasNavigated ? "18%" : targetPosition; // Sin animación en primera carga
-  const initialPathPosition = hasNavigated ? 68.4 - 55 : targetPathPosition; // Sin animación en primera carga
+  // Posición inicial: sin animación en la primera carga, con animación al hacer clic
+  const initialPosition = isAnimating ? "18%" : targetPosition; // Sin animación en primera carga
+  const initialPathPosition = isAnimating ? 68.4 - 55 : targetPathPosition; // Sin animación en primera carga
 
   const navItems = [
     {
@@ -183,12 +181,12 @@ const ClientNavbar = memo(() => {
           </svg>
 
           {/* Botones de navegación */}
-          <div className="absolute inset-0 flex justify-between items-center px-16">
+          <div className="absolute inset-0 flex justify-between items-center px-8">
             {navItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => handleButtonClick(item.path)}
-                className="z-20"
+                className="z-20 p-4 -m-4 flex items-center justify-center min-w-[60px] min-h-[60px]"
               >
                 <div
                   className={`transition-all duration-300 ${
