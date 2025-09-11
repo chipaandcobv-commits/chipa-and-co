@@ -12,13 +12,22 @@ const ClientNavbar = memo(() => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [previousPosition, setPreviousPosition] = useState<{circle: number, svg: number} | null>(null);
+  const [isProduction, setIsProduction] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
-    // Delay más largo para producción para asegurar hidratación completa
+    
+    // Detectar si estamos en producción
+    const isProd = process.env.NODE_ENV === 'production' || 
+                   window.location.hostname !== 'localhost';
+    setIsProduction(isProd);
+    
+    // Delay adaptativo según el entorno
+    const delay = isProd ? 500 : 200; // Más delay en producción
+    
     const timer = setTimeout(() => {
       setIsLoaded(true);
-    }, 300);
+    }, delay);
     
     return () => clearTimeout(timer);
   }, []);
@@ -109,12 +118,14 @@ const ClientNavbar = memo(() => {
       setPreviousPosition(currentPosition);
     } else {
       // Actualizar la posición anterior después de que termine la animación
+      // Timing más largo en producción para asegurar que la animación sea visible
+      const animationDuration = isProduction ? 1000 : 800;
       const timer = setTimeout(() => {
         setPreviousPosition(currentPosition);
-      }, 800);
+      }, animationDuration);
       return () => clearTimeout(timer);
     }
-  }, [currentPosition, previousPosition]);
+  }, [currentPosition, previousPosition, isProduction]);
 
   const navItems = [
     {
@@ -247,7 +258,7 @@ const ClientNavbar = memo(() => {
     }>
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
         <div className="relative w-[380px] h-[50px]">
-          {isLoaded && (
+          {isLoaded && previousPosition && (
             <>
               {/* Círculo flotante animado */}
               <motion.div
@@ -259,7 +270,7 @@ const ClientNavbar = memo(() => {
                     left: `${currentPosition.circle}px`
                   }}
                   transition={{
-                    duration: 0.8,
+                    duration: isProduction ? 1.0 : 0.8,
                     ease: "easeInOut",
                     type: "tween",
                   }}
@@ -315,7 +326,7 @@ const ClientNavbar = memo(() => {
                     left: `${currentPosition.circle}px`
                   }}
                   transition={{
-                    duration: 0.8,
+                    duration: isProduction ? 1.0 : 0.8,
                     ease: "easeInOut",
                     type: "tween",
                   }}
@@ -352,7 +363,7 @@ const ClientNavbar = memo(() => {
                       y: -30
                     }}
                     transition={{
-                      duration: 0.8,
+                      duration: isProduction ? 1.0 : 0.8,
                       ease: "easeInOut",
                       type: "tween",
                     }}
