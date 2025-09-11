@@ -17,8 +17,8 @@ const ClientNavbar = memo(() => {
   useEffect(() => {
     setIsMounted(true);
     
-    // Delay adaptativo según el entorno
-    const delay = process.env.NODE_ENV === 'production' ? 500 : 200;
+    // Delay fijo para evitar problemas de SSR
+    const delay = 200;
     
     const timer = setTimeout(() => {
       setIsLoaded(true);
@@ -126,65 +126,6 @@ const ClientNavbar = memo(() => {
     }
   }, [currentPosition, previousPosition]);
 
-  // Función para animar elementos con JavaScript puro
-  const animateElement = useCallback((element: HTMLElement, property: string, from: number, to: number, duration: number = 800) => {
-    if (!element) return;
-    
-    const startTime = performance.now();
-    const startValue = from;
-    const endValue = to;
-    
-    const animate = (currentTime: number) => {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      
-      // Función de easing suave
-      const easeProgress = 1 - Math.pow(1 - progress, 3);
-      
-      const currentValue = startValue + (endValue - startValue) * easeProgress;
-      
-      if (property === 'left') {
-        element.style.left = `${currentValue}px`;
-      } else if (property === 'transform') {
-        element.style.transform = `translate(${currentValue}px, -30px)`;
-      }
-      
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      }
-    };
-    
-    requestAnimationFrame(animate);
-  }, []);
-
-  // Forzar animaciones cuando cambie la posición
-  useEffect(() => {
-    if (isLoaded && previousPosition) {
-      // Animar círculo
-      const circleElement = document.querySelector('.navbar-circle') as HTMLElement;
-      if (circleElement) {
-        const fromLeft = previousPosition.circle;
-        const toLeft = currentPosition.circle;
-        animateElement(circleElement, 'left', fromLeft, toLeft, 800);
-      }
-      
-      // Animar línea
-      const lineElement = document.querySelector('.navbar-line') as HTMLElement;
-      if (lineElement) {
-        const fromLeft = previousPosition.circle;
-        const toLeft = currentPosition.circle;
-        animateElement(lineElement, 'left', fromLeft, toLeft, 800);
-      }
-      
-      // Animar SVG path
-      const pathElement = document.querySelector('.navbar-svg-path') as HTMLElement;
-      if (pathElement) {
-        const fromTransform = previousPosition.svg;
-        const toTransform = currentPosition.svg;
-        animateElement(pathElement, 'transform', fromTransform, toTransform, 800);
-      }
-    }
-  }, [currentPosition, previousPosition, isLoaded, animateElement]);
 
   const navItems = [
     {
@@ -318,11 +259,17 @@ const ClientNavbar = memo(() => {
       <div className="client-navbar-floating fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
         <div className="relative w-[380px] h-[50px]">
           {/* Círculo flotante animado */}
-              <div
-                  key={`circle-${animationKey}`}
-                  className="navbar-circle navbar-animate absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
+              <motion.div
+                  className="navbar-circle absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
+                  animate={{ 
+                    left: `${currentPosition.circle}px`
+                  }}
+                  transition={{ 
+                    type: "spring", 
+                    stiffness: 300, 
+                    damping: 30 
+                  }}
                   style={{ 
-                    left: `${currentPosition.circle}px`,
                     transform: "translateX(-50%)"
                   }}
                 >
@@ -337,14 +284,20 @@ const ClientNavbar = memo(() => {
                       <UserIcon className="w-6 h-6 text-[#F15A25] navbar-icon-enter" />
                     )}
                   </div>
-                </div>
+                </motion.div>
 
               {/* Línea negra que se desplaza con la barra */}
-              <div
-                  key={`line-${animationKey}`}
-                  className="navbar-line navbar-animate absolute top-11 w-16 h-1 bg-black rounded-full z-10"
+              <motion.div
+                  className="navbar-line absolute top-11 w-16 h-1 bg-black rounded-full z-10"
+                  animate={{ 
+                    left: `${currentPosition.circle}px`
+                  }}
+                  transition={{ 
+                    type: "spring", 
+                    stiffness: 300, 
+                    damping: 30 
+                  }}
                   style={{ 
-                    left: `${currentPosition.circle}px`,
                     transform: "translateX(-50%)"
                   }}
                 />
@@ -357,18 +310,22 @@ const ClientNavbar = memo(() => {
               xmlns="http://www.w3.org/2000/svg"
             >
               <defs>
-                <mask id="bar-mask">
+                <mask id={`bar-mask-${animationKey}`}>
                   {/* Rectángulo base visible */}
                   <rect width="380" height="50" fill="white" rx="25" />
 
                   {/* Path del agujero, movido dinámicamente */}
-                  <path
-                    key={`path-${animationKey}`}
-                    className="navbar-svg-path navbar-animate"
+                  <motion.path
                     d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
                     fill="black"
-                    style={{
-                      transform: `translate(${currentPosition.svg}px, -30px)`
+                    animate={{
+                      x: currentPosition.svg,
+                      y: -30
+                    }}
+                    transition={{ 
+                      type: "spring", 
+                      stiffness: 300, 
+                      damping: 30 
                     }}
                   />
                 </mask>
@@ -380,7 +337,7 @@ const ClientNavbar = memo(() => {
                 height="50"
                 rx="25"
                 fill="#fbe3cf"
-                mask="url(#bar-mask)"
+                mask={`url(#bar-mask-${animationKey})`}
               />
             </svg>
 

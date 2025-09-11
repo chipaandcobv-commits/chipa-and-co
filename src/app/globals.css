@@ -95,20 +95,11 @@ input:-webkit-autofill {
   -webkit-backface-visibility: hidden !important;
 }
 
-/* Animaciones JavaScript para el navbar */
-.navbar-circle {
-  will-change: left !important;
-  -webkit-will-change: left !important;
-}
-
+/* Optimización para Framer Motion */
+.navbar-circle,
 .navbar-line {
   will-change: left !important;
   -webkit-will-change: left !important;
-}
-
-.navbar-svg-path {
-  will-change: transform !important;
-  -webkit-will-change: transform !important;
 }
 
 /* Animaciones para los iconos */
