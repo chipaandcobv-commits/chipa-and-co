@@ -11,6 +11,7 @@ const ClientNavbar = memo(() => {
   const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
   const [previousPosition, setPreviousPosition] = useState<{circle: number, svg: number} | null>(null);
 
   useEffect(() => {
@@ -18,7 +19,11 @@ const ClientNavbar = memo(() => {
     // Delay más largo para producción para asegurar hidratación completa
     const timer = setTimeout(() => {
       setIsLoaded(true);
-    }, 200);
+      // Delay adicional para asegurar que la hidratación esté completa
+      setTimeout(() => {
+        setIsHydrated(true);
+      }, 100);
+    }, 300);
     
     return () => clearTimeout(timer);
   }, []);
@@ -104,17 +109,19 @@ const ClientNavbar = memo(() => {
 
   // Actualizar posición anterior cuando cambie la posición actual
   useEffect(() => {
+    if (!isHydrated) return; // No actualizar hasta que esté completamente hidratado
+    
     if (previousPosition === null) {
       // Primera vez, establecer la posición inicial
       setPreviousPosition(currentPosition);
     } else {
-      // Actualizar la posición anterior después de un pequeño delay
+      // Actualizar la posición anterior después de que termine la animación
       const timer = setTimeout(() => {
         setPreviousPosition(currentPosition);
-      }, 50);
+      }, 850); // 850ms = duración de animación (800ms) + buffer
       return () => clearTimeout(timer);
     }
-  }, [currentPosition, previousPosition]);
+  }, [currentPosition, previousPosition, isHydrated]);
 
   const navItems = [
     {
@@ -247,29 +254,26 @@ const ClientNavbar = memo(() => {
     }>
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
         <div className="relative w-[380px] h-[50px]">
-          <AnimatePresence mode="wait">
-            {isLoaded && (
-              <>
-                {/* Círculo flotante animado */}
-                <motion.div
+          {isLoaded && (
+            <>
+              {/* Círculo flotante animado */}
+              <motion.div
+                  key={`circle-${activeItem}-${currentPosition.circle}`}
                   className="absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
                   initial={{ 
-                    left: previousPosition ? `${previousPosition.circle}px` : `${currentPosition.circle}px`, 
-                    opacity: 0 
+                    left: previousPosition ? `${previousPosition.circle}px` : `${currentPosition.circle}px`
                   }}
                   animate={{
-                    left: `${currentPosition.circle}px`,
-                    opacity: 1,
+                    left: `${currentPosition.circle}px`
                   }}
-                  exit={{ opacity: 0 }}
                   transition={{
-                    duration: 0.6,
+                    duration: 0.8,
                     ease: "easeInOut",
                     type: "tween",
                   }}
                   style={{ 
                     transform: "translateX(-50%)",
-                    willChange: "left, opacity"
+                    willChange: "left"
                   }}
                 >
                   <AnimatePresence mode="wait">
@@ -311,29 +315,26 @@ const ClientNavbar = memo(() => {
 
                 {/* Línea negra que se desplaza con la barra */}
                 <motion.div
+                  key={`line-${activeItem}-${currentPosition.circle}`}
                   className="absolute top-11 w-16 h-1 bg-black rounded-full z-10"
                   initial={{ 
-                    left: previousPosition ? `${previousPosition.circle}px` : `${currentPosition.circle}px`, 
-                    opacity: 0 
+                    left: previousPosition ? `${previousPosition.circle}px` : `${currentPosition.circle}px`
                   }}
                   animate={{
-                    left: `${currentPosition.circle}px`,
-                    opacity: 1,
+                    left: `${currentPosition.circle}px`
                   }}
-                  exit={{ opacity: 0 }}
                   transition={{
-                    duration: 0.6,
+                    duration: 0.8,
                     ease: "easeInOut",
                     type: "tween",
                   }}
                   style={{ 
                     transform: "translateX(-50%)",
-                    willChange: "left, opacity"
+                    willChange: "left"
                   }}
                 />
-              </>
-            )}
-          </AnimatePresence>
+            </>
+          )}
 
           {/* Barra con corte dinámico */}
           <div className="relative w-full h-full rounded-full shadow-lg overflow-hidden">
@@ -349,21 +350,19 @@ const ClientNavbar = memo(() => {
 
                   {/* Path del agujero, movido dinámicamente */}
                   <motion.path
+                    key={`svg-${activeItem}-${currentPosition.svg}`}
                     d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
                     fill="black"
                     initial={{ 
                       x: previousPosition ? previousPosition.svg : currentPosition.svg, 
-                      y: -30, 
-                      opacity: 0 
+                      y: -30
                     }}
                     animate={{
                       x: currentPosition.svg,
-                      y: -30,
-                      opacity: 1,
+                      y: -30
                     }}
-                    exit={{ opacity: 0 }}
                     transition={{
-                      duration: 0.6,
+                      duration: 0.8,
                       ease: "easeInOut",
                       type: "tween",
                     }}
