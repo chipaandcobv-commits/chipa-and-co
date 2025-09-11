@@ -145,7 +145,7 @@ const ClientNavbar = memo(() => {
   // Fallback estático para SSR
   if (!isMounted) {
     return (
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+      <div className="client-navbar-floating fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
         <div className="relative w-[380px] h-[50px]">
           {/* Círculo estático */}
           <div
@@ -231,7 +231,7 @@ const ClientNavbar = memo(() => {
 
   return (
     <ClientOnly fallback={
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+      <div className="client-navbar-floating fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
         <div className="relative w-[380px] h-[50px]">
           <div
             className="absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
@@ -253,11 +253,11 @@ const ClientNavbar = memo(() => {
         </div>
       </div>
     }>
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+      <div className="client-navbar-floating fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
         <div className="relative w-[380px] h-[50px]">
           {/* Círculo flotante animado */}
               <motion.div
-                  className="absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
+                  className="motion-safe absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
                   initial={{ 
                     left: previousPosition ? `${previousPosition.circle}px` : `${currentPosition.circle}px`
                   }}

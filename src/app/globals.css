@@ -84,3 +84,13 @@ input:-webkit-autofill {
   -webkit-text-fill-color: #374151 !important; /* gray-700 */
   transition: background-color 5000s ease-in-out 0s;
 }
+
+/* Navbar flotante fijo - elemento que siempre se mantiene visible */
+.client-navbar-floating {
+  position: fixed !important;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+  will-change: transform !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+}

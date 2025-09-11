@@ -38,7 +38,7 @@ const nextConfig: NextConfig = {
             value: [
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-              "style-src 'self' 'unsafe-inline' 'unsafe-hashes'",
+              "style-src 'self' 'unsafe-inline' 'unsafe-hashes' 'unsafe-eval'",
               "img-src 'self' data: https:",
               "font-src 'self'",
               "connect-src 'self'",
@@ -79,6 +79,11 @@ const nextConfig: NextConfig = {
   // Configuración de compilación segura
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
+  },
+  
+  // Configuración para optimizar animaciones en producción
+  experimental: {
+    optimizePackageImports: ['framer-motion'],
   },
   
   // Configuración de seguridad de imágenes
