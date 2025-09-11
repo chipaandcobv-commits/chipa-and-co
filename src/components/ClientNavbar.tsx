@@ -9,19 +9,11 @@ const ClientNavbar = memo(() => {
   const pathname = usePathname();
   const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [animationKey, setAnimationKey] = useState(0);
+  const [currentPosition, setCurrentPosition] = useState("48%");
 
   useEffect(() => {
     setIsLoaded(true);
   }, []);
-
-  // Resetear el estado de animación cuando cambie la página
-  useEffect(() => {
-    if (isAnimating) {
-      setIsAnimating(false);
-    }
-  }, [pathname, isAnimating]);
 
   // Precargar todas las páginas del cliente para navegación más rápida
   useEffect(() => {
@@ -43,9 +35,6 @@ const ClientNavbar = memo(() => {
 
   const handleButtonClick = useCallback(
     (path: string) => {
-      // Activar animación inmediatamente al hacer clic
-      setIsAnimating(true);
-      setAnimationKey(prev => prev + 1); // Forzar re-render de animaciones
       router.push(path);
     },
     [router]
@@ -60,22 +49,23 @@ const ClientNavbar = memo(() => {
 
   const activeItem = getActiveItem();
 
-  // Posiciones de destino
-  const targetPosition = useMemo(() => {
-    if (isActive("/cliente/rewards")) return "18%";
-    if (isActive("/cliente/profile")) return "82%";
-    return "48%"; // home por defecto
-  }, [pathname]);
+  // Actualizar posición cuando cambie la página
+  useEffect(() => {
+    if (isActive("/cliente/rewards")) {
+      setCurrentPosition("18%");
+    } else if (isActive("/cliente/profile")) {
+      setCurrentPosition("82%");
+    } else {
+      setCurrentPosition("48%");
+    }
+  }, [pathname, isActive]);
 
-  const targetPathPosition = useMemo(() => {
+  // Posición del path del SVG
+  const pathPosition = useMemo(() => {
     if (isActive("/cliente/rewards")) return 68.4 - 55;
     if (isActive("/cliente/profile")) return 311.6 - 55;
     return 182.4 - 55; // home por defecto
   }, [pathname]);
-
-  // Posición inicial: sin animación en la primera carga, con animación al hacer clic
-  const initialPosition = isAnimating ? "18%" : targetPosition; // Sin animación en primera carga
-  const initialPathPosition = isAnimating ? 68.4 - 55 : targetPathPosition; // Sin animación en primera carga
 
   const navItems = [
     {
@@ -104,11 +94,9 @@ const ClientNavbar = memo(() => {
       <div className="relative w-[380px] h-[50px]">
         {/* Círculo flotante animado */}
         <motion.div
-          key={`circle-${animationKey}`}
           className="absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
-          initial={{ left: initialPosition }}
           animate={{
-            left: targetPosition,
+            left: currentPosition,
           }}
           transition={{
             duration: 0.6,
@@ -130,11 +118,9 @@ const ClientNavbar = memo(() => {
 
         {/* Línea negra que se desplaza con la barra */}
         <motion.div
-          key={`line-${animationKey}`}
           className="absolute top-11 w-16 h-1 bg-black rounded-full z-10"
-          initial={{ left: initialPosition }}
           animate={{
-            left: targetPosition,
+            left: currentPosition,
           }}
           transition={{
             duration: 0.6,
@@ -158,16 +144,14 @@ const ClientNavbar = memo(() => {
 
                 {/* Path del agujero, movido dinámicamente */}
                 <motion.path
-                  key={`path-${animationKey}`}
                   d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
                   fill="black"
-                  initial={{ x: initialPathPosition, y: -30 }}
                   animate={{
-                    x: targetPathPosition,
+                    x: pathPosition,
                     y: -30,
                   }}
                   transition={{
-                    duration: 0.3,
+                    duration: 0.6,
                     ease: "easeInOut",
                     type: "tween",
                   }}
