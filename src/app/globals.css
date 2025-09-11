@@ -99,16 +99,22 @@ input:-webkit-autofill {
 .navbar-circle {
   transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
   will-change: left !important;
+  -webkit-transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  -webkit-will-change: left !important;
 }
 
 .navbar-line {
   transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
   will-change: left !important;
+  -webkit-transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  -webkit-will-change: left !important;
 }
 
 .navbar-svg-path {
   transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
   will-change: transform !important;
+  -webkit-transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  -webkit-will-change: transform !important;
 }
 
 /* Animaciones para los iconos */
@@ -153,4 +159,14 @@ input:-webkit-autofill {
   .navbar-svg-path {
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
+}
+
+/* Forzar animaciones en producción */
+.navbar-animate {
+  animation: forceAnimation 0.1s ease-in-out !important;
+}
+
+@keyframes forceAnimation {
+  0% { opacity: 0.99; }
+  100% { opacity: 1; }
 }

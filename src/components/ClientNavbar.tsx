@@ -12,6 +12,7 @@ const ClientNavbar = memo(() => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [previousPosition, setPreviousPosition] = useState<{circle: number, svg: number} | null>(null);
+  const [animationKey, setAnimationKey] = useState(0);
 
   useEffect(() => {
     setIsMounted(true);
@@ -35,6 +36,7 @@ const ClientNavbar = memo(() => {
       router.prefetch('/cliente/profile')
     ]);
   }, [router]);
+
 
   const isActive = useCallback(
     (path: string) => {
@@ -123,6 +125,16 @@ const ClientNavbar = memo(() => {
       return () => clearTimeout(timer);
     }
   }, [currentPosition, previousPosition]);
+
+  // Forzar animaciones cuando cambie la posición
+  useEffect(() => {
+    if (isLoaded) {
+      // Usar requestAnimationFrame para asegurar que las animaciones se ejecuten
+      requestAnimationFrame(() => {
+        setAnimationKey(prev => prev + 1);
+      });
+    }
+  }, [currentPosition, isLoaded]);
 
   const navItems = [
     {
@@ -257,7 +269,8 @@ const ClientNavbar = memo(() => {
         <div className="relative w-[380px] h-[50px]">
           {/* Círculo flotante animado */}
               <div
-                  className="navbar-circle absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
+                  key={`circle-${animationKey}`}
+                  className="navbar-circle navbar-animate absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
                   style={{ 
                     left: `${currentPosition.circle}px`,
                     transform: "translateX(-50%)"
@@ -278,7 +291,8 @@ const ClientNavbar = memo(() => {
 
               {/* Línea negra que se desplaza con la barra */}
               <div
-                  className="navbar-line absolute top-11 w-16 h-1 bg-black rounded-full z-10"
+                  key={`line-${animationKey}`}
+                  className="navbar-line navbar-animate absolute top-11 w-16 h-1 bg-black rounded-full z-10"
                   style={{ 
                     left: `${currentPosition.circle}px`,
                     transform: "translateX(-50%)"
@@ -299,7 +313,8 @@ const ClientNavbar = memo(() => {
 
                   {/* Path del agujero, movido dinámicamente */}
                   <path
-                    className="navbar-svg-path"
+                    key={`path-${animationKey}`}
+                    className="navbar-svg-path navbar-animate"
                     d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
                     fill="black"
                     style={{
