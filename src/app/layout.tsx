@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/lib/auth";
 import ConditionalNavbar from "@/components/ConditionalNavbar";
 import NextAuthSessionProvider from "@/components/SessionProvider";
+import { DataCacheProvider } from "@/contexts/DataCacheContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,8 +44,10 @@ export default function RootLayout({
       >
         <NextAuthSessionProvider>
           <AuthProvider>
-            <ConditionalNavbar />
-            {children}
+            <DataCacheProvider>
+              <ConditionalNavbar />
+              {children}
+            </DataCacheProvider>
           </AuthProvider>
         </NextAuthSessionProvider>
       </body>

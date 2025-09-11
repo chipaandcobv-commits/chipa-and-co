@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo } from "react";
 import { useAuth } from "@/lib/auth";
-import { useRewards } from "@/lib/hooks/useRewards";
+import { useCachedRewards } from "@/lib/hooks/useCachedRewards";
 import { useClaimReward } from "@/lib/hooks/useClaimReward";
 import { usePointsWarning } from "@/lib/hooks/usePointsWarning";
 import { GiftCardIcon } from "@/components/icons/Icons";
@@ -15,7 +15,7 @@ export default function ClientePage() {
   const [selectedReward, setSelectedReward] = useState<any>(null);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const { user, loading: userLoading, refetch: refetchUser } = useAuth();
-  const { rewards, loading: rewardsLoading, refetch: refetchRewards } = useRewards();
+  const { rewards, loading: rewardsLoading, refetch: refetchRewards } = useCachedRewards();
   const { claimReward, loading: claiming } = useClaimReward();
 
   // Memoizar el nombre del usuario

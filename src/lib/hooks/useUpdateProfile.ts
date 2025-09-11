@@ -1,26 +1,29 @@
 import { useState } from "react";
 import { useDataCache } from "@/contexts/DataCacheContext";
 
-interface ClaimRewardParams {
-  rewardId: string;
+interface UpdateProfileParams {
+  profileData: {
+    name: string;
+    email: string;
+  };
   onSuccess?: (data: any) => void;
   onError?: (error: string) => void;
 }
 
-export function useClaimReward() {
+export function useUpdateProfile() {
   const [loading, setLoading] = useState(false);
   const { refetch } = useDataCache();
 
-  const claimReward = async ({ rewardId, onSuccess, onError }: ClaimRewardParams) => {
+  const updateProfile = async ({ profileData, onSuccess, onError }: UpdateProfileParams) => {
     setLoading(true);
     
     try {
-      const response = await fetch("/api/rewards/claim", {
-        method: "POST",
+      const response = await fetch("/api/user/profile", {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ rewardId }),
+        body: JSON.stringify(profileData),
       });
 
       const data = await response.json();
@@ -28,15 +31,12 @@ export function useClaimReward() {
       if (data.success) {
         // Esperar un tiempo prudencial para que se reflejen los cambios en la BD
         setTimeout(async () => {
-          await Promise.all([
-            refetch('userProfile'), // Actualizar puntos del usuario
-            refetch('userClaims'),  // Actualizar premios canjeados
-          ]);
+          await refetch('userProfile'); // Actualizar perfil en caché
         }, 2000); // 2 segundos de espera
         
         onSuccess?.(data);
       } else {
-        onError?.(data.error || "Error al canjear premio");
+        onError?.(data.error || "Error al actualizar perfil");
       }
     } catch (error) {
       onError?.("Error de conexión");
@@ -46,7 +46,7 @@ export function useClaimReward() {
   };
 
   return {
-    claimReward,
+    updateProfile,
     loading,
   };
 }

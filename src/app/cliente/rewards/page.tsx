@@ -1,12 +1,12 @@
 "use client";
 
-import { useUserClaims } from "@/lib/hooks/useUserClaims";
+import { useCachedUserClaims } from "@/lib/hooks/useCachedUserClaims";
 import { useState } from "react";
 import { GiftCardIcon, CheckIcon, ClockIcon } from "@/components/icons/Icons";
 
 export default function RewardsPage() {
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
-  const { claims, loading, refetch } = useUserClaims();
+  const { claims, loading, refetch } = useCachedUserClaims();
 
   if (loading) {
     return (

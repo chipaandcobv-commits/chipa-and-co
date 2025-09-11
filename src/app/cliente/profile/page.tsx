@@ -1,11 +1,17 @@
 "use client";
 
 import React, { useState, useCallback, useMemo } from "react";
-import { useAuth } from "@/lib/hooks/useAuth";
+import { useAuth } from "@/lib/auth";
+import { useCachedUserProfile } from "@/lib/hooks/useCachedUserProfile";
+import { useUpdateProfile } from "@/lib/hooks/useUpdateProfile";
+import { useChangePassword } from "@/lib/hooks/useChangePassword";
 import { UserIcon, LogoutIcon, EyeIcon, EyeOffIcon } from "@/components/icons/Icons";
 
 export default function ProfilePage() {
   const { user, loading, logout, refetch } = useAuth();
+  const { user: cachedUser, loading: cachedLoading, refetch: refetchCachedUser } = useCachedUserProfile();
+  const { updateProfile, loading: updatingProfile } = useUpdateProfile();
+  const { changePassword, loading: changingPassword } = useChangePassword();
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -56,31 +62,20 @@ export default function ProfilePage() {
   const handleUpdateProfile = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     
-    try {
-      const response = await fetch("/api/user/profile", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(profileData),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
+    await updateProfile({
+      profileData,
+      onSuccess: (data) => {
         setMessage({ type: "success", text: data.message });
         setIsEditing(false);
-        refetch();
+        refetch(); // Actualizar también el contexto de auth
         setTimeout(() => setMessage(null), 5000);
-      } else {
-        setMessage({ type: "error", text: data.error });
+      },
+      onError: (error) => {
+        setMessage({ type: "error", text: error });
         setTimeout(() => setMessage(null), 5000);
       }
-    } catch (error) {
-      setMessage({ type: "error", text: "Error de conexión" });
-      setTimeout(() => setMessage(null), 5000);
-    }
-  }, [profileData, refetch]);
+    });
+  }, [profileData, refetch, updateProfile]);
 
   const handleChangePassword = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,21 +92,9 @@ export default function ProfilePage() {
       return;
     }
 
-    try {
-      const response = await fetch("/api/user/password", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          currentPassword: passwordData.currentPassword,
-          newPassword: passwordData.newPassword,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
+    await changePassword({
+      passwordData,
+      onSuccess: (data) => {
         setMessage({ type: "success", text: data.message });
         setIsChangingPassword(false);
         setPasswordData({
@@ -120,15 +103,13 @@ export default function ProfilePage() {
           confirmPassword: "",
         });
         setTimeout(() => setMessage(null), 5000);
-      } else {
-        setMessage({ type: "error", text: data.error });
+      },
+      onError: (error) => {
+        setMessage({ type: "error", text: error });
         setTimeout(() => setMessage(null), 5000);
       }
-    } catch (error) {
-      setMessage({ type: "error", text: "Error de conexión" });
-      setTimeout(() => setMessage(null), 5000);
-    }
-  }, [passwordData]);
+    });
+  }, [passwordData, changePassword]);
 
   const handleLogout = useCallback(async () => {
     try {
