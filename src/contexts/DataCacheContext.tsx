@@ -58,7 +58,6 @@ export function DataCacheProvider({ children }: { children: ReactNode }) {
         loading: { ...prev.loading, [key]: true }
       }));
 
-      let response;
       let endpoint;
 
       switch (key) {
@@ -78,7 +77,7 @@ export function DataCacheProvider({ children }: { children: ReactNode }) {
           return;
       }
 
-      response = await fetch(endpoint);
+      const response = await fetch(endpoint);
       const result = await response.json();
 
       if (result.success) {
@@ -136,7 +135,7 @@ export function DataCacheProvider({ children }: { children: ReactNode }) {
   };
 
   const isDataStale = (key: keyof CacheData, maxAge: number = CACHE_DURATION) => {
-    const lastFetch = data.lastFetch[key];
+    const lastFetch = data.lastFetch[key as keyof typeof data.lastFetch];
     return Date.now() - lastFetch > maxAge;
   };
 
