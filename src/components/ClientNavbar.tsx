@@ -10,15 +10,14 @@ const ClientNavbar = memo(() => {
   const pathname = usePathname();
   const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false);
-  const [currentPosition, setCurrentPosition] = useState("48%");
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
-    // Pequeño delay para asegurar que la hidratación esté completa
+    // Delay más largo para producción para asegurar hidratación completa
     const timer = setTimeout(() => {
       setIsLoaded(true);
-    }, 100);
+    }, 200);
     
     return () => clearTimeout(timer);
   }, []);
@@ -57,37 +56,50 @@ const ClientNavbar = memo(() => {
 
   const activeItem = getActiveItem();
 
-  // Actualizar posición cuando cambie la página
-  useEffect(() => {
-    if (isActive("/cliente/rewards")) {
-      setCurrentPosition("18%");
-    } else if (isActive("/cliente/profile")) {
-      setCurrentPosition("82%");
-    } else {
-      setCurrentPosition("48%");
-    }
-  }, [pathname, isActive]);
+  // Función para calcular posiciones en píxeles de forma consistente
+  const getPositionInPixels = useCallback((percentage: string) => {
+    const containerWidth = 380; // Ancho del contenedor
+    const percentageValue = parseFloat(percentage.replace('%', ''));
+    // Calcular la posición absoluta desde el borde izquierdo del contenedor
+    const absolutePosition = (containerWidth * percentageValue / 100);
+    return absolutePosition;
+  }, []);
 
-  // Posición inicial basada en la página actual
-  const initialPosition = useMemo(() => {
-    if (isActive("/cliente/rewards")) return "18%";
-    if (isActive("/cliente/profile")) return "82%";
-    return "48%";
-  }, [pathname]);
+  // Función para obtener la posición del SVG basada en la posición del círculo
+  const getSVGPosition = useCallback((circlePosition: number) => {
+    // El SVG debe estar centrado con respecto al círculo
+    // El path tiene un ancho aproximado de 110px, así que centramos restando 55px
+    return circlePosition - 55;
+  }, []);
 
-  // Posición del path del SVG
-  const pathPosition = useMemo(() => {
-    if (isActive("/cliente/rewards")) return 68.4 - 55;
-    if (isActive("/cliente/profile")) return 311.6 - 55;
-    return 182.4 - 55; // home por defecto
-  }, [pathname]);
+  // Posiciones calculadas de forma consistente
+  const positions = useMemo(() => {
+    const rewardsPos = getPositionInPixels("18%");
+    const homePos = getPositionInPixels("48%");
+    const profilePos = getPositionInPixels("82%");
 
-  // Posición inicial del path del SVG
-  const initialPathPosition = useMemo(() => {
-    if (isActive("/cliente/rewards")) return 68.4 - 55;
-    if (isActive("/cliente/profile")) return 311.6 - 55;
-    return 182.4 - 55;
-  }, [pathname]);
+    return {
+      rewards: {
+        circle: rewardsPos,
+        svg: getSVGPosition(rewardsPos)
+      },
+      home: {
+        circle: homePos,
+        svg: getSVGPosition(homePos)
+      },
+      profile: {
+        circle: profilePos,
+        svg: getSVGPosition(profilePos)
+      }
+    };
+  }, [getPositionInPixels, getSVGPosition]);
+
+  // Posición actual basada en la página activa
+  const currentPosition = useMemo(() => {
+    if (isActive("/cliente/rewards")) return positions.rewards;
+    if (isActive("/cliente/profile")) return positions.profile;
+    return positions.home;
+  }, [isActive, positions]);
 
   const navItems = [
     {
@@ -116,7 +128,7 @@ const ClientNavbar = memo(() => {
           <div
             className="absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
             style={{ 
-              left: initialPosition,
+              left: `${currentPosition.circle}px`,
               transform: "translateX(-50%)" 
             }}
           >
@@ -135,7 +147,7 @@ const ClientNavbar = memo(() => {
           <div
             className="absolute top-11 w-16 h-1 bg-black rounded-full z-10"
             style={{ 
-              left: initialPosition,
+              left: `${currentPosition.circle}px`,
               transform: "translateX(-50%)" 
             }}
           />
@@ -154,7 +166,7 @@ const ClientNavbar = memo(() => {
                     d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
                     fill="black"
                     style={{ 
-                      transform: `translate(${initialPathPosition}px, -30px)` 
+                      transform: `translate(${currentPosition.svg}px, -30px)` 
                     }}
                   />
                 </mask>
@@ -201,7 +213,7 @@ const ClientNavbar = memo(() => {
           <div
             className="absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
             style={{ 
-              left: initialPosition,
+              left: `${currentPosition.circle}px`,
               transform: "translateX(-50%)" 
             }}
           >
@@ -226,9 +238,9 @@ const ClientNavbar = memo(() => {
                 {/* Círculo flotante animado */}
                 <motion.div
                   className="absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
-                  initial={{ left: initialPosition, opacity: 0 }}
+                  initial={{ left: `${currentPosition.circle}px`, opacity: 0 }}
                   animate={{
-                    left: currentPosition,
+                    left: `${currentPosition.circle}px`,
                     opacity: 1,
                   }}
                   exit={{ opacity: 0 }}
@@ -237,7 +249,10 @@ const ClientNavbar = memo(() => {
                     ease: "easeInOut",
                     type: "tween",
                   }}
-                  style={{ transform: "translateX(-50%)" }}
+                  style={{ 
+                    transform: "translateX(-50%)",
+                    willChange: "left, opacity"
+                  }}
                 >
                   <AnimatePresence mode="wait">
                     {activeItem === "rewards" && (
@@ -279,9 +294,9 @@ const ClientNavbar = memo(() => {
                 {/* Línea negra que se desplaza con la barra */}
                 <motion.div
                   className="absolute top-11 w-16 h-1 bg-black rounded-full z-10"
-                  initial={{ left: initialPosition, opacity: 0 }}
+                  initial={{ left: `${currentPosition.circle}px`, opacity: 0 }}
                   animate={{
-                    left: currentPosition,
+                    left: `${currentPosition.circle}px`,
                     opacity: 1,
                   }}
                   exit={{ opacity: 0 }}
@@ -290,7 +305,10 @@ const ClientNavbar = memo(() => {
                     ease: "easeInOut",
                     type: "tween",
                   }}
-                  style={{ transform: "translateX(-50%)" }}
+                  style={{ 
+                    transform: "translateX(-50%)",
+                    willChange: "left, opacity"
+                  }}
                 />
               </>
             )}
@@ -312,9 +330,9 @@ const ClientNavbar = memo(() => {
                   <motion.path
                     d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
                     fill="black"
-                    initial={{ x: initialPathPosition, y: -30, opacity: 0 }}
+                    initial={{ x: currentPosition.svg, y: -30, opacity: 0 }}
                     animate={{
-                      x: pathPosition,
+                      x: currentPosition.svg,
                       y: -30,
                       opacity: 1,
                     }}
