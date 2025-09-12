@@ -41,7 +41,7 @@ const ClientNavbar = memo(() => {
   }, []);
 
   const getSVGPosition = useCallback((circlePosition: number) => {
-    return circlePosition - 55;
+    return circlePosition - 55; // Centrado con el círculo
   }, []);
 
   const positions = useMemo(() => {
@@ -146,7 +146,7 @@ const ClientNavbar = memo(() => {
                   d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
                   fill="black"
                   animate={{
-                    x: getSVGPosition(currentPosition.circle),
+                    x: currentPosition.circle - 55, // Misma lógica que el círculo
                     y: -30
                   }}
                   transition={sharedTransition}
