@@ -95,11 +95,23 @@ input:-webkit-autofill {
   -webkit-backface-visibility: hidden !important;
 }
 
-/* Optimización para Framer Motion */
-.navbar-circle,
-.navbar-line {
+/* Animaciones CSS puras para el navbar */
+.navbar-circle {
+  transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
   will-change: left !important;
   -webkit-will-change: left !important;
+}
+
+.navbar-line {
+  transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  will-change: left !important;
+  -webkit-will-change: left !important;
+}
+
+.navbar-svg-path {
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  will-change: transform !important;
+  -webkit-will-change: transform !important;
 }
 
 /* Animaciones para los iconos */
@@ -109,6 +121,17 @@ input:-webkit-autofill {
 
 .navbar-icon-enter {
   animation: iconEnter 0.3s ease-out forwards !important;
+}
+
+@keyframes iconEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .navbar-icon-exit {
