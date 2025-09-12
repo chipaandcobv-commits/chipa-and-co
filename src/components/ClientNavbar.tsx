@@ -9,9 +9,15 @@ const ClientNavbar = memo(() => {
   const pathname = usePathname();
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
+  const [shouldAnimate, setShouldAnimate] = useState(false);
 
   useLayoutEffect(() => {
     setIsMounted(true);
+    // Pequeño delay para asegurar que el DOM esté listo
+    const timer = setTimeout(() => {
+      setShouldAnimate(true);
+    }, 100);
+    return () => clearTimeout(timer);
   }, []);
 
   const isActive = useCallback(
@@ -190,10 +196,13 @@ const ClientNavbar = memo(() => {
         {/* Círculo flotante animado */}
         <motion.div
           className="navbar-circle absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
-          animate={{
+          initial={false}
+          animate={shouldAnimate ? {
             x: currentPosition.circle - 218  // Centrar respecto al contenedor de 380px
+          } : {
+            x: currentPosition.circle - 218  // Posición inicial sin animación
           }}
-          transition={sharedTransition}
+          transition={shouldAnimate ? sharedTransition : { duration: 0 }}
           style={{
             left: "50%",
             transform: "translateX(-50%)"
@@ -209,10 +218,13 @@ const ClientNavbar = memo(() => {
         {/* Línea negra que se desplaza con la barra */}
         <motion.div
           className="navbar-line absolute top-11 w-16 h-1 bg-black rounded-full z-10"
-          animate={{
+          initial={false}
+          animate={shouldAnimate ? {
             x: currentPosition.circle - 218  // Centrar respecto al contenedor de 380px
+          } : {
+            x: currentPosition.circle - 218  // Posición inicial sin animación
           }}
-          transition={sharedTransition}
+          transition={shouldAnimate ? sharedTransition : { duration: 0 }}
           style={{
             left: "50%",
             transform: "translateX(-50%)"
@@ -232,11 +244,15 @@ const ClientNavbar = memo(() => {
                 <motion.path
                   d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
                   fill="black"
-                  animate={{
+                  initial={false}
+                  animate={shouldAnimate ? {
+                    x: getSVGPosition(currentPosition.circle),
+                    y: -30
+                  } : {
                     x: getSVGPosition(currentPosition.circle),
                     y: -30
                   }}
-                  transition={sharedTransition}
+                  transition={shouldAnimate ? sharedTransition : { duration: 0 }}
                 />
               </mask>
             </defs>
