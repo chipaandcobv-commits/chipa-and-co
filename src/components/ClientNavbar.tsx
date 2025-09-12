@@ -320,11 +320,14 @@ const ClientNavbar = memo(() => {
                   <motion.path
                     d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
                     fill="black"
-                    layoutId="navbar-path"
                     animate={{
-                      x: currentPosition.svg,
-                      y: -30
+                      x: currentPosition.circle,
+                      y: 20
                     }}
+                    style={{
+                      transform: "translate(-50%, -50%)"
+                    }}
+                    initial={false}
                     transition={{ 
                       type: "spring", 
                       stiffness: 300, 
