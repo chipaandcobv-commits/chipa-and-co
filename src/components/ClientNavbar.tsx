@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, memo, useMemo } from "react";
+import { useCallback, memo, useMemo, useState, useLayoutEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { GiftCardIcon, HomeIcon, UserIcon } from "./icons/Icons";
@@ -8,6 +8,11 @@ import { GiftCardIcon, HomeIcon, UserIcon } from "./icons/Icons";
 const ClientNavbar = memo(() => {
   const pathname = usePathname();
   const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useLayoutEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const isActive = useCallback(
     (path: string) => {
@@ -88,6 +93,87 @@ const ClientNavbar = memo(() => {
       path: "/cliente/profile",
     },
   ];
+
+  // Fallback estático para SSR
+  if (!isMounted) {
+    return (
+      <div className="client-navbar-floating fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+        <div className="relative w-[380px] h-[50px]">
+          {/* Círculo estático */}
+          <div
+            className="navbar-circle absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
+            style={{
+              left: `${currentPosition.circle}px`,
+              transform: "translateX(-50%)"
+            }}
+          >
+            {activeItem === "rewards" && <GiftCardIcon className="w-6 h-6 text-[#F15A25]" />}
+            {activeItem === "home" && <HomeIcon className="w-6 h-6 text-[#F15A25]" />}
+            {activeItem === "profile" && <UserIcon className="w-6 h-6 text-[#F15A25]" />}
+          </div>
+
+          {/* Línea estática */}
+          <div
+            className="navbar-line absolute top-11 w-16 h-1 bg-black rounded-full z-10"
+            style={{
+              left: `${currentPosition.circle}px`,
+              transform: "translateX(-50%)"
+            }}
+          />
+
+          {/* Barra estática */}
+          <div className="relative w-full h-full rounded-full shadow-lg overflow-hidden">
+            <svg
+              className="absolute inset-0 w-full h-full"
+              viewBox="0 0 380 50"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <mask id="bar-mask-static">
+                  <rect width="380" height="50" fill="white" rx="25" />
+                  <path
+                    d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
+                    fill="black"
+                    style={{
+                      transform: `translate(${getSVGPosition(currentPosition.circle)}px, -30px)`
+                    }}
+                  />
+                </mask>
+              </defs>
+              <rect
+                width="380"
+                height="50"
+                rx="25"
+                fill="#fbe3cf"
+                mask="url(#bar-mask-static)"
+              />
+            </svg>
+
+            {/* Botones de navegación estáticos */}
+            <div className="absolute inset-0 flex justify-between items-center px-8">
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => handleButtonClick(item.path)}
+                  className="z-20 p-4 -m-4 flex items-center justify-center min-w-[60px] min-h-[60px]"
+                >
+                  <div
+                    className={`transition-all duration-300 ${
+                      activeItem !== item.id
+                        ? "text-gray-600 opacity-100"
+                        : "text-[#F15A25] opacity-0"
+                    }`}
+                  >
+                    {item.icon}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="client-navbar-floating fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
