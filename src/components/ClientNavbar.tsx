@@ -12,6 +12,8 @@ const ClientNavbar = memo(() => {
   const isActive = useCallback(
     (path: string) => {
       if (path === "/cliente") return pathname === "/cliente";
+      if (path === "/cliente/rewards") return pathname.startsWith("/cliente/rewards");
+      if (path === "/cliente/profile") return pathname.startsWith("/cliente/profile");
       return pathname.startsWith(path);
     },
     [pathname]
@@ -68,6 +70,7 @@ const ClientNavbar = memo(() => {
   const currentPosition = useMemo(() => {
     if (isActive("/cliente/rewards")) return positions.rewards;
     if (isActive("/cliente/profile")) return positions.profile;
+    if (isActive("/cliente")) return positions.home;
     return positions.home;
   }, [isActive, positions]);
 
