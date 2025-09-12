@@ -261,6 +261,9 @@ const ClientNavbar = memo(() => {
           {/* Círculo flotante animado */}
               <motion.div
                   className="navbar-circle absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
+                  initial={{ 
+                    left: previousPosition ? `${previousPosition.circle}px` : `${currentPosition.circle}px`
+                  }}
                   animate={{ 
                     left: `${currentPosition.circle}px`
                   }}
@@ -289,6 +292,9 @@ const ClientNavbar = memo(() => {
               {/* Línea negra que se desplaza con la barra */}
               <motion.div
                   className="navbar-line absolute top-11 w-16 h-1 bg-black rounded-full z-10"
+                  initial={{ 
+                    left: previousPosition ? `${previousPosition.circle}px` : `${currentPosition.circle}px`
+                  }}
                   animate={{ 
                     left: `${currentPosition.circle}px`
                   }}
@@ -318,6 +324,10 @@ const ClientNavbar = memo(() => {
                   <motion.path
                     d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
                     fill="black"
+                    initial={{
+                      x: previousPosition ? previousPosition.svg : currentPosition.svg,
+                      y: -30
+                    }}
                     animate={{
                       x: currentPosition.svg,
                       y: -30
