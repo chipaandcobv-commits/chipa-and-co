@@ -267,21 +267,19 @@ const ClientNavbar = memo(() => {
             xmlns="http://www.w3.org/2000/svg"
           >
             <defs>
-              <mask id="bar-mask">
+              <mask id={`bar-mask-${pathname.replace('/', '-')}`}>
                 <rect width="380" height="50" fill="white" rx="25" />
 
-                {/* Animar un <g> en vez de el <path> para que la traducción actúe en el sistema de coordenadas SVG
-                    y evitar animaciones iniciales desde x=0. */}
-                 <motion.g
-                   initial={false}
-                   animate={mounted ? { x: sharedPosition - 55, y: -30 } : false}
-                   transition={sharedTransition}
-                 >
-                  <path
-                    d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
-                    fill="black"
-                  />
-                </motion.g>
+                <motion.path
+                  d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
+                  fill="black"
+                  initial={false}
+                  animate={{ 
+                    x: sharedPosition - 55, 
+                    y: -30 
+                  }}
+                  transition={sharedTransition}
+                />
 
               </mask>
             </defs>
@@ -290,7 +288,7 @@ const ClientNavbar = memo(() => {
               height="50"
               rx="25"
               fill="#fbe3cf"
-              mask="url(#bar-mask)"
+              mask={`url(#bar-mask-${pathname.replace('/', '-')})`}
             />
           </svg>
 
