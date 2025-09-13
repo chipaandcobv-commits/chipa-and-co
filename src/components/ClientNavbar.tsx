@@ -276,17 +276,20 @@ const ClientNavbar = memo(() => {
               <mask id={`bar-mask-${pathname.replace('/', '-')}`}>
                 <rect width="380" height="50" fill="white" rx="25" />
 
-                <motion.path
-                  key={`path-${animationKey}`}
-                  d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
-                  fill="black"
+                <motion.g
+                  key={`hole-${animationKey}`}
                   initial={false}
-                  animate={mounted ? { 
+                  animate={{ 
                     x: sharedPosition - 55, 
                     y: -30 
-                  } : false}
+                  }}
                   transition={sharedTransition}
-                />
+                >
+                  <path
+                    d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
+                    fill="black"
+                  />
+                </motion.g>
 
               </mask>
             </defs>
