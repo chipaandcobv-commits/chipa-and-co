@@ -17,13 +17,18 @@ const ClientNavbar = memo(() => {
 
   // Rastrear la última posición válida
   useLayoutEffect(() => {
+    console.log(`🔄 Pathname changed to: ${pathname}`);
     if (pathname.startsWith("/cliente/rewards")) {
+      console.log(`📍 Setting position to: rewards`);
       setLastValidPosition("rewards");
     } else if (pathname.startsWith("/cliente/profile")) {
+      console.log(`📍 Setting position to: profile`);
       setLastValidPosition("profile");
     } else if (pathname === "/cliente") {
+      console.log(`📍 Setting position to: home`);
       setLastValidPosition("home");
     } else if (pathname.startsWith("/cliente")) {
+      console.log(`📍 Setting position to: home (fallback)`);
       setLastValidPosition("home");
     }
   }, [pathname]);
@@ -109,8 +114,9 @@ const ClientNavbar = memo(() => {
 
   // Posición base compartida para círculo y hueco
   const sharedPosition = useMemo(() => {
+    console.log(`🎯 SharedPosition - Pathname: ${pathname}, LastValid: ${lastValidPosition}, Circle: ${currentPosition.circle}`);
     return currentPosition.circle;
-  }, [currentPosition.circle]);
+  }, [currentPosition.circle, pathname, lastValidPosition]);
 
 
   // Configuración de transición compartida para sincronizar todas las animaciones
@@ -274,10 +280,10 @@ const ClientNavbar = memo(() => {
                   d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
                   fill="black"
                   initial={false}
-                  animate={{ 
+                  animate={mounted ? { 
                     x: sharedPosition - 55, 
                     y: -30 
-                  }}
+                  } : false}
                   transition={sharedTransition}
                 />
 
