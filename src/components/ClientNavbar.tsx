@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, memo, useMemo, useState, useLayoutEffect } from "react";
+import { useCallback, memo, useMemo, useState, useLayoutEffect, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { GiftCardIcon, HomeIcon, UserIcon } from "./icons/Icons";
@@ -8,11 +8,11 @@ import { GiftCardIcon, HomeIcon, UserIcon } from "./icons/Icons";
 const ClientNavbar = memo(() => {
   const pathname = usePathname();
   const router = useRouter();
-  const [isMounted, setIsMounted] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [lastValidPosition, setLastValidPosition] = useState("home");
 
-  useLayoutEffect(() => {
-    setIsMounted(true);
+  useEffect(() => {
+    setMounted(true);
   }, []);
 
   // Rastrear la última posición válida
@@ -140,7 +140,7 @@ const ClientNavbar = memo(() => {
   ];
 
   // Fallback estático para SSR
-  if (!isMounted) {
+  if (!mounted) {
     return (
       <div className="client-navbar-floating fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
         <div className="relative w-[380px] h-[50px]">
@@ -228,9 +228,9 @@ const ClientNavbar = memo(() => {
           className="navbar-circle absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
           layoutId="navbar-circle"
           initial={false}
-          animate={{
+          animate={mounted ? {
             x: sharedPosition - 218  // Centrar respecto al contenedor de 380px
-          }}
+          } : false}
           transition={sharedTransition}
           style={{
             left: "50%",
@@ -249,9 +249,9 @@ const ClientNavbar = memo(() => {
           className="navbar-line absolute top-11 w-16 h-1 bg-black rounded-full z-10"
           layoutId="navbar-line"
           initial={false}
-          animate={{
+          animate={mounted ? {
             x: sharedPosition - 218  // Centrar respecto al contenedor de 380px
-          }}
+          } : false}
           transition={sharedTransition}
           style={{
             left: "50%",
@@ -272,13 +272,11 @@ const ClientNavbar = memo(() => {
 
                 {/* Animar un <g> en vez de el <path> para que la traducción actúe en el sistema de coordenadas SVG
                     y evitar animaciones iniciales desde x=0. */}
-                <motion.g
-                  initial={false}
-                  animate={{ x: sharedPosition - 55, y: -30 }}
-                  transition={sharedTransition}
-                  transformBox="fill-box"
-                  transformOrigin="center"
-                >
+                 <motion.g
+                   initial={false}
+                   animate={mounted ? { x: sharedPosition - 55, y: -30 } : false}
+                   transition={sharedTransition}
+                 >
                   <path
                     d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
                     fill="black"
