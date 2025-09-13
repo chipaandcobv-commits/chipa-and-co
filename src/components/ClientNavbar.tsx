@@ -9,17 +9,38 @@ const ClientNavbar = memo(() => {
   const pathname = usePathname();
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
+  const [lastValidPosition, setLastValidPosition] = useState("home");
 
   useLayoutEffect(() => {
     setIsMounted(true);
   }, []);
 
+  // Rastrear la última posición válida
+  useLayoutEffect(() => {
+    if (pathname.startsWith("/cliente/rewards")) {
+      setLastValidPosition("rewards");
+    } else if (pathname.startsWith("/cliente/profile")) {
+      setLastValidPosition("profile");
+    } else if (pathname === "/cliente") {
+      setLastValidPosition("home");
+    } else if (pathname.startsWith("/cliente")) {
+      setLastValidPosition("home");
+    }
+  }, [pathname]);
+
   const isActive = useCallback(
     (path: string) => {
-      if (path === "/cliente") return pathname === "/cliente";
-      if (path === "/cliente/rewards") return pathname.startsWith("/cliente/rewards");
-      if (path === "/cliente/profile") return pathname.startsWith("/cliente/profile");
-      return pathname.startsWith(path);
+      // Lógica más precisa para evitar conflictos
+      if (path === "/cliente") {
+        return pathname === "/cliente";
+      }
+      if (path === "/cliente/rewards") {
+        return pathname.startsWith("/cliente/rewards");
+      }
+      if (path === "/cliente/profile") {
+        return pathname.startsWith("/cliente/profile");
+      }
+      return false;
     },
     [pathname]
   );
@@ -73,11 +94,24 @@ const ClientNavbar = memo(() => {
   }, [getPositionInPixels, getSVGPosition]);
 
   const currentPosition = useMemo(() => {
-    if (isActive("/cliente/rewards")) return positions.rewards;
-    if (isActive("/cliente/profile")) return positions.profile;
-    if (isActive("/cliente")) return positions.home;
-    return positions.home;
-  }, [isActive, positions]);
+    // Usar lastValidPosition para consistencia
+    let position;
+    if (lastValidPosition === "rewards") {
+      position = positions.rewards;
+    } else if (lastValidPosition === "profile") {
+      position = positions.profile;
+    } else {
+      position = positions.home;
+    }
+
+    return position;
+  }, [lastValidPosition, positions, pathname]);
+
+  // Posición base compartida para círculo y hueco
+  const sharedPosition = useMemo(() => {
+    return currentPosition.circle;
+  }, [currentPosition.circle]);
+
 
   // Configuración de transición compartida para sincronizar todas las animaciones
   const sharedTransition = {
@@ -193,8 +227,9 @@ const ClientNavbar = memo(() => {
         <motion.div
           className="navbar-circle absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
           layoutId="navbar-circle"
+          initial={false}
           animate={{
-            x: currentPosition.circle - 218  // Centrar respecto al contenedor de 380px
+            x: sharedPosition - 218  // Centrar respecto al contenedor de 380px
           }}
           transition={sharedTransition}
           style={{
@@ -213,8 +248,9 @@ const ClientNavbar = memo(() => {
         <motion.div
           className="navbar-line absolute top-11 w-16 h-1 bg-black rounded-full z-10"
           layoutId="navbar-line"
+          initial={false}
           animate={{
-            x: currentPosition.circle - 218  // Centrar respecto al contenedor de 380px
+            x: sharedPosition - 218  // Centrar respecto al contenedor de 380px
           }}
           transition={sharedTransition}
           style={{
@@ -233,15 +269,22 @@ const ClientNavbar = memo(() => {
             <defs>
               <mask id="bar-mask">
                 <rect width="380" height="50" fill="white" rx="25" />
-                <motion.path
-                  d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
-                  fill="black"
-                  animate={{
-                    x: currentPosition.circle - 55, // Misma lógica que el círculo
-                    y: -30
-                  }}
+
+                {/* Animar un <g> en vez de el <path> para que la traducción actúe en el sistema de coordenadas SVG
+                    y evitar animaciones iniciales desde x=0. */}
+                <motion.g
+                  initial={false}
+                  animate={{ x: sharedPosition - 55, y: -30 }}
                   transition={sharedTransition}
-                />
+                  transformBox="fill-box"
+                  transformOrigin="center"
+                >
+                  <path
+                    d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
+                    fill="black"
+                  />
+                </motion.g>
+
               </mask>
             </defs>
             <rect
