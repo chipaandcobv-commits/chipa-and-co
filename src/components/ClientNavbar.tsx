@@ -9,15 +9,9 @@ const ClientNavbar = memo(() => {
   const pathname = usePathname();
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
-  const [canAnimate, setCanAnimate] = useState(false);
 
   useLayoutEffect(() => {
     setIsMounted(true);
-    // Delay para asegurar que el DOM esté completamente listo
-    const timer = setTimeout(() => {
-      setCanAnimate(true);
-    }, 150);
-    return () => clearTimeout(timer);
   }, []);
 
   const isActive = useCallback(
@@ -199,12 +193,10 @@ const ClientNavbar = memo(() => {
         <motion.div
           className="navbar-circle absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
           layoutId="navbar-circle"
-          animate={canAnimate ? {
+          animate={{
             x: currentPosition.circle - 218  // Centrar respecto al contenedor de 380px
-          } : {
-            x: currentPosition.circle - 218  // Posición inicial sin animación
           }}
-          transition={canAnimate ? sharedTransition : { duration: 0 }}
+          transition={sharedTransition}
           style={{
             left: "50%",
             transform: "translateX(-50%)"
@@ -221,12 +213,10 @@ const ClientNavbar = memo(() => {
         <motion.div
           className="navbar-line absolute top-11 w-16 h-1 bg-black rounded-full z-10"
           layoutId="navbar-line"
-          animate={canAnimate ? {
+          animate={{
             x: currentPosition.circle - 218  // Centrar respecto al contenedor de 380px
-          } : {
-            x: currentPosition.circle - 218  // Posición inicial sin animación
           }}
-          transition={canAnimate ? sharedTransition : { duration: 0 }}
+          transition={sharedTransition}
           style={{
             left: "50%",
             transform: "translateX(-50%)"
@@ -246,14 +236,11 @@ const ClientNavbar = memo(() => {
                 <motion.path
                   d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
                   fill="black"
-                  animate={canAnimate ? {
+                  animate={{
                     x: currentPosition.circle - 55, // Misma lógica que el círculo
                     y: -30
-                  } : {
-                    x: currentPosition.circle - 55, // Posición inicial sin animación
-                    y: -30
                   }}
-                  transition={canAnimate ? sharedTransition : { duration: 0 }}
+                  transition={sharedTransition}
                 />
               </mask>
             </defs>
