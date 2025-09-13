@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useDataCache } from "@/contexts/DataCacheContext";
+import { useAuth } from "@/lib/auth";
 
 interface ClaimRewardParams {
   rewardId: string;
@@ -10,6 +11,7 @@ interface ClaimRewardParams {
 export function useClaimReward() {
   const [loading, setLoading] = useState(false);
   const { refetch } = useDataCache();
+  const { user, setAuthUser, refetch: refetchAuth } = useAuth();
 
   const claimReward = async ({ rewardId, onSuccess, onError }: ClaimRewardParams) => {
     setLoading(true);
@@ -26,13 +28,24 @@ export function useClaimReward() {
       const data = await response.json();
 
       if (data.success) {
-        // Esperar un tiempo prudencial para que se reflejen los cambios en la BD
+        // Actualizar inmediatamente los puntos en el contexto de autenticación
+        if (data.newTotalPoints !== undefined && user) {
+          setAuthUser({
+            ...user,
+            puntos: data.newTotalPoints
+          });
+        }
+        
+        // Actualizar los datos del cache inmediatamente
+        await Promise.all([
+          refetch('userProfile'), // Actualizar puntos del usuario
+          refetch('userClaims'),  // Actualizar premios canjeados
+        ]);
+        
+        // También actualizar el contexto de autenticación desde la base de datos
         setTimeout(async () => {
-          await Promise.all([
-            refetch('userProfile'), // Actualizar puntos del usuario
-            refetch('userClaims'),  // Actualizar premios canjeados
-          ]);
-        }, 2000); // 2 segundos de espera
+          await refetchAuth();
+        }, 1000); // 1 segundo de espera para asegurar consistencia
         
         onSuccess?.(data);
       } else {
