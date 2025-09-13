@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/hooks/useAuth";
 import AdminRedirect from "@/components/AdminRedirect";
+import { useAutoCleanup } from "@/lib/hooks/useAutoCleanup";
 
 interface ExpiredStats {
   expiredPending: number;
@@ -15,6 +16,9 @@ export default function ExpiredRewardsPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const { user, loading: userLoading } = useAuth();
+
+  // Ejecutar limpieza automática de premios vencidos al cargar la página
+  useAutoCleanup();
 
   useEffect(() => {
     if (user) {

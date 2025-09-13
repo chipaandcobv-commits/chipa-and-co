@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Button from "../../components/ui/Button";
 import { DashboardIcon, LogoutIcon } from "../../components/icons/Icons";
 import SimpleChart from "../../components/charts/SimpleChart";
+import { useAutoCleanup } from "../../lib/hooks/useAutoCleanup";
 
 interface Analytics {
   summary: {
@@ -50,6 +51,9 @@ export default function AdminDashboard() {
   const [error, setError] = useState("");
   const [selectedProductId, setSelectedProductId] = useState<string>("");
   const router = useRouter();
+
+  // Ejecutar limpieza automática de premios vencidos al cargar el dashboard
+  useAutoCleanup();
 
   useEffect(() => {
     fetchAnalytics();
