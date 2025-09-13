@@ -10,6 +10,7 @@ const ClientNavbar = memo(() => {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [lastValidPosition, setLastValidPosition] = useState("home");
+  const [animationKey, setAnimationKey] = useState(0);
 
   useEffect(() => {
     setMounted(true);
@@ -17,20 +18,18 @@ const ClientNavbar = memo(() => {
 
   // Rastrear la última posición válida
   useLayoutEffect(() => {
-    console.log(`🔄 Pathname changed to: ${pathname}`);
     if (pathname === "/cliente") {
-      console.log(`📍 Setting position to: home (exact match)`);
       setLastValidPosition("home");
     } else if (pathname.startsWith("/cliente/rewards")) {
-      console.log(`📍 Setting position to: rewards`);
       setLastValidPosition("rewards");
     } else if (pathname.startsWith("/cliente/profile")) {
-      console.log(`📍 Setting position to: profile`);
       setLastValidPosition("profile");
     } else if (pathname.startsWith("/cliente")) {
-      console.log(`📍 Setting position to: home (fallback)`);
       setLastValidPosition("home");
     }
+    
+    // Forzar nueva animación incrementando la key
+    setAnimationKey(prev => prev + 1);
   }, [pathname]);
 
   const isActive = useCallback(
@@ -114,9 +113,8 @@ const ClientNavbar = memo(() => {
 
   // Posición base compartida para círculo y hueco
   const sharedPosition = useMemo(() => {
-    console.log(`🎯 SharedPosition - Pathname: ${pathname}, LastValid: ${lastValidPosition}, Circle: ${currentPosition.circle}, Mounted: ${mounted}`);
     return currentPosition.circle;
-  }, [currentPosition.circle, pathname, lastValidPosition, mounted]);
+  }, [currentPosition.circle]);
 
 
   // Configuración de transición compartida para sincronizar todas las animaciones
@@ -231,6 +229,7 @@ const ClientNavbar = memo(() => {
       <div className="relative w-[380px] h-[50px]">
         {/* Círculo flotante animado */}
         <motion.div
+          key={`circle-${animationKey}`}
           className="navbar-circle absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
           layoutId="navbar-circle"
           initial={false}
@@ -252,6 +251,7 @@ const ClientNavbar = memo(() => {
 
         {/* Línea negra que se desplaza con la barra */}
         <motion.div
+          key={`line-${animationKey}`}
           className="navbar-line absolute top-11 w-16 h-1 bg-black rounded-full z-10"
           layoutId="navbar-line"
           initial={false}
@@ -277,6 +277,7 @@ const ClientNavbar = memo(() => {
                 <rect width="380" height="50" fill="white" rx="25" />
 
                 <motion.path
+                  key={`path-${animationKey}`}
                   d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
                   fill="black"
                   initial={false}
