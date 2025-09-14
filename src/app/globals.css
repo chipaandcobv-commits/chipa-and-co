@@ -71,6 +71,22 @@ input[type="password"] {
     -webkit-appearance: none !important;
   }
 
+  /* Mejoras adicionales para campos de contraseña en iOS */
+  input[type="password"] {
+    -webkit-text-security: disc !important;
+    -webkit-appearance: none !important;
+    border-radius: 8px !important;
+  }
+
+  /* Asegurar que los inputs tengan el tamaño correcto en iOS */
+  input[type="password"],
+  input[type="text"],
+  input[type="email"] {
+    font-size: 16px !important; /* Previene zoom en iOS */
+    min-height: 48px !important;
+    padding: 12px 16px !important;
+  }
+
   /* Clase auxiliar: oculta el placeholder nativo SOLO en iOS
      (la usamos si renderizamos un overlay de placeholder) */
   .ios-hide-placeholder::placeholder {

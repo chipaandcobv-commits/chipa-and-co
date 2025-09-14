@@ -281,15 +281,25 @@ export default function ProfilePage() {
                   <div className="relative">
                     <input
                       type={showCurrentPassword ? "text" : "password"}
+                      id="current-password"
+                      autoComplete="current-password"
                       value={passwordData.currentPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                      className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F15A25] focus:border-transparent"
+                      className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F15A25] focus:border-transparent min-h-[48px] text-base"
+                      style={{ fontSize: '16px' }}
                       required
+                      onFocus={(e) => {
+                        // Forzar re-render en Safari para inputs controlados
+                        const val = e.target.value;
+                        e.target.value = '';
+                        e.target.value = val;
+                      }}
                     />
                     <button
                       type="button"
                       onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                      style={{ minHeight: '20px', minWidth: '20px' }}
                     >
                       {showCurrentPassword ? <EyeOffIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
                     </button>
@@ -303,16 +313,26 @@ export default function ProfilePage() {
                   <div className="relative">
                     <input
                       type={showNewPassword ? "text" : "password"}
+                      id="new-password"
+                      autoComplete="new-password"
                       value={passwordData.newPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                      className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F15A25] focus:border-transparent"
+                      className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F15A25] focus:border-transparent min-h-[48px] text-base"
+                      style={{ fontSize: '16px' }}
                       required
                       minLength={6}
+                      onFocus={(e) => {
+                        // Forzar re-render en Safari para inputs controlados
+                        const val = e.target.value;
+                        e.target.value = '';
+                        e.target.value = val;
+                      }}
                     />
                     <button
                       type="button"
                       onClick={() => setShowNewPassword(!showNewPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                      style={{ minHeight: '20px', minWidth: '20px' }}
                     >
                       {showNewPassword ? <EyeOffIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
                     </button>
@@ -326,16 +346,26 @@ export default function ProfilePage() {
                   <div className="relative">
                     <input
                       type={showConfirmPassword ? "text" : "password"}
+                      id="confirm-password"
+                      autoComplete="new-password"
                       value={passwordData.confirmPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                      className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F15A25] focus:border-transparent"
+                      className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F15A25] focus:border-transparent min-h-[48px] text-base"
+                      style={{ fontSize: '16px' }}
                       required
                       minLength={6}
+                      onFocus={(e) => {
+                        // Forzar re-render en Safari para inputs controlados
+                        const val = e.target.value;
+                        e.target.value = '';
+                        e.target.value = val;
+                      }}
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                      style={{ minHeight: '20px', minWidth: '20px' }}
                     >
                       {showConfirmPassword ? <EyeOffIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
                     </button>

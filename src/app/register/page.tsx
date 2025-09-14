@@ -200,7 +200,8 @@ export default function RegisterPage() {
                   required
                   className="pr-12 placeholder:text-gray-400 text-gray-700"
                   style={{ 
-                    fontSize: '16px'
+                    fontSize: '16px',
+                    minHeight: '48px'
                   }}
                   onFocus={(e) => {
                     // Forzar re-render en Safari para inputs controlados
@@ -237,7 +238,8 @@ export default function RegisterPage() {
                   required
                   className="pr-12 placeholder:text-gray-400 text-gray-700"
                   style={{ 
-                    fontSize: '16px'
+                    fontSize: '16px',
+                    minHeight: '48px'
                   }}
                   onFocus={(e) => {
                     // Forzar re-render en Safari para inputs controlados
