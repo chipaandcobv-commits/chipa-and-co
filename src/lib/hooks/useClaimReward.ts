@@ -28,8 +28,18 @@ export function useClaimReward() {
       const data = await response.json();
 
       if (data.success) {
+        console.log("🎁 Premio canjeado exitosamente:", {
+          newTotalPoints: data.newTotalPoints,
+          currentUserPoints: user?.puntos,
+          pointsSpent: data.claim?.pointsSpent
+        });
+        
         // Actualizar inmediatamente los puntos en el contexto de autenticación
         if (data.newTotalPoints !== undefined && user) {
+          console.log("🔄 Actualizando puntos en AuthContext:", {
+            from: user.puntos,
+            to: data.newTotalPoints
+          });
           setAuthUser({
             ...user,
             puntos: data.newTotalPoints
@@ -37,15 +47,12 @@ export function useClaimReward() {
         }
         
         // Actualizar los datos del cache inmediatamente
+        console.log("🔄 Actualizando cache de datos...");
         await Promise.all([
           refetch('userProfile'), // Actualizar puntos del usuario
           refetch('userClaims'),  // Actualizar premios canjeados
         ]);
-        
-        // También actualizar el contexto de autenticación desde la base de datos
-        setTimeout(async () => {
-          await refetchAuth();
-        }, 1000); // 1 segundo de espera para asegurar consistencia
+        console.log("✅ Cache actualizado");
         
         onSuccess?.(data);
       } else {

@@ -45,8 +45,6 @@ export default function ClientePage() {
         setMessage({ type: "success", text: data.message });
         setShowConfirmationModal(false);
         setSelectedReward(null);
-        refetchUser();
-        refetchRewards();
         setTimeout(() => setMessage(null), 5000);
       },
       onError: (error) => {
