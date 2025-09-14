@@ -76,6 +76,9 @@ input[type="password"] {
     -webkit-text-security: disc !important;
     -webkit-appearance: none !important;
     border-radius: 8px !important;
+    /* Fix específico para iOS Safari */
+    -webkit-user-select: text !important;
+    -webkit-touch-callout: default !important;
   }
 
   /* Asegurar que los inputs tengan el tamaño correcto en iOS */
@@ -85,6 +88,40 @@ input[type="password"] {
     font-size: 16px !important; /* Previene zoom en iOS */
     min-height: 48px !important;
     padding: 12px 16px !important;
+  }
+
+  /* Fix específico para inputs de contraseña en iOS */
+  input[type="password"]:focus {
+    -webkit-text-fill-color: initial !important;
+    -webkit-box-shadow: none !important;
+    -webkit-appearance: none !important;
+  }
+
+  /* Fix crítico para el bug de iOS donde no se puede escribir en password ocultos */
+  input[type="password"] {
+    -webkit-text-security: disc !important;
+    -webkit-user-select: text !important;
+    -webkit-touch-callout: default !important;
+    -webkit-appearance: none !important;
+    -webkit-text-fill-color: initial !important;
+  }
+
+  /* Asegurar que los inputs de contraseña sean editables en iOS */
+  input[type="password"]:not(:disabled):not([readonly]) {
+    -webkit-user-select: text !important;
+    -webkit-touch-callout: default !important;
+    pointer-events: auto !important;
+  }
+
+  /* Fix adicional para el bug de iOS con inputs controlados */
+  input[type="password"][value] {
+    -webkit-text-fill-color: initial !important;
+    color: initial !important;
+  }
+
+  /* Forzar que los inputs de contraseña sean interactivos en iOS */
+  input[type="password"] {
+    -webkit-user-modify: read-write-plaintext-only !important;
   }
 
   /* Clase auxiliar: oculta el placeholder nativo SOLO en iOS
