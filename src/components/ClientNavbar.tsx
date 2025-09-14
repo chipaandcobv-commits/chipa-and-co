@@ -4,7 +4,6 @@ import { useCallback, memo, useMemo, useState, useLayoutEffect, useEffect } from
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { GiftCardIcon, HomeIcon, UserIcon } from "./icons/Icons";
-import { useRealTimePoints } from "@/lib/hooks/useRealTimePoints";
 
 const ClientNavbar = memo(() => {
   const pathname = usePathname();
@@ -12,9 +11,6 @@ const ClientNavbar = memo(() => {
   const [mounted, setMounted] = useState(false);
   const [lastValidPosition, setLastValidPosition] = useState("home");
   const [animationKey, setAnimationKey] = useState(0);
-
-  // Mantener los puntos actualizados en tiempo real
-  useRealTimePoints();
 
   useEffect(() => {
     setMounted(true);

@@ -5,7 +5,7 @@ import { useAuth } from "@/lib/auth";
 import { useCachedRewards } from "@/lib/hooks/useCachedRewards";
 import { useClaimReward } from "@/lib/hooks/useClaimReward";
 import { usePointsWarning } from "@/lib/hooks/usePointsWarning";
-import { useRealTimePoints } from "@/lib/hooks/useRealTimePoints";
+import { useUserPoints } from "@/lib/hooks/useUserPoints";
 import { GiftCardIcon } from "@/components/icons/Icons";
 import RewardConfirmationModal from "@/components/RewardConfirmationModal";
 import PointsWarningBanner from "@/components/PointsWarningBanner";
@@ -18,15 +18,10 @@ export default function ClientePage() {
   const { user, loading: userLoading, refetch: refetchUser } = useAuth();
   const { rewards, loading: rewardsLoading, refetch: refetchRewards } = useCachedRewards();
   const { claimReward, loading: claiming } = useClaimReward();
-  
-  // Mantener los puntos actualizados en tiempo real
-  useRealTimePoints();
+  const { userPoints, refreshPoints } = useUserPoints();
 
   // Memoizar el nombre del usuario
   const userName = useMemo(() => user?.name?.split(" ")[0] || "", [user?.name]);
-  
-  // Memoizar los puntos del usuario
-  const userPoints = useMemo(() => (user?.puntos || 0), [user?.puntos]);
   
   // Hook para la advertencia de puntos
   const pointsWarning = usePointsWarning(userPoints);

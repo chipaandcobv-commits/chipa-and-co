@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
 
 interface CacheData {
   rewards: any[];
@@ -25,11 +25,13 @@ interface DataCacheContextType {
   data: CacheData;
   refetch: (key?: keyof CacheData) => Promise<void>;
   isDataStale: (key: keyof CacheData, maxAge?: number) => boolean;
+  forceRefreshUserData: () => Promise<void>;
 }
 
 const DataCacheContext = createContext<DataCacheContextType | undefined>(undefined);
 
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+const USER_PROFILE_CACHE_DURATION = 2 * 60 * 1000; // 2 minutos para datos críticos del usuario
 
 export function DataCacheProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<CacheData>({
@@ -51,7 +53,17 @@ export function DataCacheProvider({ children }: { children: ReactNode }) {
     },
   });
 
+  // Ref para evitar peticiones duplicadas
+  const fetchingRef = useRef<Set<keyof CacheData>>(new Set());
+
   const fetchData = async (key: keyof CacheData) => {
+    // Evitar peticiones duplicadas
+    if (fetchingRef.current.has(key)) {
+      return;
+    }
+
+    fetchingRef.current.add(key);
+
     try {
       setData(prev => ({
         ...prev,
@@ -117,6 +129,9 @@ export function DataCacheProvider({ children }: { children: ReactNode }) {
         ...prev,
         loading: { ...prev.loading, [key]: false }
       }));
+    } finally {
+      // Remover de la lista de peticiones en curso
+      fetchingRef.current.delete(key);
     }
   };
 
@@ -134,9 +149,20 @@ export function DataCacheProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const isDataStale = (key: keyof CacheData, maxAge: number = CACHE_DURATION) => {
+  const isDataStale = (key: keyof CacheData, maxAge?: number) => {
     const lastFetch = data.lastFetch[key as keyof typeof data.lastFetch];
-    return Date.now() - lastFetch > maxAge;
+    // Usar duración específica para userProfile (datos críticos del usuario)
+    const cacheDuration = maxAge || (key === 'userProfile' ? USER_PROFILE_CACHE_DURATION : CACHE_DURATION);
+    return Date.now() - lastFetch > cacheDuration;
+  };
+
+  // Función para forzar actualización de datos críticos del usuario
+  const forceRefreshUserData = async () => {
+    // Forzar actualización inmediata de datos críticos del usuario
+    await Promise.all([
+      fetchData('userProfile'),
+      fetchData('userClaims')
+    ]);
   };
 
   // Precargar todos los datos al montar el componente
@@ -145,7 +171,7 @@ export function DataCacheProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <DataCacheContext.Provider value={{ data, refetch, isDataStale }}>
+    <DataCacheContext.Provider value={{ data, refetch, isDataStale, forceRefreshUserData }}>
       {children}
     </DataCacheContext.Provider>
   );

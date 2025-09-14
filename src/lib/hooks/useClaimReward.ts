@@ -46,13 +46,8 @@ export function useClaimReward() {
           });
         }
         
-        // Actualizar los datos del cache inmediatamente
-        console.log("🔄 Actualizando cache de datos...");
-        await Promise.all([
-          refetch('userProfile'), // Actualizar puntos del usuario
-          refetch('userClaims'),  // Actualizar premios canjeados
-        ]);
-        console.log("✅ Cache actualizado");
+        // Actualizar solo los claims del usuario (no hacer refresh completo)
+        await refetch('userClaims');
         
         onSuccess?.(data);
       } else {

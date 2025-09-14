@@ -136,7 +136,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Pequeño delay para asegurar que las cookies estén disponibles
     const timer = setTimeout(() => {
-      checkAuth();
+      // Forzar actualización de datos al recargar la página para obtener puntos actualizados
+      checkAuth({ forceRefresh: true });
     }, 100);
     
     return () => clearTimeout(timer);
