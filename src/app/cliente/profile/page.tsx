@@ -289,30 +289,11 @@ export default function ProfilePage() {
                       style={{ fontSize: '16px' }}
                       required
                       onFocus={(e) => {
-                        // Fix específico para iOS Safari con inputs de contraseña
+                        // Fix simple para iOS Safari
                         const input = e.target;
                         const val = input.value;
-                        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                        
-                        if (isIOS) {
-                          // Fix más agresivo para iOS
-                          input.blur();
-                          setTimeout(() => {
-                            input.focus();
-                            input.value = '';
-                            setTimeout(() => {
-                              input.value = val;
-                              input.setSelectionRange(val.length, val.length);
-                            }, 10);
-                          }, 10);
-                        } else {
-                          // Fix estándar para otros navegadores
-                          input.value = '';
-                          setTimeout(() => {
-                            input.value = val;
-                            input.setSelectionRange(val.length, val.length);
-                          }, 0);
-                        }
+                        input.value = '';
+                        input.value = val;
                       }}
                     />
                     <button
@@ -342,30 +323,11 @@ export default function ProfilePage() {
                       required
                       minLength={6}
                       onFocus={(e) => {
-                        // Fix específico para iOS Safari con inputs de contraseña
+                        // Fix simple para iOS Safari
                         const input = e.target;
                         const val = input.value;
-                        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                        
-                        if (isIOS) {
-                          // Fix más agresivo para iOS
-                          input.blur();
-                          setTimeout(() => {
-                            input.focus();
-                            input.value = '';
-                            setTimeout(() => {
-                              input.value = val;
-                              input.setSelectionRange(val.length, val.length);
-                            }, 10);
-                          }, 10);
-                        } else {
-                          // Fix estándar para otros navegadores
-                          input.value = '';
-                          setTimeout(() => {
-                            input.value = val;
-                            input.setSelectionRange(val.length, val.length);
-                          }, 0);
-                        }
+                        input.value = '';
+                        input.value = val;
                       }}
                     />
                     <button
@@ -395,30 +357,11 @@ export default function ProfilePage() {
                       required
                       minLength={6}
                       onFocus={(e) => {
-                        // Fix específico para iOS Safari con inputs de contraseña
+                        // Fix simple para iOS Safari
                         const input = e.target;
                         const val = input.value;
-                        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                        
-                        if (isIOS) {
-                          // Fix más agresivo para iOS
-                          input.blur();
-                          setTimeout(() => {
-                            input.focus();
-                            input.value = '';
-                            setTimeout(() => {
-                              input.value = val;
-                              input.setSelectionRange(val.length, val.length);
-                            }, 10);
-                          }, 10);
-                        } else {
-                          // Fix estándar para otros navegadores
-                          input.value = '';
-                          setTimeout(() => {
-                            input.value = val;
-                            input.setSelectionRange(val.length, val.length);
-                          }, 0);
-                        }
+                        input.value = '';
+                        input.value = val;
                       }}
                     />
                     <button

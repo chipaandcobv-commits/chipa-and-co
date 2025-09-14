@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Button from "../../components/ui/Button";
@@ -25,6 +25,7 @@ export default function LoginPage() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+  const passwordRef = useRef<HTMLInputElement>(null);
 
   // Redirección automática si ya está autenticado
   useEffect(() => {
@@ -39,11 +40,17 @@ export default function LoginPage() {
     setIsLoading(true);
     setErrors({});
 
+    // Obtener el valor de la contraseña del ref si existe
+    const passwordValue = passwordRef.current?.value || formData.password;
+
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          password: passwordValue,
+        }),
       });
       const data = await response.json();
 
@@ -130,47 +137,20 @@ export default function LoginPage() {
 
             <div>
               <div className="relative">
-                <Input
+                <input
+                  ref={passwordRef}
                   type={showPassword ? "text" : "password"}
                   name="password"
-                  id="password" // obligatorio para iOS
-                  autoComplete="current-password" // ⚡ clave para iOS
+                  id="password"
+                  autoComplete="current-password"
                   placeholder="Tu contraseña"
-                  value={formData.password}
-                  onChange={handleChange}
-                  error={errors.password}
-                  required
-                  className="pr-12 placeholder:text-gray-400 text-gray-700"
+                  defaultValue={formData.password}
+                  className="w-full px-4 py-3 pr-12 text-gray-900 bg-[#FFE4CC] border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base placeholder:text-gray-400"
                   style={{ 
                     fontSize: '16px',
                     minHeight: '48px'
                   }}
-                  onFocus={(e) => {
-                    // Fix específico para iOS Safari con inputs de contraseña
-                    const input = e.target;
-                    const val = input.value;
-                    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                    
-                    if (isIOS) {
-                      // Fix más agresivo para iOS
-                      input.blur();
-                      setTimeout(() => {
-                        input.focus();
-                        input.value = '';
-                        setTimeout(() => {
-                          input.value = val;
-                          input.setSelectionRange(val.length, val.length);
-                        }, 10);
-                      }, 10);
-                    } else {
-                      // Fix estándar para otros navegadores
-                      input.value = '';
-                      setTimeout(() => {
-                        input.value = val;
-                        input.setSelectionRange(val.length, val.length);
-                      }, 0);
-                    }
-                  }}
+                  required
                 />
                 <button
                   type="button"
@@ -181,6 +161,7 @@ export default function LoginPage() {
                   {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
                 </button>
               </div>
+              {errors.password && <p className="mt-2 text-sm text-red-600">{errors.password}</p>}
             </div>
 
             <Button
