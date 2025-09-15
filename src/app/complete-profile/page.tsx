@@ -4,12 +4,12 @@ import { useRouter } from "next/navigation";
 import { useSession, signOut, signIn } from "next-auth/react";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
-import { UserIcon, EyeIcon, EyeOffIcon } from "../../components/icons/Icons";
+import { UserIcon } from "../../components/icons/Icons";
 import Image from "next/image";
 
 export default function CompleteProfilePage() {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { data: session, status, update } = useSession();
   const [formData, setFormData] = useState({
     dni: "",
     password: "",
@@ -17,108 +17,22 @@ export default function CompleteProfilePage() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [hasCheckedProfile, setHasCheckedProfile] = useState(false);
 
   // Redirección si no está autenticado o no necesita completar perfil
   useEffect(() => {
-    console.log("🔄 useEffect triggered:", { status, hasSession: !!session, hasCheckedProfile });
-    
     if (status === "loading") return; // Aún cargando
-    if (hasCheckedProfile) {
-      console.log("✅ Already checked profile, skipping");
-      return; // Ya se ejecutó la verificación
-    }
 
     if (!session) {
-      console.log("❌ No session, redirecting to login");
       router.replace("/login");
       return;
     }
 
-    // Marcar que ya se ejecutó la verificación
-    console.log("🔍 Starting profile check...");
-    setHasCheckedProfile(true);
-
-    // Verificar si el usuario ya completó su perfil en la base de datos
-    const checkUserProfileStatus = async () => {
-      try {
-        console.log("🔍 Checking user profile status...");
-        
-        // 1. Primero verificar si el usuario existe en la base de datos
-        const clearResponse = await fetch("/api/auth/clear-session", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-        });
-
-        const clearData = await clearResponse.json();
-
-        if (clearData.success && clearData.shouldClearSession) {
-          // El usuario no existe en la base de datos, limpiar sesión y redirigir
-          console.log("❌ User not found in database, signing out");
-          await signOut({ callbackUrl: "/login" });
-          return;
-        }
-
-        // 2. Obtener datos frescos del usuario desde la base de datos
-        const userResponse = await fetch("/api/auth/me-nextauth", {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        });
-
-        const userData = await userResponse.json();
-
-        if (userData.success && userData.user) {
-          console.log("✅ User data from database:", {
-            needsProfileCompletion: userData.user.needsProfileCompletion,
-            role: userData.user.role,
-            dni: userData.user.dni
-          });
-
-          // 3. Si el usuario ya completó su perfil, redirigir inmediatamente
-          if (!userData.user.needsProfileCompletion) {
-            console.log("✅ Profile already completed, redirecting...");
-            
-            // Generar token JWT para el sistema existente
-            try {
-              const tokenResponse = await fetch("/api/auth/google-complete", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-              });
-
-              const tokenData = await tokenResponse.json();
-
-              if (tokenData.success) {
-                // Guardar el token JWT en las cookies
-                document.cookie = `auth-token=${tokenData.token}; path=/; max-age=86400; secure; samesite=strict`;
-                console.log("✅ JWT token generated");
-              }
-            } catch (error) {
-              console.warn("⚠️ Token generation error:", error);
-            }
-            
-            // Redirigir según el rol
-            const target = userData.user.role === "ADMIN" ? "/admin" : "/cliente";
-            console.log("🔄 Redirecting to:", target);
-            router.replace(target);
-            return;
-          }
-
-          // 4. Si el usuario necesita completar perfil, permitir que permanezca en esta página
-          console.log("📝 User needs to complete profile, staying on page");
-          return;
-        } else {
-          console.error("❌ Failed to get user data:", userData);
-        }
-      } catch (error) {
-        console.error("❌ Error checking user profile status:", error);
-        // En caso de error, continuar con el flujo normal
-      }
-    };
-
-    checkUserProfileStatus();
-  }, [session, status, router, hasCheckedProfile]);
+    // Verificar si el usuario ya completó su perfil
+    if (session.user && !session.user.needsProfileCompletion) {
+      const target = session.user.role === "ADMIN" ? "/admin" : "/cliente";
+      router.replace(target);
+    }
+  }, [session, status, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -162,73 +76,25 @@ export default function CompleteProfilePage() {
       const data = await response.json();
 
       if (data.success) {
-        console.log("✅ Profile completed successfully:", data.user);
-        
-        // 1. Primero actualizar la sesión de NextAuth
-        try {
-          console.log("🔄 Updating NextAuth session...");
-          
-          // Forzar actualización del token de NextAuth
-          const updateResponse = await fetch("/api/auth/force-update", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-          });
+        console.log("✅ Perfil completado con éxito:", data.user);
 
-          const updateData = await updateResponse.json();
-          if (updateData.success) {
-            console.log("✅ NextAuth session updated:", updateData.user);
-          } else {
-            console.warn("⚠️ NextAuth session update failed:", updateData);
-          }
+        // 1. Llama a la función `update` para refrescar la sesión del lado del cliente
+        await update({
+          ...session, // Mantiene los datos de sesión existentes
+          user: {
+            ...session?.user, // Mantiene los datos del usuario existentes
+            needsProfileCompletion: false, // Actualiza directamente el campo relevante
+          },
+        });
 
-          // También actualizar la sesión local
-          const sessionResponse = await fetch("/api/auth/refresh-session", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-          });
+        console.log("✅ Sesión de NextAuth actualizada vía `update()`");
 
-          const sessionData = await sessionResponse.json();
-          if (sessionData.success) {
-            console.log("✅ Local session refreshed:", sessionData.user);
-          } else {
-            console.warn("⚠️ Local session refresh failed:", sessionData);
-          }
-        } catch (sessionError) {
-          console.warn("⚠️ Session update error:", sessionError);
-        }
+        // 2. Redirige solo después de que la sesión se haya actualizado
+        const target = session?.user?.role === "ADMIN" ? "/admin" : "/cliente";
+        router.replace(target);
 
-        // 2. Generar token JWT para el sistema existente
-        try {
-          const tokenResponse = await fetch("/api/auth/google-complete", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-          });
-
-          const tokenData = await tokenResponse.json();
-
-          if (tokenData.success) {
-            // Guardar el token JWT en las cookies
-            document.cookie = `auth-token=${tokenData.token}; path=/; max-age=86400; secure; samesite=strict`;
-            console.log("✅ JWT token generated and saved");
-          } else {
-            console.warn("⚠️ JWT token generation failed:", tokenData);
-          }
-        } catch (tokenError) {
-          console.warn("⚠️ JWT token generation error:", tokenError);
-        }
-
-        // 3. Redirigir según el rol (siempre, independientemente de los tokens)
-        const target = "/cliente";
-        console.log("🔄 Redirecting to:", target);
-        
-        // Pequeño delay para asegurar que la sesión se actualice completamente
-        setTimeout(() => {
-          // Usar window.location para forzar una navegación completa y refrescar la sesión
-          window.location.href = target;
-        }, 500);
-        
       } else {
-        console.error("❌ Profile completion failed:", data);
+        console.error("❌ El perfil no se pudo completar:", data);
         setErrors(data.errors || { general: data.error });
       }
     } catch (error) {
@@ -322,32 +188,21 @@ export default function CompleteProfilePage() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Contraseña
               </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  name="password"
-                  id="password"
-                  autoComplete="new-password"
-                  placeholder="Crea una contraseña segura"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 pr-14 text-gray-900 bg-[#FFE4CC] border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base placeholder:text-gray-400"
-                  style={{ 
-                    fontSize: '16px',
-                    minHeight: '48px',
-                    WebkitTextSecurity: showPassword ? 'none' : 'disc'
-                  } as React.CSSProperties}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
-                  style={{ minHeight: '20px', minWidth: '20px' }}
-                >
-                  {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
-                </button>
-              </div>
+              <input
+                type="password"
+                name="password"
+                id="password"
+                autoComplete="new-password"
+                placeholder="Crea una contraseña segura"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 text-gray-900 bg-[#FFE4CC] border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base placeholder:text-gray-400"
+                style={{
+                  fontSize: '16px',
+                  minHeight: '48px'
+                } as React.CSSProperties}
+              />
               {errors.password && <p className="mt-2 text-sm text-red-600">{errors.password}</p>}
             </div>
 
@@ -355,32 +210,21 @@ export default function CompleteProfilePage() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Confirmar Contraseña
               </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  name="confirmPassword"
-                  id="confirmPassword"
-                  autoComplete="new-password"
-                  placeholder="Confirma tu contraseña"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 pr-14 text-gray-900 bg-[#FFE4CC] border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base placeholder:text-gray-400"
-                  style={{ 
-                    fontSize: '16px',
-                    minHeight: '48px',
-                    WebkitTextSecurity: showConfirmPassword ? 'none' : 'disc'
-                  } as React.CSSProperties}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
-                  style={{ minHeight: '20px', minWidth: '20px' }}
-                >
-                  {showConfirmPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
-                </button>
-              </div>
+              <input
+                type="password"
+                name="confirmPassword"
+                id="confirmPassword"
+                autoComplete="new-password"
+                placeholder="Confirma tu contraseña"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 text-gray-900 bg-[#FFE4CC] border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base placeholder:text-gray-400"
+                style={{
+                  fontSize: '16px',
+                  minHeight: '48px'
+                } as React.CSSProperties}
+              />
               {errors.confirmPassword && <p className="mt-2 text-sm text-red-600">{errors.confirmPassword}</p>}
             </div>
 
