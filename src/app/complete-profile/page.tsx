@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useSession, signOut, signIn } from "next-auth/react";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
-import { UserIcon } from "../../components/icons/Icons";
+import { UserIcon, EyeIcon, EyeOffIcon } from "../../components/icons/Icons";
 import Image from "next/image";
 
 export default function CompleteProfilePage() {
@@ -17,6 +17,8 @@ export default function CompleteProfilePage() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Redirección si no está autenticado o no necesita completar perfil
   useEffect(() => {
@@ -130,6 +132,8 @@ export default function CompleteProfilePage() {
       const data = await response.json();
 
       if (data.success) {
+        console.log("✅ Profile completed successfully:", data.user);
+        
         // Generar token JWT para el sistema existente
         try {
           const tokenResponse = await fetch("/api/auth/google-complete", {
@@ -145,15 +149,24 @@ export default function CompleteProfilePage() {
             
             // Redirigir según el rol
             const target = data.user.role === "ADMIN" ? "/admin" : "/cliente";
+            console.log("🔄 Redirecting to:", target);
             router.replace(target);
           } else {
-            setErrors({ general: "Error al generar token de acceso" });
+            console.error("❌ Token generation failed:", tokenData);
+            // Fallback: redirigir sin token si la generación falla
+            const target = data.user.role === "ADMIN" ? "/admin" : "/cliente";
+            console.log("🔄 Fallback redirect to:", target);
+            router.replace(target);
           }
         } catch (tokenError) {
-          console.error("Token generation error:", tokenError);
-          setErrors({ general: "Error al generar token de acceso" });
+          console.error("❌ Token generation error:", tokenError);
+          // Fallback: redirigir sin token si la generación falla
+          const target = data.user.role === "ADMIN" ? "/admin" : "/cliente";
+          console.log("🔄 Fallback redirect to:", target);
+          router.replace(target);
         }
       } else {
+        console.error("❌ Profile completion failed:", data);
         setErrors(data.errors || { general: data.error });
       }
     } catch (error) {
@@ -243,35 +256,71 @@ export default function CompleteProfilePage() {
               }}
             />
 
-            <Input
-              label="Contraseña"
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Crea una contraseña segura"
-              error={errors.password}
-              required
-              className="placeholder:text-gray-400 text-gray-700"
-              style={{ 
-                fontSize: '16px'
-              }}
-            />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Contraseña
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  name="password"
+                  id="password"
+                  autoComplete="new-password"
+                  placeholder="Crea una contraseña segura"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-3 pr-14 text-gray-900 bg-[#FFE4CC] border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base placeholder:text-gray-400"
+                  style={{ 
+                    fontSize: '16px',
+                    minHeight: '48px',
+                    WebkitTextSecurity: showPassword ? 'none' : 'disc'
+                  } as React.CSSProperties}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                  style={{ minHeight: '20px', minWidth: '20px' }}
+                >
+                  {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
+                </button>
+              </div>
+              {errors.password && <p className="mt-2 text-sm text-red-600">{errors.password}</p>}
+            </div>
 
-            <Input
-              label="Confirmar Contraseña"
-              type="password"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              placeholder="Confirma tu contraseña"
-              error={errors.confirmPassword}
-              required
-              className="placeholder:text-gray-400 text-gray-700"
-              style={{ 
-                fontSize: '16px'
-              }}
-            />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Confirmar Contraseña
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  name="confirmPassword"
+                  id="confirmPassword"
+                  autoComplete="new-password"
+                  placeholder="Confirma tu contraseña"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-3 pr-14 text-gray-900 bg-[#FFE4CC] border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base placeholder:text-gray-400"
+                  style={{ 
+                    fontSize: '16px',
+                    minHeight: '48px',
+                    WebkitTextSecurity: showConfirmPassword ? 'none' : 'disc'
+                  } as React.CSSProperties}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                  style={{ minHeight: '20px', minWidth: '20px' }}
+                >
+                  {showConfirmPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
+                </button>
+              </div>
+              {errors.confirmPassword && <p className="mt-2 text-sm text-red-600">{errors.confirmPassword}</p>}
+            </div>
 
             <Button
               type="submit"
