@@ -19,15 +19,27 @@ export default function CompleteProfilePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [hasCheckedProfile, setHasCheckedProfile] = useState(false);
 
   // Redirección si no está autenticado o no necesita completar perfil
   useEffect(() => {
+    console.log("🔄 useEffect triggered:", { status, hasSession: !!session, hasCheckedProfile });
+    
     if (status === "loading") return; // Aún cargando
+    if (hasCheckedProfile) {
+      console.log("✅ Already checked profile, skipping");
+      return; // Ya se ejecutó la verificación
+    }
 
     if (!session) {
+      console.log("❌ No session, redirecting to login");
       router.replace("/login");
       return;
     }
+
+    // Marcar que ya se ejecutó la verificación
+    console.log("🔍 Starting profile check...");
+    setHasCheckedProfile(true);
 
     // Verificar si el usuario ya completó su perfil en la base de datos
     const checkUserProfileStatus = async () => {
@@ -106,7 +118,7 @@ export default function CompleteProfilePage() {
     };
 
     checkUserProfileStatus();
-  }, [session, status, router]);
+  }, [session, status, router, hasCheckedProfile]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -206,7 +218,7 @@ export default function CompleteProfilePage() {
         }
 
         // 3. Redirigir según el rol (siempre, independientemente de los tokens)
-        const target = data.user.role === "ADMIN" ? "/admin" : "/cliente";
+        const target = "/cliente";
         console.log("🔄 Redirecting to:", target);
         
         // Pequeño delay para asegurar que la sesión se actualice completamente
