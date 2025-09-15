@@ -36,11 +36,11 @@ input[type="password"]::-webkit-textfield-decoration-container {
   display: none !important;
 }
 
-/* Asegurar que no aparezca el icono nativo en ningún navegador */
+/* Fix para iOS: NO desactivar -webkit-appearance en password */
 input[type="password"] {
-  -webkit-appearance: none;
+  -webkit-appearance: textfield; /* En lugar de none para iOS */
   -moz-appearance: none;
-  appearance: none;
+  appearance: textfield;
 }
 
 /* Clase para la fuente Urbanist */
@@ -64,11 +64,10 @@ input[type="password"] {
     opacity: 1 !important;
   }
 
-  /* Deshacer text-fill en password (causa típica del bug) */
-  input[type="password"],
+  /* Fix para iOS: NO tocar -webkit-appearance en password */
   input[type="password"]:-webkit-autofill {
     -webkit-text-fill-color: unset !important;
-    -webkit-appearance: none !important;
+    /* NO tocar -webkit-appearance aquí */
   }
 
   /* Asegurar que los inputs tengan el tamaño correcto en iOS */
@@ -82,8 +81,8 @@ input[type="password"] {
 
   /* Fix simple para inputs de contraseña en iOS */
   input[type="password"] {
-    -webkit-appearance: none !important;
     -webkit-text-fill-color: initial !important;
+    /* NO tocar -webkit-appearance aquí para evitar el bug de iOS */
   }
 
   /* Clase auxiliar: oculta el placeholder nativo SOLO en iOS

@@ -60,7 +60,7 @@ export default function CompleteProfilePage() {
               
               // Redirigir según el rol
               const target = session.user.role === "ADMIN" ? "/admin" : "/cliente";
-              window.location.href = target;
+              router.replace(target);
               return;
             }
           } catch (error) {
@@ -143,9 +143,9 @@ export default function CompleteProfilePage() {
             // Guardar el token JWT en las cookies
             document.cookie = `auth-token=${tokenData.token}; path=/; max-age=86400; secure; samesite=strict`;
             
-            // Redirigir según el rol - usar window.location.replace para evitar problemas de navegación
+            // Redirigir según el rol
             const target = data.user.role === "ADMIN" ? "/admin" : "/cliente";
-            window.location.replace(target);
+            router.replace(target);
           } else {
             setErrors({ general: "Error al generar token de acceso" });
           }
