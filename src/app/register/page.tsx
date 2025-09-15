@@ -188,27 +188,19 @@ export default function RegisterPage() {
                 Contraseña
               </label>
               <div className="relative">
-                <Input
+                <input
                   type={showPassword ? "text" : "password"}
                   name="password"
-                  id="password" // obligatorio para iOS
-                  autoComplete="new-password" // ⚡ clave para iOS
+                  id="password"
+                  autoComplete="new-password"
                   placeholder="Mínimo 8 caracteres"
                   value={formData.password}
                   onChange={handleChange}
-                  error={errors.password}
                   required
-                  className="pr-12 placeholder:text-gray-400 text-gray-700"
+                  className="w-full px-4 py-3 pr-12 text-gray-900 bg-[#FFE4CC] border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base placeholder:text-gray-400"
                   style={{ 
                     fontSize: '16px',
                     minHeight: '48px'
-                  }}
-                  onFocus={(e) => {
-                    // Fix simple para iOS Safari
-                    const input = e.target;
-                    const val = input.value;
-                    input.value = '';
-                    input.value = val;
                   }}
                 />
                 <button
@@ -220,6 +212,7 @@ export default function RegisterPage() {
                   {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
                 </button>
               </div>
+              {errors.password && <p className="mt-2 text-sm text-red-600">{errors.password}</p>}
             </div>
 
             <div>
@@ -227,27 +220,19 @@ export default function RegisterPage() {
                 Confirmar contraseña
               </label>
               <div className="relative">
-                <Input
+                <input
                   type={showConfirmPassword ? "text" : "password"}
                   name="confirmPassword"
-                  id="confirmPassword" // obligatorio para iOS
-                  autoComplete="new-password" // ⚡ clave para iOS
+                  id="confirmPassword"
+                  autoComplete="new-password"
                   placeholder="Repite tu contraseña"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  error={errors.confirmPassword}
                   required
-                  className="pr-12 placeholder:text-gray-400 text-gray-700"
+                  className="w-full px-4 py-3 pr-12 text-gray-900 bg-[#FFE4CC] border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base placeholder:text-gray-400"
                   style={{ 
                     fontSize: '16px',
                     minHeight: '48px'
-                  }}
-                  onFocus={(e) => {
-                    // Fix simple para iOS Safari
-                    const input = e.target;
-                    const val = input.value;
-                    input.value = '';
-                    input.value = val;
                   }}
                 />
                 <button
@@ -259,6 +244,7 @@ export default function RegisterPage() {
                   {showConfirmPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
                 </button>
               </div>
+              {errors.confirmPassword && <p className="mt-2 text-sm text-red-600">{errors.confirmPassword}</p>}
             </div>
 
             <Button

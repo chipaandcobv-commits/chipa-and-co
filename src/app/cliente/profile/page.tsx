@@ -285,16 +285,9 @@ export default function ProfilePage() {
                       autoComplete="current-password"
                       value={passwordData.currentPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                      className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F15A25] focus:border-transparent min-h-[48px] text-base"
+                      className="w-full px-4 py-3 pr-12 text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F15A25] focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base"
                       style={{ fontSize: '16px' }}
                       required
-                      onFocus={(e) => {
-                        // Fix simple para iOS Safari
-                        const input = e.target;
-                        const val = input.value;
-                        input.value = '';
-                        input.value = val;
-                      }}
                     />
                     <button
                       type="button"
@@ -318,17 +311,10 @@ export default function ProfilePage() {
                       autoComplete="new-password"
                       value={passwordData.newPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                      className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F15A25] focus:border-transparent min-h-[48px] text-base"
+                      className="w-full px-4 py-3 pr-12 text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F15A25] focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base"
                       style={{ fontSize: '16px' }}
                       required
                       minLength={6}
-                      onFocus={(e) => {
-                        // Fix simple para iOS Safari
-                        const input = e.target;
-                        const val = input.value;
-                        input.value = '';
-                        input.value = val;
-                      }}
                     />
                     <button
                       type="button"
@@ -352,17 +338,10 @@ export default function ProfilePage() {
                       autoComplete="new-password"
                       value={passwordData.confirmPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                      className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F15A25] focus:border-transparent min-h-[48px] text-base"
+                      className="w-full px-4 py-3 pr-12 text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F15A25] focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base"
                       style={{ fontSize: '16px' }}
                       required
                       minLength={6}
-                      onFocus={(e) => {
-                        // Fix simple para iOS Safari
-                        const input = e.target;
-                        const val = input.value;
-                        input.value = '';
-                        input.value = val;
-                      }}
                     />
                     <button
                       type="button"

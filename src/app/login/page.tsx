@@ -130,7 +130,7 @@ export default function LoginPage() {
 
             <div>
               <div className="relative">
-                <Input
+                <input
                   type={showPassword ? "text" : "password"}
                   name="password"
                   id="password"
@@ -138,9 +138,8 @@ export default function LoginPage() {
                   placeholder="Tu contraseña"
                   value={formData.password}
                   onChange={handleChange}
-                  error={errors.password}
                   required
-                  className="pr-12 placeholder:text-gray-400 text-gray-700"
+                  className="w-full px-4 py-3 pr-12 text-gray-900 bg-[#FFE4CC] border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base placeholder:text-gray-400"
                   style={{ 
                     fontSize: '16px',
                     minHeight: '48px'
@@ -155,6 +154,7 @@ export default function LoginPage() {
                   {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
                 </button>
               </div>
+              {errors.password && <p className="mt-2 text-sm text-red-600">{errors.password}</p>}
             </div>
 
             <Button
