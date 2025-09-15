@@ -29,65 +29,83 @@ export default function CompleteProfilePage() {
       return;
     }
 
-    // Verificar si el usuario existe en la base de datos
-    const checkUserExists = async () => {
+    // Verificar si el usuario ya completó su perfil en la base de datos
+    const checkUserProfileStatus = async () => {
       try {
-        const response = await fetch("/api/auth/clear-session", {
+        console.log("🔍 Checking user profile status...");
+        
+        // 1. Primero verificar si el usuario existe en la base de datos
+        const clearResponse = await fetch("/api/auth/clear-session", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
         });
 
-        const data = await response.json();
+        const clearData = await clearResponse.json();
 
-        if (data.success && data.shouldClearSession) {
+        if (clearData.success && clearData.shouldClearSession) {
           // El usuario no existe en la base de datos, limpiar sesión y redirigir
+          console.log("❌ User not found in database, signing out");
           await signOut({ callbackUrl: "/login" });
           return;
         }
 
-        // Si el usuario no necesita completar perfil, redirigir
-        if (session.user && !session.user.needsProfileCompletion) {
-          // Generar token JWT para el sistema existente
-          try {
-            const tokenResponse = await fetch("/api/auth/google-complete", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-            });
+        // 2. Obtener datos frescos del usuario desde la base de datos
+        const userResponse = await fetch("/api/auth/me-nextauth", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
 
-            const tokenData = await tokenResponse.json();
+        const userData = await userResponse.json();
 
-            if (tokenData.success) {
-              // Guardar el token JWT en las cookies
-              document.cookie = `auth-token=${tokenData.token}; path=/; max-age=86400; secure; samesite=strict`;
-              
-              // Redirigir según el rol
-              const target = session.user.role === "ADMIN" ? "/admin" : "/cliente";
-              router.replace(target);
-              return;
+        if (userData.success && userData.user) {
+          console.log("✅ User data from database:", {
+            needsProfileCompletion: userData.user.needsProfileCompletion,
+            role: userData.user.role,
+            dni: userData.user.dni
+          });
+
+          // 3. Si el usuario ya completó su perfil, redirigir inmediatamente
+          if (!userData.user.needsProfileCompletion) {
+            console.log("✅ Profile already completed, redirecting...");
+            
+            // Generar token JWT para el sistema existente
+            try {
+              const tokenResponse = await fetch("/api/auth/google-complete", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+              });
+
+              const tokenData = await tokenResponse.json();
+
+              if (tokenData.success) {
+                // Guardar el token JWT en las cookies
+                document.cookie = `auth-token=${tokenData.token}; path=/; max-age=86400; secure; samesite=strict`;
+                console.log("✅ JWT token generated");
+              }
+            } catch (error) {
+              console.warn("⚠️ Token generation error:", error);
             }
-          } catch (error) {
-            console.error("Token generation error:", error);
+            
+            // Redirigir según el rol
+            const target = userData.user.role === "ADMIN" ? "/admin" : "/cliente";
+            console.log("🔄 Redirecting to:", target);
+            router.replace(target);
+            return;
           }
-          
-          // Fallback: redirigir sin token
-          const target = session.user.role === "ADMIN" ? "/admin" : "/cliente";
-          router.replace(target);
-          return;
-        }
 
-        // Si el usuario necesita completar perfil, permitir que permanezca en esta página
-        if (session.user && session.user.needsProfileCompletion) {
-          // El usuario está en la página correcta para completar su perfil
-          console.log("User is on the correct page to complete profile");
+          // 4. Si el usuario necesita completar perfil, permitir que permanezca en esta página
+          console.log("📝 User needs to complete profile, staying on page");
           return;
+        } else {
+          console.error("❌ Failed to get user data:", userData);
         }
       } catch (error) {
-        console.error("Error checking user existence:", error);
+        console.error("❌ Error checking user profile status:", error);
         // En caso de error, continuar con el flujo normal
       }
     };
 
-    checkUserExists();
+    checkUserProfileStatus();
   }, [session, status, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
