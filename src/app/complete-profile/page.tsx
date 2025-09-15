@@ -134,7 +134,40 @@ export default function CompleteProfilePage() {
       if (data.success) {
         console.log("✅ Profile completed successfully:", data.user);
         
-        // Generar token JWT para el sistema existente
+        // 1. Primero actualizar la sesión de NextAuth
+        try {
+          console.log("🔄 Updating NextAuth session...");
+          
+          // Forzar actualización del token de NextAuth
+          const updateResponse = await fetch("/api/auth/force-update", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+          });
+
+          const updateData = await updateResponse.json();
+          if (updateData.success) {
+            console.log("✅ NextAuth session updated:", updateData.user);
+          } else {
+            console.warn("⚠️ NextAuth session update failed:", updateData);
+          }
+
+          // También actualizar la sesión local
+          const sessionResponse = await fetch("/api/auth/refresh-session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+          });
+
+          const sessionData = await sessionResponse.json();
+          if (sessionData.success) {
+            console.log("✅ Local session refreshed:", sessionData.user);
+          } else {
+            console.warn("⚠️ Local session refresh failed:", sessionData);
+          }
+        } catch (sessionError) {
+          console.warn("⚠️ Session update error:", sessionError);
+        }
+
+        // 2. Generar token JWT para el sistema existente
         try {
           const tokenResponse = await fetch("/api/auth/google-complete", {
             method: "POST",
@@ -146,25 +179,24 @@ export default function CompleteProfilePage() {
           if (tokenData.success) {
             // Guardar el token JWT en las cookies
             document.cookie = `auth-token=${tokenData.token}; path=/; max-age=86400; secure; samesite=strict`;
-            
-            // Redirigir según el rol
-            const target = data.user.role === "ADMIN" ? "/admin" : "/cliente";
-            console.log("🔄 Redirecting to:", target);
-            router.replace(target);
+            console.log("✅ JWT token generated and saved");
           } else {
-            console.error("❌ Token generation failed:", tokenData);
-            // Fallback: redirigir sin token si la generación falla
-            const target = data.user.role === "ADMIN" ? "/admin" : "/cliente";
-            console.log("🔄 Fallback redirect to:", target);
-            router.replace(target);
+            console.warn("⚠️ JWT token generation failed:", tokenData);
           }
         } catch (tokenError) {
-          console.error("❌ Token generation error:", tokenError);
-          // Fallback: redirigir sin token si la generación falla
-          const target = data.user.role === "ADMIN" ? "/admin" : "/cliente";
-          console.log("🔄 Fallback redirect to:", target);
-          router.replace(target);
+          console.warn("⚠️ JWT token generation error:", tokenError);
         }
+
+        // 3. Redirigir según el rol (siempre, independientemente de los tokens)
+        const target = data.user.role === "ADMIN" ? "/admin" : "/cliente";
+        console.log("🔄 Redirecting to:", target);
+        
+        // Pequeño delay para asegurar que la sesión se actualice completamente
+        setTimeout(() => {
+          // Usar window.location para forzar una navegación completa y refrescar la sesión
+          window.location.href = target;
+        }, 500);
+        
       } else {
         console.error("❌ Profile completion failed:", data);
         setErrors(data.errors || { general: data.error });
