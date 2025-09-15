@@ -142,7 +142,6 @@ export default function RegisterPage() {
               value={formData.name}
               onChange={handleChange}
               placeholder="Tu nombre completo"
-              icon={<UserIcon />}
               error={errors.name}
               required
               className="placeholder:text-gray-400 text-gray-700"
@@ -158,7 +157,6 @@ export default function RegisterPage() {
               value={formData.dni}
               onChange={handleChange}
               placeholder="Tu número de DNI"
-              icon={<UserIcon />}
               error={errors.dni}
               required
               className="placeholder:text-gray-400 text-gray-700"
@@ -174,7 +172,6 @@ export default function RegisterPage() {
               value={formData.email}
               onChange={handleChange}
               placeholder="tu@email.com"
-              icon={<EmailIcon />}
               error={errors.email}
               required
               className="placeholder:text-gray-400 text-gray-700"

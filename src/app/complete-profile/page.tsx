@@ -2,9 +2,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession, signOut, signIn } from "next-auth/react";
+import Link from "next/link";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
-import { UserIcon } from "../../components/icons/Icons";
+import { UserIcon, EyeIcon, EyeOffIcon } from "../../components/icons/Icons";
 import Image from "next/image";
 
 export default function CompleteProfilePage() {
@@ -17,6 +18,8 @@ export default function CompleteProfilePage() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Redirección si no está autenticado o no necesita completar perfil
   useEffect(() => {
@@ -175,7 +178,6 @@ export default function CompleteProfilePage() {
               value={formData.dni}
               onChange={handleChange}
               placeholder="Tu número de DNI"
-              icon={<UserIcon />}
               error={errors.dni}
               required
               className="placeholder:text-gray-400 text-gray-700"
@@ -188,21 +190,32 @@ export default function CompleteProfilePage() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Contraseña
               </label>
-              <input
-                type="password"
-                name="password"
-                id="password"
-                autoComplete="new-password"
-                placeholder="Crea una contraseña segura"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 text-gray-900 bg-[#FFE4CC] border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base placeholder:text-gray-400"
-                style={{
-                  fontSize: '16px',
-                  minHeight: '48px'
-                } as React.CSSProperties}
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  name="password"
+                  id="password"
+                  autoComplete="new-password"
+                  placeholder="Crea una contraseña segura"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-3 pr-14 text-gray-900 bg-[#FFE4CC] border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base placeholder:text-gray-400"
+                  style={{ 
+                    fontSize: '16px',
+                    minHeight: '48px',
+                    WebkitTextSecurity: showPassword ? 'none' : 'disc'
+                  } as React.CSSProperties}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                  style={{ minHeight: '20px', minWidth: '20px' }}
+                >
+                  {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
+                </button>
+              </div>
               {errors.password && <p className="mt-2 text-sm text-red-600">{errors.password}</p>}
             </div>
 
@@ -210,21 +223,32 @@ export default function CompleteProfilePage() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Confirmar Contraseña
               </label>
-              <input
-                type="password"
-                name="confirmPassword"
-                id="confirmPassword"
-                autoComplete="new-password"
-                placeholder="Confirma tu contraseña"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 text-gray-900 bg-[#FFE4CC] border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base placeholder:text-gray-400"
-                style={{
-                  fontSize: '16px',
-                  minHeight: '48px'
-                } as React.CSSProperties}
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  name="confirmPassword"
+                  id="confirmPassword"
+                  autoComplete="new-password"
+                  placeholder="Confirma tu contraseña"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-3 pr-14 text-gray-900 bg-[#FFE4CC] border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base placeholder:text-gray-400"
+                  style={{ 
+                    fontSize: '16px',
+                    minHeight: '48px',
+                    WebkitTextSecurity: showConfirmPassword ? 'none' : 'disc'
+                  } as React.CSSProperties}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                  style={{ minHeight: '20px', minWidth: '20px' }}
+                >
+                  {showConfirmPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
+                </button>
+              </div>
               {errors.confirmPassword && <p className="mt-2 text-sm text-red-600">{errors.confirmPassword}</p>}
             </div>
 
@@ -240,10 +264,21 @@ export default function CompleteProfilePage() {
           </div>
 
           {/* Footer */}
-          <div className="text-center">
+          <div className="text-center space-y-4">
             <p className="text-sm text-gray-600">
               Al completar tu perfil, podrás acceder a todos los beneficios del programa de fidelización.
             </p>
+            <div className="pt-4 border-t border-gray-300">
+              <p className="text-sm text-gray-600 mb-3">
+                ¿Quieres usar otro email para registrarte?
+              </p>
+              <Link
+                href="/login"
+                className="inline-flex items-center text-sm font-medium text-[#F15A25] hover:text-[#E55A1A] transition-colors"
+              >
+                ← Volver al inicio
+              </Link>
+            </div>
           </div>
         </form>
       </div>
