@@ -688,19 +688,23 @@ export default function ConfigManagement() {
                   </label>
                   <div className="relative">
                     <input
-                      type={showCurrentPassword ? "text" : "password"}
+                      type="text"
                       id="admin-current-password"
                       autoComplete="current-password"
                       value={passwordData.currentPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                      className="w-full px-4 py-3 pr-12 text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F15A25] focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base"
-                      style={{ fontSize: '16px', minHeight: '48px' }}
+                      className="w-full px-4 py-3 pr-14 text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F15A25] focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base"
+                      style={{ 
+                        fontSize: '16px', 
+                        minHeight: '48px',
+                        WebkitTextSecurity: showCurrentPassword ? 'none' : 'disc'
+                      } as React.CSSProperties}
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
                       style={{ minHeight: '20px', minWidth: '20px' }}
                     >
                       {showCurrentPassword ? <EyeOffIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
@@ -714,20 +718,24 @@ export default function ConfigManagement() {
                   </label>
                   <div className="relative">
                     <input
-                      type={showNewPassword ? "text" : "password"}
+                      type="text"
                       id="admin-new-password"
                       autoComplete="new-password"
                       value={passwordData.newPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                      className="w-full px-4 py-3 pr-12 text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F15A25] focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base"
-                      style={{ fontSize: '16px', minHeight: '48px' }}
+                      className="w-full px-4 py-3 pr-14 text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F15A25] focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base"
+                      style={{ 
+                        fontSize: '16px', 
+                        minHeight: '48px',
+                        WebkitTextSecurity: showNewPassword ? 'none' : 'disc'
+                      } as React.CSSProperties}
                       required
                       minLength={6}
                     />
                     <button
                       type="button"
                       onClick={() => setShowNewPassword(!showNewPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
                       style={{ minHeight: '20px', minWidth: '20px' }}
                     >
                       {showNewPassword ? <EyeOffIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
@@ -741,20 +749,24 @@ export default function ConfigManagement() {
                   </label>
                   <div className="relative">
                     <input
-                      type={showConfirmPassword ? "text" : "password"}
+                      type="text"
                       id="admin-confirm-password"
                       autoComplete="new-password"
                       value={passwordData.confirmPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                      className="w-full px-4 py-3 pr-12 text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F15A25] focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base"
-                      style={{ fontSize: '16px', minHeight: '48px' }}
+                      className="w-full px-4 py-3 pr-14 text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F15A25] focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base"
+                      style={{ 
+                        fontSize: '16px', 
+                        minHeight: '48px',
+                        WebkitTextSecurity: showConfirmPassword ? 'none' : 'disc'
+                      } as React.CSSProperties}
                       required
                       minLength={6}
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
                       style={{ minHeight: '20px', minWidth: '20px' }}
                     >
                       {showConfirmPassword ? <EyeOffIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}

@@ -189,7 +189,7 @@ export default function RegisterPage() {
               </label>
               <div className="relative">
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type="text"
                   name="password"
                   id="password"
                   autoComplete="new-password"
@@ -197,16 +197,17 @@ export default function RegisterPage() {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 pr-12 text-gray-900 bg-[#FFE4CC] border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base placeholder:text-gray-400"
+                  className="w-full px-4 py-3 pr-14 text-gray-900 bg-[#FFE4CC] border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base placeholder:text-gray-400"
                   style={{ 
                     fontSize: '16px',
-                    minHeight: '48px'
-                  }}
+                    minHeight: '48px',
+                    WebkitTextSecurity: showPassword ? 'none' : 'disc'
+                  } as React.CSSProperties}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
                   style={{ minHeight: '20px', minWidth: '20px' }}
                 >
                   {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
@@ -221,7 +222,7 @@ export default function RegisterPage() {
               </label>
               <div className="relative">
                 <input
-                  type={showConfirmPassword ? "text" : "password"}
+                  type="text"
                   name="confirmPassword"
                   id="confirmPassword"
                   autoComplete="new-password"
@@ -229,16 +230,17 @@ export default function RegisterPage() {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 pr-12 text-gray-900 bg-[#FFE4CC] border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base placeholder:text-gray-400"
+                  className="w-full px-4 py-3 pr-14 text-gray-900 bg-[#FFE4CC] border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base placeholder:text-gray-400"
                   style={{ 
                     fontSize: '16px',
-                    minHeight: '48px'
-                  }}
+                    minHeight: '48px',
+                    WebkitTextSecurity: showConfirmPassword ? 'none' : 'disc'
+                  } as React.CSSProperties}
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
                   style={{ minHeight: '20px', minWidth: '20px' }}
                 >
                   {showConfirmPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
@@ -346,7 +348,7 @@ export default function RegisterPage() {
           <footer className="py-8 px-4">
             <div className="bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 md:p-8 text-center">
               <h3 className="text-lg md:text-xl font-semibold text-[#F15A25] mb-4">
-                Chipa&Co - Sistema de Fidelización
+                Chipa&Co
               </h3>
               <p className="text-sm md:text-base text-gray-600 mb-6 leading-relaxed">
                 La forma más fácil de ganar puntos y obtener premios increíbles.

@@ -131,7 +131,7 @@ export default function LoginPage() {
             <div>
               <div className="relative">
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type="text"
                   name="password"
                   id="password"
                   autoComplete="current-password"
@@ -139,16 +139,17 @@ export default function LoginPage() {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 pr-12 text-gray-900 bg-[#FFE4CC] border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base placeholder:text-gray-400"
+                  className="w-full px-4 py-3 pr-14 text-gray-900 bg-[#FFE4CC] border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 min-h-[48px] h-[48px] text-base placeholder:text-gray-400"
                   style={{ 
                     fontSize: '16px',
-                    minHeight: '48px'
-                  }}
+                    minHeight: '48px',
+                    WebkitTextSecurity: showPassword ? 'none' : 'disc'
+                  } as React.CSSProperties}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
                   style={{ minHeight: '20px', minWidth: '20px' }}
                 >
                   {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
