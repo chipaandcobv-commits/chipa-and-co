@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import {
-  EmailIcon,
-  UserIcon,
   EyeIcon,
   EyeOffIcon,
 } from "../../components/icons/Icons";
@@ -256,23 +254,6 @@ export default function RegisterPage() {
               {isLoading ? "Creando cuenta..." : "Crear Cuenta"}
             </Button>
 
-
-            {/* Divider */}
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-[#FFE4CC] text-gray-500">O regístrate con</span>
-              </div>
-            </div>
-
-            {/* Google Button */}
-            <GoogleButton
-              text="Registrarse con Google"
-              isLoading={isGoogleLoading}
-              onLoadingChange={setIsGoogleLoading}
-            />
           </div>
 
           {/* Footer */}
