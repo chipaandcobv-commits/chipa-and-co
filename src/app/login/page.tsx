@@ -172,7 +172,7 @@ export default function LoginPage() {
             <div className="text-center">
               <button
                 onClick={() => setShowForgotPasswordModal(true)}
-                className="text-sm text-[#F15A25] hover:text-[#E55A1A] transition-colors"
+                className="text-sm text-[#F15A25] hover:text-[#E55A1A] underline transition-colors"
               >
                 ¿Olvidaste tu contraseña?
               </button>
@@ -260,7 +260,7 @@ export default function LoginPage() {
           <footer className="py-8 px-4">
             <div className="bg-white rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 md:p-8 text-center">
               <h3 className="text-lg md:text-xl font-semibold text-[#F15A25] mb-4">
-                Chipa&Co - Sistema de Fidelización
+                Chipa&Co
               </h3>
               <p className="text-sm md:text-base text-gray-600 mb-6 leading-relaxed">
                 La forma más fácil de ganar puntos y obtener premios increíbles.

@@ -30,13 +30,13 @@ export default function UsersManagement() {
   const [roleFilter, setRoleFilter] = useState<"ALL" | "USER" | "ADMIN">("ALL");
   const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
   const [resettingPasswordUserId, setResettingPasswordUserId] = useState<string | null>(null);
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [resetPasswordData, setResetPasswordData] = useState<{
-    userId: string;
-    userName: string;
-    userEmail: string;
-    newPassword: string;
+  const [showConfirmResetModal, setShowConfirmResetModal] = useState(false);
+  const [userToReset, setUserToReset] = useState<{
+    id: string;
+    name: string;
+    email: string;
   } | null>(null);
+  const [newPassword, setNewPassword] = useState("");
 
   useEffect(() => {
     fetchUsers();
@@ -93,26 +93,43 @@ export default function UsersManagement() {
     fetchUsers();
   };
 
-  const handleResetPassword = async (userId: string) => {
-    setResettingPasswordUserId(userId);
+  const handleResetPasswordClick = (userId: string) => {
+    const user = users.find(u => u.id === userId);
+    if (user) {
+      setUserToReset({
+        id: user.id,
+        name: user.name,
+        email: user.email
+      });
+      setNewPassword(""); // Limpiar el campo de contraseña
+      setShowConfirmResetModal(true);
+    }
+  };
+
+  const handleConfirmResetPassword = async () => {
+    if (!userToReset || !newPassword.trim()) {
+      alert("Por favor ingresa una contraseña válida");
+      return;
+    }
+    
+    setResettingPasswordUserId(userToReset.id);
+    setShowConfirmResetModal(false);
     
     try {
       const response = await fetch("/api/admin/users/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId }),
+        body: JSON.stringify({ 
+          userId: userToReset.id,
+          newPassword: newPassword.trim()
+        }),
       });
 
       const data = await response.json();
       
       if (data.success) {
-        setResetPasswordData({
-          userId: data.data.userId,
-          userName: data.data.userName,
-          userEmail: data.data.userEmail,
-          newPassword: data.data.newPassword,
-        });
-        setShowPasswordModal(true);
+        alert(`Contraseña actualizada exitosamente para ${userToReset.name}`);
+        setNewPassword("");
       } else {
         alert(`Error: ${data.error || "Error al resetear contraseña"}`);
       }
@@ -121,13 +138,17 @@ export default function UsersManagement() {
       alert("Error al resetear contraseña");
     } finally {
       setResettingPasswordUserId(null);
+      setUserToReset(null);
+      setNewPassword("");
     }
   };
 
-  const closePasswordModal = () => {
-    setShowPasswordModal(false);
-    setResetPasswordData(null);
+  const handleCancelResetPassword = () => {
+    setShowConfirmResetModal(false);
+    setUserToReset(null);
+    setNewPassword("");
   };
+
 
   if (loading) {
     return (
@@ -257,7 +278,7 @@ export default function UsersManagement() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <Button
-                          onClick={() => handleResetPassword(user.id)}
+                          onClick={() => handleResetPasswordClick(user.id)}
                           disabled={resettingPasswordUserId === user.id}
                           className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 text-xs"
                         >
@@ -280,60 +301,70 @@ export default function UsersManagement() {
         </div>
       </main>
 
-      {/* Modal para mostrar nueva contraseña */}
-      {showPasswordModal && resetPasswordData && (
+      {/* Modal de confirmación para resetear contraseña */}
+      {showConfirmResetModal && userToReset && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-[#F4E7DB] rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 max-w-md w-full mx-4">
             <div className="text-center mb-6">
               <h3 className="text-xl font-semibold text-[#F15A25] mb-2">
-                🔑 Contraseña Reseteada
+                🔑 Asignar Nueva Contraseña
               </h3>
               <p className="text-sm text-gray-600">
-                La contraseña ha sido reseteada exitosamente
+                Ingresa la nueva contraseña para este usuario
               </p>
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-4 mb-6">
               <div className="bg-[#FCE6D5] rounded-lg p-4">
                 <label className="block text-sm font-medium text-[#F15A25] mb-1">Usuario:</label>
-                <p className="text-sm text-gray-900 font-medium">{resetPasswordData.userName}</p>
+                <p className="text-sm text-gray-900 font-medium">{userToReset.name}</p>
               </div>
               
               <div className="bg-[#FCE6D5] rounded-lg p-4">
                 <label className="block text-sm font-medium text-[#F15A25] mb-1">Email:</label>
-                <p className="text-sm text-gray-900">{resetPasswordData.userEmail}</p>
+                <p className="text-sm text-gray-900">{userToReset.email}</p>
               </div>
               
-              <div className="bg-[#FCE6D5] rounded-lg p-4">
+              <div>
                 <label className="block text-sm font-medium text-[#F15A25] mb-2">Nueva Contraseña:</label>
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="text"
-                    value={resetPasswordData.newPassword}
-                    readOnly
-                    className="flex-1 px-3 py-2 border border-[#F15A25] rounded-lg bg-white text-sm font-mono text-[#F15A25] font-semibold"
-                  />
-                  <Button
-                    onClick={() => navigator.clipboard.writeText(resetPasswordData.newPassword)}
-                    className="bg-[#F15A25] hover:bg-[#E55A1A] text-white px-3 py-2 text-xs rounded-lg transition-colors"
-                  >
-                    📋 Copiar
-                  </Button>
-                </div>
+                <Input
+                  type="password"
+                  placeholder="Ingresa la nueva contraseña"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="w-full"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  La contraseña debe tener al menos 6 caracteres
+                </p>
+              </div>
+              
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-sm text-blue-700">
+                  <strong>ℹ️ Información:</strong> Esta acción cambiará la contraseña del usuario. Asegúrate de proporcionar la nueva contraseña al usuario de forma segura.
+                </p>
               </div>
             </div>
             
-            <div className="mt-6 flex justify-center">
+            <div className="flex space-x-3">
               <Button
-                onClick={closePasswordModal}
-                className="bg-[#F15A25] hover:bg-[#E55A1A] text-white px-6 py-2 rounded-lg transition-colors"
+                onClick={handleCancelResetPassword}
+                className="flex-1 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors"
               >
-                ✅ Cerrar
+                ❌ Cancelar
+              </Button>
+              <Button
+                onClick={handleConfirmResetPassword}
+                disabled={!newPassword.trim() || newPassword.length < 6}
+                className="flex-1 bg-[#F15A25] hover:bg-[#E55A1A] text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                ✅ Asignar Contraseña
               </Button>
             </div>
           </div>
         </div>
       )}
+
     </div>
   );
 }

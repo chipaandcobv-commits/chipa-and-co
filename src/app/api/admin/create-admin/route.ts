@@ -1,20 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "../../../../generated/prisma";
 import { hashPassword } from "../../../../lib/auth-server";
+import { requireAdmin } from "../../../../lib/admin";
 
 const prisma = new PrismaClient();
 
-// POST - Crear usuario administrador inicial
+// POST - Crear usuario administrador (solo para admins existentes)
 export async function POST(request: NextRequest) {
   try {
-    // Verificar si ya existe un admin
-    const existingAdmin = await prisma.user.findFirst({
+    // 🔐 PROTECCIÓN: Requerir autenticación de admin existente
+    const currentAdmin = await requireAdmin();
+
+    // Verificar si ya existe un admin (solo si no es el primer admin)
+    const existingAdminCount = await prisma.user.count({
       where: { role: "ADMIN" },
     });
 
-    if (existingAdmin) {
+    // Si ya hay más de un admin, no permitir crear más
+    if (existingAdminCount > 1) {
       return NextResponse.json(
-        { success: false, error: "Ya existe un usuario administrador" },
+        { success: false, error: "Ya existen suficientes administradores. Use el script dedicado para crear más." },
         { status: 400 }
       );
     }
@@ -22,7 +27,7 @@ export async function POST(request: NextRequest) {
     const data = await request.json();
     const { name, email, dni, password, secretKey } = data;
 
-    // Verificar clave secreta (puedes cambiar esto por algo más seguro)
+    // 🔐 Verificar clave secreta adicional (doble protección)
     if (
       secretKey !== process.env.ADMIN_SECRET_KEY &&
       secretKey !== "admin-create-key-2024"

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Button from "../../../components/ui/Button";
 import Input from "../../../components/ui/Input";
 import SecurityKeyModal from "../../../components/SecurityKeyModal";
-import { DashboardIcon, LogoutIcon, EyeIcon, EyeOffIcon } from "../../../components/icons/Icons";
+import { EyeIcon, EyeOffIcon } from "../../../components/icons/Icons";
 import { Settings } from "lucide-react";
 
 interface SystemConfig {

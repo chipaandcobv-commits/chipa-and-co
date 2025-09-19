@@ -63,6 +63,7 @@ export default function OrdersManagement() {
   const [message, setMessage] = useState("");
   const [searchingClient, setSearchingClient] = useState(false);
   const [backingUp, setBackingUp] = useState(false);
+  const [showBackupConfirmModal, setShowBackupConfirmModal] = useState(false);
   const router = useRouter();
   const [showBackupSection, setShowBackupSection] = useState(false);
 
@@ -123,11 +124,12 @@ export default function OrdersManagement() {
     }
   };
 
-  const handleBackupOrders = async () => {
-    if (!confirm("¿Estás seguro de que quieres hacer backup de todas las órdenes y eliminarlas? Esta acción no se puede deshacer.")) {
-      return;
-    }
+  const handleBackupOrdersClick = () => {
+    setShowBackupConfirmModal(true);
+  };
 
+  const handleConfirmBackupOrders = async () => {
+    setShowBackupConfirmModal(false);
     setBackingUp(true);
     setMessage("");
 
@@ -169,6 +171,10 @@ export default function OrdersManagement() {
     } finally {
       setBackingUp(false);
     }
+  };
+
+  const handleCancelBackupOrders = () => {
+    setShowBackupConfirmModal(false);
   };
 
   const addOrderItem = (productId: string) => {
@@ -505,7 +511,7 @@ export default function OrdersManagement() {
                     <span className="font-medium">Órdenes actuales:</span> {orders.length}
                   </div>
                   <Button
-                    onClick={handleBackupOrders}
+                    onClick={handleBackupOrdersClick}
                     isLoading={backingUp}
                     disabled={orders.length === 0}
                     className="bg-red-600 hover:bg-red-700 text-white"
@@ -556,6 +562,61 @@ export default function OrdersManagement() {
           </div>
         </div>
       </main>
+
+      {/* Modal de confirmación para backup */}
+      {showBackupConfirmModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-[#F4E7DB] rounded-2xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] border border-white p-6 max-w-md w-full mx-4">
+            <div className="text-center mb-6">
+              <h3 className="text-xl font-semibold text-[#F15A25] mb-2">
+                ⚠️ Confirmar Backup y Limpieza
+              </h3>
+              <p className="text-sm text-gray-600">
+                ¿Estás seguro de que quieres hacer backup de todas las órdenes y eliminarlas?
+              </p>
+            </div>
+            
+            <div className="space-y-4 mb-6">
+              <div className="bg-[#FCE6D5] rounded-lg p-4">
+                <label className="block text-sm font-medium text-[#F15A25] mb-1">Órdenes a procesar:</label>
+                <p className="text-lg text-gray-900 font-semibold">{orders.length} órdenes</p>
+              </div>
+              
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-sm text-blue-700 mb-2">
+                  <strong>📊 Lo que sucederá:</strong>
+                </p>
+                <ul className="text-sm text-blue-600 space-y-1">
+                  <li>• Se creará un archivo Excel con todas las órdenes</li>
+                  <li>• El archivo se descargará automáticamente</li>
+                  <li>• Todas las órdenes se eliminarán de la base de datos</li>
+                </ul>
+              </div>
+              
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p className="text-sm text-red-700">
+                  <strong>⚠️ Advertencia:</strong> Esta acción no se puede deshacer. Una vez eliminadas, las órdenes no se podrán recuperar excepto desde el archivo Excel descargado.
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex space-x-3">
+              <Button
+                onClick={handleCancelBackupOrders}
+                className="flex-1 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                ❌ Cancelar
+              </Button>
+              <Button
+                onClick={handleConfirmBackupOrders}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                ✅ Confirmar Backup
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
