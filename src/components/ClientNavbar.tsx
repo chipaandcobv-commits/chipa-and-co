@@ -21,28 +21,29 @@ const ClientNavbar = memo(() => {
   useEffect(() => {
     let newPosition = "home";
     
-    if (pathname === "/cliente") {
-      newPosition = "home";
-    } else if (pathname.startsWith("/cliente/rewards")) {
+    if (pathname.startsWith("/cliente/rewards")) {
       newPosition = "rewards";
     } else if (pathname.startsWith("/cliente/profile")) {
       newPosition = "profile";
-    } else if (pathname.startsWith("/cliente")) {
+    } else {
+      // Cualquier otra ruta que empiece con /cliente (incluyendo /cliente exacto)
       newPosition = "home";
     }
     
-    // Delay en producción para asegurar que la animación se ejecute correctamente
-    const isProduction = process.env.NODE_ENV === 'production';
-    const delay = isProduction ? 50 : 0;
-    
-    setTimeout(() => {
-      // Siempre actualizar la posición anterior y actual, y forzar animación
-      setPreviousPosition(lastValidPosition);
-      setLastValidPosition(newPosition);
-      // Forzar nueva animación incrementando la key
-      setAnimationKey(prev => prev + 1);
-    }, delay);
-  }, [pathname]);
+    // Solo animar si realmente hay un cambio de posición
+    if (newPosition !== lastValidPosition) {
+      // Delay en producción para asegurar que la animación se ejecute correctamente
+      const isProduction = process.env.NODE_ENV === 'production';
+      const delay = isProduction ? 50 : 0;
+      
+      setTimeout(() => {
+        setPreviousPosition(lastValidPosition);
+        setLastValidPosition(newPosition);
+        // Forzar nueva animación incrementando la key
+        setAnimationKey(prev => prev + 1);
+      }, delay);
+    }
+  }, [pathname, lastValidPosition]);
 
   const isActive = useCallback(
     (path: string) => {
