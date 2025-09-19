@@ -30,11 +30,13 @@ const ClientNavbar = memo(() => {
       newPosition = "home";
     }
     
-    // Siempre actualizar la posición anterior y actual, y forzar animación
-    setPreviousPosition(lastValidPosition);
-    setLastValidPosition(newPosition);
-    // Forzar nueva animación incrementando la key
-    setAnimationKey(prev => prev + 1);
+    // Solo animar si realmente hay un cambio de posición
+    if (newPosition !== lastValidPosition) {
+      setPreviousPosition(lastValidPosition);
+      setLastValidPosition(newPosition);
+      // Forzar nueva animación incrementando la key
+      setAnimationKey(prev => prev + 1);
+    }
   }, [pathname]);
 
   const isActive = useCallback(
