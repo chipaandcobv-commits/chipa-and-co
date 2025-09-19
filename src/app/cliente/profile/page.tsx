@@ -5,7 +5,6 @@ import { useAuth } from "@/lib/auth";
 import { useCachedUserProfile } from "@/lib/hooks/useCachedUserProfile";
 import { useUpdateProfile } from "@/lib/hooks/useUpdateProfile";
 import { useChangePassword } from "@/lib/hooks/useChangePassword";
-import { useViewportScrollPersistence } from "@/lib/hooks/useViewportScrollPersistence";
 import { UserIcon, LogoutIcon, EyeIcon, EyeOffIcon } from "@/components/icons/Icons";
 
 export default function ProfilePage() {
@@ -13,7 +12,6 @@ export default function ProfilePage() {
   const { user: cachedUser, loading: cachedLoading, refetch: refetchCachedUser } = useCachedUserProfile();
   const { updateProfile, loading: updatingProfile } = useUpdateProfile();
   const { changePassword, loading: changingPassword } = useChangePassword();
-  useViewportScrollPersistence(); // Solo para persistir scroll, no necesitamos las funciones
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);

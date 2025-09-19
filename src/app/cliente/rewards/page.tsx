@@ -1,14 +1,12 @@
 "use client";
 
 import { useCachedUserClaims } from "@/lib/hooks/useCachedUserClaims";
-import { useViewportScrollPersistence } from "@/lib/hooks/useViewportScrollPersistence";
 import { useState } from "react";
 import { GiftCardIcon, CheckIcon, ClockIcon } from "@/components/icons/Icons";
 
 export default function RewardsPage() {
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const { claims, loading, refetch } = useCachedUserClaims();
-  useViewportScrollPersistence(); // Solo para persistir scroll, no necesitamos las funciones
 
   if (loading) {
     return (
