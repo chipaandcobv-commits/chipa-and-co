@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import ProfileCompletionGuard from "../../components/ProfileCompletionGuard";
 import ClientNavbar from "../../components/ClientNavbar";
-import ClientOnly from "../../components/ClientOnly";
 
 export const metadata: Metadata = {
   title: "Chipa&Co - Cliente",
@@ -17,9 +16,7 @@ export default function ClienteLayout({
     <ProfileCompletionGuard>
       <div className="cliente-layout">
         {children}
-        <ClientOnly>
-          <ClientNavbar />
-        </ClientOnly>
+        <ClientNavbar />
       </div>
     </ProfileCompletionGuard>
   );

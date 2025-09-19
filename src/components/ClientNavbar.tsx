@@ -15,19 +15,10 @@ const ClientNavbar = memo(() => {
 
   useEffect(() => {
     setMounted(true);
-    // Delay adicional en producción para asegurar hidratación completa
-    const isProduction = process.env.NODE_ENV === 'production';
-    if (isProduction) {
-      const timer = setTimeout(() => {
-        // Forzar re-render después de la hidratación
-        setAnimationKey(prev => prev + 1);
-      }, 200);
-      return () => clearTimeout(timer);
-    }
   }, []);
 
-  // Rastrear la última posición válida - usar useEffect para evitar conflictos con scroll
-  useEffect(() => {
+  // Rastrear la última posición válida - usar useLayoutEffect para evitar conflictos con scroll
+  useLayoutEffect(() => {
     let newPosition = "home";
     
     if (pathname.startsWith("/cliente/rewards")) {
@@ -46,7 +37,7 @@ const ClientNavbar = memo(() => {
       // Forzar nueva animación incrementando la key
       setAnimationKey(prev => prev + 1);
     }
-  }, [pathname]);
+  }, [pathname, lastValidPosition]);
 
   const isActive = useCallback(
     (path: string) => {
