@@ -10,27 +10,35 @@ const ClientNavbar = memo(() => {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [lastValidPosition, setLastValidPosition] = useState("home");
+  const [previousPosition, setPreviousPosition] = useState("home");
   const [animationKey, setAnimationKey] = useState(0);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Rastrear la última posición válida
-  useLayoutEffect(() => {
+  // Rastrear la última posición válida - usar useEffect para evitar conflictos con scroll
+  useEffect(() => {
+    let newPosition = "home";
+    
     if (pathname === "/cliente") {
-      setLastValidPosition("home");
+      newPosition = "home";
     } else if (pathname.startsWith("/cliente/rewards")) {
-      setLastValidPosition("rewards");
+      newPosition = "rewards";
     } else if (pathname.startsWith("/cliente/profile")) {
-      setLastValidPosition("profile");
+      newPosition = "profile";
     } else if (pathname.startsWith("/cliente")) {
-      setLastValidPosition("home");
+      newPosition = "home";
     }
     
-    // Forzar nueva animación incrementando la key
-    setAnimationKey(prev => prev + 1);
-  }, [pathname]);
+    // Solo actualizar si la posición cambió
+    if (newPosition !== lastValidPosition) {
+      setPreviousPosition(lastValidPosition);
+      setLastValidPosition(newPosition);
+      // Forzar nueva animación incrementando la key
+      setAnimationKey(prev => prev + 1);
+    }
+  }, [pathname, lastValidPosition]);
 
   const isActive = useCallback(
     (path: string) => {
@@ -98,7 +106,7 @@ const ClientNavbar = memo(() => {
   }, [getPositionInPixels, getSVGPosition]);
 
   const currentPosition = useMemo(() => {
-    // Usar lastValidPosition para consistencia
+    // Usar lastValidPosition para la posición actual
     let position;
     if (lastValidPosition === "rewards") {
       position = positions.rewards;
@@ -109,7 +117,21 @@ const ClientNavbar = memo(() => {
     }
 
     return position;
-  }, [lastValidPosition, positions, pathname]);
+  }, [lastValidPosition, positions]);
+
+  const previousPositionData = useMemo(() => {
+    // Usar previousPosition para la posición anterior
+    let position;
+    if (previousPosition === "rewards") {
+      position = positions.rewards;
+    } else if (previousPosition === "profile") {
+      position = positions.profile;
+    } else {
+      position = positions.home;
+    }
+
+    return position;
+  }, [previousPosition, positions]);
 
   // Posición base compartida para círculo y hueco
   const sharedPosition = useMemo(() => {
@@ -231,10 +253,11 @@ const ClientNavbar = memo(() => {
         <motion.div
           key={`circle-${animationKey}`}
           className="navbar-circle absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
-          layoutId="navbar-circle"
-          initial={false}
+          initial={mounted ? {
+            x: previousPositionData.circle - 218  // Posición anterior
+          } : false}
           animate={mounted ? {
-            x: sharedPosition - 218  // Centrar respecto al contenedor de 380px
+            x: sharedPosition - 218  // Posición actual
           } : false}
           transition={sharedTransition}
           style={{
@@ -253,10 +276,11 @@ const ClientNavbar = memo(() => {
         <motion.div
           key={`line-${animationKey}`}
           className="navbar-line absolute top-11 w-16 h-1 bg-black rounded-full z-10"
-          layoutId="navbar-line"
-          initial={false}
+          initial={mounted ? {
+            x: previousPositionData.circle - 218  // Posición anterior
+          } : false}
           animate={mounted ? {
-            x: sharedPosition - 218  // Centrar respecto al contenedor de 380px
+            x: sharedPosition - 218  // Posición actual
           } : false}
           transition={sharedTransition}
           style={{
@@ -278,7 +302,10 @@ const ClientNavbar = memo(() => {
 
                 <motion.g
                   key={`hole-${animationKey}`}
-                  initial={false}
+                  initial={{ 
+                    x: previousPositionData.circle - 55, 
+                    y: -30 
+                  }}
                   animate={{ 
                     x: sharedPosition - 55, 
                     y: -30 

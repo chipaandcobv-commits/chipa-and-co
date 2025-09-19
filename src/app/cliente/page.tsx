@@ -6,6 +6,7 @@ import { useCachedRewards } from "@/lib/hooks/useCachedRewards";
 import { useClaimReward } from "@/lib/hooks/useClaimReward";
 import { usePointsWarning } from "@/lib/hooks/usePointsWarning";
 import { useUserPoints } from "@/lib/hooks/useUserPoints";
+import { useViewportScrollPersistence } from "@/lib/hooks/useViewportScrollPersistence";
 import { GiftCardIcon } from "@/components/icons/Icons";
 import RewardConfirmationModal from "@/components/RewardConfirmationModal";
 import PointsWarningBanner from "@/components/PointsWarningBanner";
@@ -19,6 +20,7 @@ export default function ClientePage() {
   const { rewards, loading: rewardsLoading, refetch: refetchRewards } = useCachedRewards();
   const { claimReward, loading: claiming } = useClaimReward();
   const { userPoints, refreshPoints } = useUserPoints();
+  const { scrollToTop } = useViewportScrollPersistence();
 
   // Memoizar el nombre del usuario
   const userName = useMemo(() => user?.name?.split(" ")[0] || "", [user?.name]);
@@ -40,14 +42,20 @@ export default function ClientePage() {
         setMessage({ type: "success", text: data.message });
         setShowConfirmationModal(false);
         setSelectedReward(null);
+        // Desplazar hacia arriba para mostrar el mensaje de éxito
+        scrollToTop();
         setTimeout(() => setMessage(null), 5000);
       },
       onError: (error) => {
         setMessage({ type: "error", text: error });
+        setShowConfirmationModal(false);
+        setSelectedReward(null);
+        // Desplazar hacia arriba para mostrar el mensaje de error
+        scrollToTop();
         setTimeout(() => setMessage(null), 5000);
       },
     });
-  }, [selectedReward, claimReward, refetchUser, refetchRewards]);
+  }, [selectedReward, claimReward, scrollToTop]);
 
   const handleCloseModal = useCallback(() => {
     setShowConfirmationModal(false);
