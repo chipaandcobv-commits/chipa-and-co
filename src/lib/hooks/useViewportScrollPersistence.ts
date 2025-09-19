@@ -30,14 +30,22 @@ const setStoredPosition = (path: string, position: number) => {
 export const useViewportScrollPersistence = () => {
   const pathname = usePathname();
 
-  // Restaurar posición de scroll al montar - usar useLayoutEffect para evitar flash
-  useLayoutEffect(() => {
+  // Restaurar posición de scroll al montar - usar useEffect con delay para no interferir con navbar
+  useEffect(() => {
     const positions = getStoredPositions();
     const savedPosition = positions[pathname];
 
     if (savedPosition !== undefined) {
-      // Restaurar inmediatamente para evitar flash
+      // Restaurar el scroll inmediatamente
       window.scrollTo(0, savedPosition);
+      
+      // Usar requestAnimationFrame para asegurar que se aplique
+      requestAnimationFrame(() => {
+        window.scrollTo(0, savedPosition);
+        requestAnimationFrame(() => {
+          window.scrollTo(0, savedPosition);
+        });
+      });
     }
   }, [pathname]);
 

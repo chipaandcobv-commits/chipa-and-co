@@ -17,7 +17,7 @@ const ClientNavbar = memo(() => {
     setMounted(true);
   }, []);
 
-  // Rastrear la última posición válida - completamente independiente del scroll
+  // Rastrear la última posición válida - usar useEffect para evitar conflictos con scroll
   useEffect(() => {
     let newPosition = "home";
     
@@ -30,12 +30,14 @@ const ClientNavbar = memo(() => {
       newPosition = "home";
     }
     
-    // Siempre ejecutar animación cuando cambia la ruta, independientemente del scroll
-    setPreviousPosition(lastValidPosition);
-    setLastValidPosition(newPosition);
-    // Forzar nueva animación incrementando la key
-    setAnimationKey(prev => prev + 1);
-  }, [pathname]);
+    // Solo animar si realmente hay un cambio de posición
+    if (newPosition !== lastValidPosition) {
+      setPreviousPosition(lastValidPosition);
+      setLastValidPosition(newPosition);
+      // Forzar nueva animación incrementando la key
+      setAnimationKey(prev => prev + 1);
+    }
+  }, [pathname, lastValidPosition]);
 
   const isActive = useCallback(
     (path: string) => {
