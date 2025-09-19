@@ -31,14 +31,12 @@ const ClientNavbar = memo(() => {
       newPosition = "home";
     }
     
-    // Solo actualizar si la posición cambió
-    if (newPosition !== lastValidPosition) {
-      setPreviousPosition(lastValidPosition);
-      setLastValidPosition(newPosition);
-      // Forzar nueva animación incrementando la key
-      setAnimationKey(prev => prev + 1);
-    }
-  }, [pathname, lastValidPosition]);
+    // Siempre actualizar la posición anterior y actual, y forzar animación
+    setPreviousPosition(lastValidPosition);
+    setLastValidPosition(newPosition);
+    // Forzar nueva animación incrementando la key
+    setAnimationKey(prev => prev + 1);
+  }, [pathname]);
 
   const isActive = useCallback(
     (path: string) => {
