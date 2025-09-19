@@ -30,22 +30,24 @@ const setStoredPosition = (path: string, position: number) => {
 export const useViewportScrollPersistence = () => {
   const pathname = usePathname();
 
-  // Restaurar posición de scroll al montar - usar useEffect con delay para no interferir con navbar
+  // Restaurar posición de scroll al montar - usar delay más largo en producción
   useEffect(() => {
     const positions = getStoredPositions();
     const savedPosition = positions[pathname];
 
     if (savedPosition !== undefined) {
-      // Restaurar el scroll inmediatamente
-      window.scrollTo(0, savedPosition);
+      // Delay más largo en producción para permitir que las animaciones se completen
+      const isProduction = process.env.NODE_ENV === 'production';
+      const delay = isProduction ? 300 : 100;
       
-      // Usar requestAnimationFrame para asegurar que se aplique
-      requestAnimationFrame(() => {
+      setTimeout(() => {
         window.scrollTo(0, savedPosition);
+        
+        // Usar requestAnimationFrame para asegurar que se aplique
         requestAnimationFrame(() => {
           window.scrollTo(0, savedPosition);
         });
-      });
+      }, delay);
     }
   }, [pathname]);
 

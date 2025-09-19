@@ -31,11 +31,17 @@ const ClientNavbar = memo(() => {
       newPosition = "home";
     }
     
-    // Siempre actualizar la posición anterior y actual, y forzar animación
-    setPreviousPosition(lastValidPosition);
-    setLastValidPosition(newPosition);
-    // Forzar nueva animación incrementando la key
-    setAnimationKey(prev => prev + 1);
+    // Delay en producción para asegurar que la animación se ejecute correctamente
+    const isProduction = process.env.NODE_ENV === 'production';
+    const delay = isProduction ? 50 : 0;
+    
+    setTimeout(() => {
+      // Siempre actualizar la posición anterior y actual, y forzar animación
+      setPreviousPosition(lastValidPosition);
+      setLastValidPosition(newPosition);
+      // Forzar nueva animación incrementando la key
+      setAnimationKey(prev => prev + 1);
+    }, delay);
   }, [pathname]);
 
   const isActive = useCallback(
