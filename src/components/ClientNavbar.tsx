@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, memo, useMemo, useState, useLayoutEffect, useEffect } from "react";
+import { useCallback, memo, useMemo, useState, useLayoutEffect, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { GiftCardIcon, HomeIcon, UserIcon } from "./icons/Icons";
@@ -12,6 +12,7 @@ const ClientNavbar = memo(() => {
   const [lastValidPosition, setLastValidPosition] = useState("home");
   const [previousPosition, setPreviousPosition] = useState("home");
   const [animationKey, setAnimationKey] = useState(0);
+  const lastValidPositionRef = useRef("home");
 
   useEffect(() => {
     setMounted(true);
@@ -32,8 +33,9 @@ const ClientNavbar = memo(() => {
     
     // Solo animar si realmente hay un cambio de posición
     if (newPosition !== lastValidPosition) {
-      setPreviousPosition(lastValidPosition);
+      setPreviousPosition(lastValidPositionRef.current);
       setLastValidPosition(newPosition);
+      lastValidPositionRef.current = newPosition;
       // Forzar nueva animación incrementando la key
       setAnimationKey(prev => prev + 1);
     }
