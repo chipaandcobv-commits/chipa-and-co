@@ -252,7 +252,7 @@ const ClientNavbar = memo(() => {
       <div className="relative w-[380px] h-[50px]">
         {/* Círculo flotante animado */}
         <motion.div
-          key={`circle-${animationKey}`}
+          key={`circle-${pathname}-${animationKey}`}
           className="navbar-circle absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
           initial={mounted ? {
             x: previousPositionData.circle - 218  // Posición anterior
@@ -275,7 +275,7 @@ const ClientNavbar = memo(() => {
 
         {/* Línea negra que se desplaza con la barra */}
         <motion.div
-          key={`line-${animationKey}`}
+          key={`line-${pathname}-${animationKey}`}
           className="navbar-line absolute top-11 w-16 h-1 bg-black rounded-full z-10"
           initial={mounted ? {
             x: previousPositionData.circle - 218  // Posición anterior
@@ -302,14 +302,14 @@ const ClientNavbar = memo(() => {
                 <rect width="380" height="50" fill="white" rx="25" />
 
                 <motion.g
-                  key={`hole-${animationKey}`}
-                  initial={{ 
-                    x: previousPositionData.circle - 55, 
-                    y: -30 
+                  key={`hole-${pathname}-${animationKey}`}
+                  initial={{
+                    x: previousPositionData.circle - 55,
+                    y: -30
                   }}
-                  animate={{ 
-                    x: sharedPosition - 55, 
-                    y: -30 
+                  animate={{
+                    x: sharedPosition - 55,
+                    y: -30
                   }}
                   transition={sharedTransition}
                 >
