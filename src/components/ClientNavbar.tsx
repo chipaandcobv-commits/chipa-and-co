@@ -30,12 +30,24 @@ const ClientNavbar = memo(() => {
       newPosition = "home";
     }
     
+    // Debug específico para producción
+    console.log('Navbar Debug:', {
+      pathname,
+      newPosition,
+      lastValidPosition,
+      willAnimate: newPosition !== lastValidPosition,
+      environment: process.env.NODE_ENV
+    });
+    
     // Solo animar si realmente hay un cambio de posición
     if (newPosition !== lastValidPosition) {
+      console.log('Triggering animation:', { from: lastValidPosition, to: newPosition });
       setPreviousPosition(lastValidPosition);
       setLastValidPosition(newPosition);
       // Forzar nueva animación incrementando la key
       setAnimationKey(prev => prev + 1);
+    } else {
+      console.log('No animation needed - same position');
     }
   }, [pathname, lastValidPosition]);
 
