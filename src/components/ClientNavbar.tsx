@@ -13,7 +13,6 @@ const ClientNavbar = memo(() => {
   const [previousPosition, setPreviousPosition] = useState("home");
   const [animationKey, setAnimationKey] = useState(0);
   const lastValidPositionRef = useRef("home");
-  const previousPathnameRef = useRef(pathname);
 
   useEffect(() => {
     setMounted(true);
@@ -23,25 +22,26 @@ const ClientNavbar = memo(() => {
   useLayoutEffect(() => {
     let newPosition = "home";
     
-    if (pathname.startsWith("/cliente/rewards")) {
+    if (pathname === "/cliente") {
+      newPosition = "home";
+    } else if (pathname.startsWith("/cliente/rewards")) {
       newPosition = "rewards";
     } else if (pathname.startsWith("/cliente/profile")) {
       newPosition = "profile";
     } else {
-      // Cualquier otra ruta que empiece con /cliente (incluyendo /cliente exacto)
+      // Cualquier otra ruta que empiece con /cliente
       newPosition = "home";
     }
     
-    // Siempre animar si el pathname cambió, independientemente del estado interno
-    if (pathname !== previousPathnameRef.current) {
+    // Solo animar si realmente hay un cambio de posición
+    if (newPosition !== lastValidPosition) {
       setPreviousPosition(lastValidPositionRef.current);
       setLastValidPosition(newPosition);
       lastValidPositionRef.current = newPosition;
-      previousPathnameRef.current = pathname;
       // Forzar nueva animación incrementando la key
       setAnimationKey(prev => prev + 1);
     }
-  }, [pathname]);
+  }, [pathname, lastValidPosition]);
 
   const isActive = useCallback(
     (path: string) => {
