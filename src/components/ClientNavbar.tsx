@@ -124,6 +124,11 @@ const ClientNavbar = memo(() => {
     duration: 0.6
   };
 
+  // Función para calcular la posición absoluta del círculo
+  const getCirclePosition = useCallback((position: number) => {
+    return position - 218; // Centrar respecto al contenedor de 380px
+  }, []);
+
   const navItems = [
     {
       id: "rewards",
@@ -233,7 +238,7 @@ const ClientNavbar = memo(() => {
           layoutId="navbar-circle"
           initial={false}
           animate={mounted ? {
-            transform: `translateX(calc(-50% + ${sharedPosition - 218}px))`
+            transform: `translateX(calc(-50% + ${getCirclePosition(sharedPosition)}px))`
           } : false}
           transition={sharedTransition}
           style={{
@@ -254,7 +259,7 @@ const ClientNavbar = memo(() => {
           layoutId="navbar-line"
           initial={false}
           animate={mounted ? {
-            transform: `translateX(calc(-50% + ${sharedPosition - 218}px))`
+            transform: `translateX(calc(-50% + ${getCirclePosition(sharedPosition)}px))`
           } : false}
           transition={sharedTransition}
           style={{
