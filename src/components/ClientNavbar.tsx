@@ -9,22 +9,30 @@ const ClientNavbar = memo(() => {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [currentPosition, setCurrentPosition] = useState("home");
+  const [forceUpdate, setForceUpdate] = useState(0);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Rastrear la posición actual
+  // Rastrear la posición actual y forzar animación
   useLayoutEffect(() => {
+    let newPosition = "home";
+    
     if (pathname === "/cliente") {
-      setCurrentPosition("home");
+      newPosition = "home";
     } else if (pathname.startsWith("/cliente/rewards")) {
-      setCurrentPosition("rewards");
+      newPosition = "rewards";
     } else if (pathname.startsWith("/cliente/profile")) {
-      setCurrentPosition("profile");
+      newPosition = "profile";
     } else if (pathname.startsWith("/cliente")) {
-      setCurrentPosition("home");
+      newPosition = "home";
     }
+    
+    // Siempre actualizar el estado, incluso si es la misma posición
+    setCurrentPosition(newPosition);
+    // Forzar nueva animación incrementando el contador
+    setForceUpdate(prev => prev + 1);
   }, [pathname]);
 
   const isActive = useCallback(
@@ -109,6 +117,7 @@ const ClientNavbar = memo(() => {
     return position;
   }, [currentPosition, positions]);
 
+
   const navItems = [
     {
       id: "rewards",
@@ -134,8 +143,8 @@ const ClientNavbar = memo(() => {
         <div
           className="navbar-circle absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20 transition-transform duration-500 ease-out"
           style={{
-            left: "50%",
-            transform: `translateX(calc(-50% + ${currentPositionData.circle - 190}px))`
+            left: `${currentPositionData.circle}px`,
+            transform: "translateX(-50%)"
           }}
         >
           <div className="navbar-icon">
@@ -149,8 +158,8 @@ const ClientNavbar = memo(() => {
         <div
           className="navbar-line absolute top-11 w-16 h-1 bg-black rounded-full z-10 transition-transform duration-500 ease-out"
           style={{
-            left: "50%",
-            transform: `translateX(calc(-50% + ${currentPositionData.circle - 190}px))`
+            left: `${currentPositionData.circle}px`,
+            transform: "translateX(-50%)"
           }}
         />
 
