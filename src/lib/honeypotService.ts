@@ -136,66 +136,67 @@ export function detectBotWithHoneypot(
   
   if (formTime < HONEYPOT_CONFIG.timeThreshold) {
     reasons.push(`Form completed too quickly: ${formTime}ms < ${HONEYPOT_CONFIG.timeThreshold}ms`);
-    confidence += 0.6; // Media confianza de bot
+    confidence += 0.2; // Reducido significativamente
   }
 
   if (formTime > HONEYPOT_CONFIG.maxFormTime) {
     reasons.push(`Form completed too slowly: ${formTime}ms > ${HONEYPOT_CONFIG.maxFormTime}ms`);
-    confidence += 0.3; // Baja confianza de bot
+    confidence += 0.1; // Reducido significativamente
   }
 
-  // 3. Verificar User-Agent
-  if (!metadata.userAgent || metadata.userAgent.length < 10) {
+  // 3. Verificar User-Agent (solo si está completamente ausente)
+  if (!metadata.userAgent || metadata.userAgent.length < 5) {
     reasons.push('Invalid or missing User-Agent');
-    confidence += 0.4;
+    confidence += 0.1; // Reducido significativamente
   }
 
-  // 4. Verificar referer
-  if (!metadata.referer || !metadata.referer.includes('http')) {
-    reasons.push('Invalid or missing Referer');
-    confidence += 0.3;
+  // 4. Verificar referer (solo si está completamente ausente)
+  if (!metadata.referer) {
+    reasons.push('Missing Referer');
+    confidence += 0.1; // Reducido significativamente
   }
 
-  // 5. Verificar JavaScript habilitado (si no hay datos del navegador)
-  if (!metadata.screenResolution || !metadata.colorDepth) {
+  // 5. Verificar JavaScript habilitado (solo si ambos están ausentes)
+  if (!metadata.screenResolution && !metadata.colorDepth) {
     reasons.push('JavaScript may be disabled or bot detected');
-    confidence += 0.5;
+    confidence += 0.2; // Reducido significativamente
   }
 
-  // 6. Verificar fingerprint
-  if (!metadata.fingerprint || metadata.fingerprint.length < 10) {
-    reasons.push('Invalid or missing browser fingerprint');
-    confidence += 0.4;
+  // 6. Verificar fingerprint (solo si está completamente ausente)
+  if (!metadata.fingerprint) {
+    reasons.push('Missing browser fingerprint');
+    confidence += 0.1; // Reducido significativamente
   }
 
-  // 7. Verificar patrones de bot comunes
-  if (metadata.userAgent.includes('bot') || 
-      metadata.userAgent.includes('crawler') || 
-      metadata.userAgent.includes('spider') ||
-      metadata.userAgent.includes('scraper')) {
+  // 7. Verificar patrones de bot comunes (solo patrones muy obvios)
+  if (metadata.userAgent && (
+      metadata.userAgent.toLowerCase().includes('bot') || 
+      metadata.userAgent.toLowerCase().includes('crawler') || 
+      metadata.userAgent.toLowerCase().includes('spider') ||
+      metadata.userAgent.toLowerCase().includes('scraper'))) {
     reasons.push('Bot-like User-Agent detected');
     confidence += 0.9;
   }
 
-  // 8. Verificar datos inconsistentes
-  if (metadata.language && !metadata.language.includes('es') && !metadata.language.includes('en')) {
+  // 8. Verificar datos inconsistentes (solo si es muy obvio)
+  if (metadata.language && !metadata.language.includes('es') && !metadata.language.includes('en') && !metadata.language.includes('pt')) {
     reasons.push('Unusual language setting');
-    confidence += 0.2;
+    confidence += 0.1; // Reducido
   }
 
-  // 9. Verificar timezone
-  if (!metadata.timezone || metadata.timezone === 'UTC') {
-    reasons.push('Default or missing timezone');
-    confidence += 0.2;
+  // 9. Verificar timezone (solo si está completamente ausente)
+  if (!metadata.timezone) {
+    reasons.push('Missing timezone');
+    confidence += 0.1; // Reducido
   }
 
-  // 10. Verificar cookies
-  if (!metadata.cookieEnabled) {
+  // 10. Verificar cookies (solo si está explícitamente deshabilitado)
+  if (metadata.cookieEnabled === false) {
     reasons.push('Cookies disabled');
-    confidence += 0.3;
+    confidence += 0.1; // Reducido
   }
 
-  const isBot = confidence > 0.5; // Umbral de detección
+  const isBot = confidence > 0.8; // Umbral de detección aumentado significativamente
 
   return {
     isBot,
@@ -343,11 +344,47 @@ export function logBotDetection(
     reasons,
     metadata: {
       ip: metadata.ip,
-      userAgent: metadata.userAgent.substring(0, 100),
+      userAgent: metadata.userAgent?.substring(0, 100) || 'N/A',
       formTime: metadata.endTime - metadata.startTime,
-      fingerprint: metadata.fingerprint.substring(0, 20),
+      fingerprint: metadata.fingerprint?.substring(0, 20) || 'N/A',
+      screenResolution: metadata.screenResolution || 'N/A',
+      colorDepth: metadata.colorDepth || 'N/A',
+      timezone: metadata.timezone || 'N/A',
+      cookieEnabled: metadata.cookieEnabled,
     },
   });
+}
+
+// Función de debug para ayudar a identificar problemas
+export function debugHoneypotDetection(
+  formData: FormData,
+  metadata: FormMetadata
+): { debug: any; confidence: number; reasons: string[] } {
+  const result = detectBotWithHoneypot(formData, metadata);
+  
+  const debug = {
+    formTime: metadata.endTime - metadata.startTime,
+    timeThreshold: HONEYPOT_CONFIG.timeThreshold,
+    userAgent: metadata.userAgent || 'MISSING',
+    userAgentLength: metadata.userAgent?.length || 0,
+    referer: metadata.referer || 'MISSING',
+    screenResolution: metadata.screenResolution || 'MISSING',
+    colorDepth: metadata.colorDepth || 'MISSING',
+    timezone: metadata.timezone || 'MISSING',
+    fingerprint: metadata.fingerprint || 'MISSING',
+    fingerprintLength: metadata.fingerprint?.length || 0,
+    cookieEnabled: metadata.cookieEnabled,
+    language: metadata.language || 'MISSING',
+    honeypotFields: Object.keys(formData).filter(key => 
+      HONEYPOT_CONFIG.fieldNames.includes(key) && formData[key]?.toString().trim() !== ''
+    ),
+  };
+  
+  return {
+    debug,
+    confidence: result.confidence,
+    reasons: result.reasons,
+  };
 }
 
 // Función para obtener configuración de honeypot

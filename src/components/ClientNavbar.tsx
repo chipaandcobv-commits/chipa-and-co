@@ -28,12 +28,11 @@ const ClientNavbar = memo(() => {
       setLastValidPosition("home");
     }
     // Forzar nueva animación incrementando la key
-    setAnimationKey(prev => prev + 1);
+    setAnimationKey((prev) => prev + 1);
   }, [pathname]);
 
   const isActive = useCallback(
     (path: string) => {
-      // Lógica más precisa para evitar conflictos
       if (path === "/cliente") {
         return pathname === "/cliente";
       }
@@ -64,71 +63,31 @@ const ClientNavbar = memo(() => {
 
   const activeItem = getActiveItem();
 
-  const getPositionInPixels = useCallback((percentage: string) => {
-    const containerWidth = 380;
-    const percentageValue = parseFloat(percentage.replace('%', ''));
-    const absolutePosition = (containerWidth * percentageValue / 100);
-    return absolutePosition;
+  // Posiciones fijas simples para el navbar
+  const getPosition = useCallback((item: string) => {
+    switch (item) {
+      case "rewards":
+        return 0;
+      case "home":
+        return 133;
+      case "profile":
+        return 266;
+      default:
+        return 133;
+    }
   }, []);
-
-  const getSVGPosition = useCallback((circlePosition: number) => {
-    return circlePosition - 55; // Centrado con el círculo
-  }, []);
-
-  const positions = useMemo(() => {
-    const rewardsPos = getPositionInPixels("18%");
-    const homePos = getPositionInPixels("48%");
-    const profilePos = getPositionInPixels("82%");
-
-    return {
-      rewards: {
-        circle: rewardsPos,
-        svg: getSVGPosition(rewardsPos)
-      },
-      home: {
-        circle: homePos,
-        svg: getSVGPosition(homePos)
-      },
-      profile: {
-        circle: profilePos,
-        svg: getSVGPosition(profilePos)
-      }
-    };
-  }, [getPositionInPixels, getSVGPosition]);
 
   const currentPosition = useMemo(() => {
-    // Usar lastValidPosition para consistencia
-    let position;
-    if (lastValidPosition === "rewards") {
-      position = positions.rewards;
-    } else if (lastValidPosition === "profile") {
-      position = positions.profile;
-    } else {
-      position = positions.home;
-    }
+    return getPosition(lastValidPosition);
+  }, [lastValidPosition, getPosition]);
 
-    return position;
-  }, [lastValidPosition, positions]);
-
-  // Posición base compartida para círculo y hueco
-  const sharedPosition = useMemo(() => {
-    return currentPosition.circle;
-  }, [currentPosition.circle]);
-
-  // Configuración de transición compartida para sincronizar todas las animaciones
+  // Configuración de transición
   const sharedTransition = {
     type: "spring" as const,
-    stiffness: 300,
-    damping: 30,
-    duration: 0.6
+    stiffness: 400,
+    damping: 35,
+    duration: 0.5,
   };
-
-  // Configuración específica para evitar problemas de scroll en producción
-  const motionProps = {
-    layout: false,
-    layoutScroll: false
-  };
-
 
   const navItems = [
     {
@@ -149,46 +108,61 @@ const ClientNavbar = memo(() => {
   ];
 
   return (
-    <div className="client-navbar-floating fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+    <motion.div
+      className="client-navbar-floating fixed bottom-4 left-1/2 -translate-x-1/2 z-50"
+      layoutRoot
+    >
       <div className="relative w-[380px] h-[50px]">
-        {/* Círculo flotante animado */}
+        {/* Círculo flotante */}
         <motion.div
           key={`circle-${animationKey}`}
           className="navbar-circle absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
           layoutId="navbar-circle"
           initial={false}
-          animate={mounted ? {
-            x: sharedPosition - 218  // Centrar respecto al contenedor de 380px
-          } : false}
+          animate={
+            mounted
+              ? {
+                  x: currentPosition - 163,
+                }
+              : false
+          }
           transition={sharedTransition}
           style={{
             left: "50%",
-            transform: "translateX(-50%)"
+            transform: "translateX(-50%)",
           }}
-          {...motionProps}
         >
           <div className="navbar-icon">
-            {activeItem === "rewards" && <GiftCardIcon className="w-6 h-6 text-[#F15A25]" />}
-            {activeItem === "home" && <HomeIcon className="w-6 h-6 text-[#F15A25]" />}
-            {activeItem === "profile" && <UserIcon className="w-6 h-6 text-[#F15A25]" />}
+            {activeItem === "rewards" && (
+              <GiftCardIcon className="w-6 h-6 text-[#F15A25]" />
+            )}
+            {activeItem === "home" && (
+              <HomeIcon className="w-6 h-6 text-[#F15A25]" />
+            )}
+            {activeItem === "profile" && (
+              <UserIcon className="w-6 h-6 text-[#F15A25]" />
+            )}
           </div>
         </motion.div>
 
-        {/* Línea negra que se desplaza con la barra */}
+        {/* Línea negra */}
         <motion.div
           key={`line-${animationKey}`}
           className="navbar-line absolute top-11 w-16 h-1 bg-black rounded-full z-10"
           layoutId="navbar-line"
           initial={false}
-          animate={mounted ? {
-            x: sharedPosition - 218  // Centrar respecto al contenedor de 380px
-          } : false}
+          animate={
+            mounted
+              ? {
+                  x: currentPosition - 165,
+                }
+              : false
+          }
           transition={sharedTransition}
           style={{
             left: "50%",
-            transform: "translateX(-50%)"
+            transform: "translateX(-50%)",
           }}
-          {...motionProps}
         />
 
         {/* Barra con corte dinámico */}
@@ -199,15 +173,15 @@ const ClientNavbar = memo(() => {
             xmlns="http://www.w3.org/2000/svg"
           >
             <defs>
-              <mask id={`bar-mask-${pathname.replace('/', '-')}`}>
+              <mask id={`bar-mask-${pathname.replace("/", "-")}`}>
                 <rect width="380" height="50" fill="white" rx="25" />
 
                 <motion.g
                   key={`hole-${animationKey}`}
                   initial={false}
-                  animate={{ 
-                    x: sharedPosition - 55, 
-                    y: -30 
+                  animate={{
+                    x: currentPosition,
+                    y: -30,
                   }}
                   transition={sharedTransition}
                 >
@@ -216,7 +190,6 @@ const ClientNavbar = memo(() => {
                     fill="black"
                   />
                 </motion.g>
-
               </mask>
             </defs>
             <rect
@@ -224,11 +197,11 @@ const ClientNavbar = memo(() => {
               height="50"
               rx="25"
               fill="#fbe3cf"
-              mask={`url(#bar-mask-${pathname.replace('/', '-')})`}
+              mask={`url(#bar-mask-${pathname.replace("/", "-")})`}
             />
           </svg>
 
-          {/* Botones de navegación */}
+          {/* Botones */}
           <div className="absolute inset-0 flex justify-between items-center px-8">
             {navItems.map((item) => (
               <button
@@ -250,7 +223,7 @@ const ClientNavbar = memo(() => {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 });
 

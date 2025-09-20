@@ -5,7 +5,7 @@ import { validateRegisterForm } from "../../../../lib/validations";
 import { securityLogger, SecurityEventType } from "../../../../lib/securityLogger";
 import { verifyCaptcha } from "../../../../lib/captchaService";
 import { checkAdvancedRateLimit, checkGlobalRateLimit, incrementGlobalCounter, getRateLimitHeaders } from "../../../../lib/rateLimitAdvanced";
-import { detectBotWithHoneypot, validateFormData, generateBrowserFingerprint, detectAttackPatterns, logBotDetection } from "../../../../lib/honeypotService";
+import { detectBotWithHoneypot, validateFormData, generateBrowserFingerprint, detectAttackPatterns, logBotDetection, debugHoneypotDetection } from "../../../../lib/honeypotService";
 
 const prisma = new PrismaClient();
 
@@ -137,7 +137,20 @@ export async function POST(request: NextRequest) {
     }
 
     const botDetection = detectBotWithHoneypot(data, metadata);
-    if (botDetection.isBot) {
+    
+    // Debug information para desarrollo
+    if (process.env.NODE_ENV === 'development') {
+      const debugInfo = debugHoneypotDetection(data, metadata);
+      console.log('🔍 [HONEYPOT DEBUG]', {
+        email: data.email,
+        confidence: debugInfo.confidence,
+        reasons: debugInfo.reasons,
+        debug: debugInfo.debug,
+      });
+    }
+    
+    // Solo bloquear si la confianza es muy alta (0.9 o más)
+    if (botDetection.isBot && botDetection.confidence >= 0.9) {
       logBotDetection(true, botDetection.confidence, botDetection.reasons, metadata);
       
       securityLogger.log(
@@ -147,7 +160,7 @@ export async function POST(request: NextRequest) {
         data.email,
         undefined,
         {
-          reason: 'Bot detected by honeypot',
+          reason: 'Bot detected by honeypot (high confidence)',
           confidence: botDetection.confidence,
           reasons: botDetection.reasons,
           fingerprint: metadata.fingerprint,
@@ -158,6 +171,15 @@ export async function POST(request: NextRequest) {
         { success: false, error: "Actividad sospechosa detectada" },
         { status: 403 }
       );
+    }
+    
+    // Log de advertencia para confianza media
+    if (botDetection.confidence >= 0.5 && botDetection.confidence < 0.9) {
+      console.log('⚠️ [HONEYPOT WARNING] Medium confidence bot detection:', {
+        email: data.email,
+        confidence: botDetection.confidence,
+        reasons: botDetection.reasons,
+      });
     }
 
     // 6. DETECTAR PATRONES DE ATAQUE
@@ -247,6 +269,17 @@ export async function POST(request: NextRequest) {
     // 8. INCREMENTAR CONTADORES GLOBALES
     await incrementGlobalCounter(request, 'register');
 
+    // 9. CREAR SESIÓN DE AUTENTICACIÓN AUTOMÁTICAMENTE
+    const tokenPayload = {
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    };
+
+    const token = await signToken(tokenPayload);
+    await setAuthCookie(token);
+
     // Log del registro exitoso
     securityLogger.log(
       SecurityEventType.REGISTER_SUCCESS,
@@ -259,12 +292,13 @@ export async function POST(request: NextRequest) {
         formTime: Date.now() - startTime,
         fingerprint: metadata.fingerprint,
         botDetectionConfidence: botDetection.confidence,
+        autoLogin: true,
       }
     );
 
     const response = NextResponse.json({
       success: true,
-      message: "Usuario registrado exitosamente.",
+      message: "Usuario registrado exitosamente. Iniciando sesión automáticamente...",
       user: {
         id: user.id,
         name: user.name,
@@ -276,6 +310,7 @@ export async function POST(request: NextRequest) {
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },
+      autoLogin: true,
     });
 
     // Agregar headers de rate limiting

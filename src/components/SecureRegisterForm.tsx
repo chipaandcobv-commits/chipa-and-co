@@ -211,10 +211,22 @@ export default function SecureRegisterForm() {
 
       if (data.success) {
         setMessage(data.message);
-        // Redirect to login after successful registration
-        setTimeout(() => {
-          router.push('/login');
-        }, 2000);
+        
+        // Si el registro incluye auto-login, redirigir según el rol
+        if (data.autoLogin && data.user) {
+          setTimeout(() => {
+            if (data.user.role === 'ADMIN') {
+              router.push('/admin');
+            } else {
+              router.push('/cliente');
+            }
+          }, 1500);
+        } else {
+          // Si no hay auto-login, redirigir al login
+          setTimeout(() => {
+            router.push('/login');
+          }, 2000);
+        }
       } else {
         if (data.errors) {
           setErrors(data.errors);

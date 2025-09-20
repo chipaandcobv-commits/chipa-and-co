@@ -41,7 +41,9 @@ export default function ClientePage() {
         setShowConfirmationModal(false);
         setSelectedReward(null);
         // Desplazar hacia arriba para mostrar el mensaje de éxito
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 100);
         setTimeout(() => setMessage(null), 5000);
       },
       onError: (error) => {
@@ -49,7 +51,9 @@ export default function ClientePage() {
         setShowConfirmationModal(false);
         setSelectedReward(null);
         // Desplazar hacia arriba para mostrar el mensaje de error
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 100);
         setTimeout(() => setMessage(null), 5000);
       },
     });
