@@ -233,12 +233,11 @@ const ClientNavbar = memo(() => {
           layoutId="navbar-circle"
           initial={false}
           animate={mounted ? {
-            x: sharedPosition - 218  // Centrar respecto al contenedor de 380px
+            transform: `translateX(calc(-50% + ${sharedPosition - 218}px))`
           } : false}
           transition={sharedTransition}
           style={{
-            left: "50%",
-            transform: "translateX(-50%)"
+            left: "50%"
           }}
         >
           <div className="navbar-icon">
@@ -255,12 +254,11 @@ const ClientNavbar = memo(() => {
           layoutId="navbar-line"
           initial={false}
           animate={mounted ? {
-            x: sharedPosition - 218  // Centrar respecto al contenedor de 380px
+            transform: `translateX(calc(-50% + ${sharedPosition - 218}px))`
           } : false}
           transition={sharedTransition}
           style={{
-            left: "50%",
-            transform: "translateX(-50%)"
+            left: "50%"
           }}
         />
 
