@@ -8,18 +8,27 @@ import { GiftCardIcon, HomeIcon, UserIcon } from "./icons/Icons";
 const ClientNavbar = memo(() => {
   const pathname = usePathname();
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
-  const [lastValidPosition, setLastValidPosition] = useState("home");
+
+  // Determinar posición inicial según la ruta
+  const getInitialPosition = (path: string) => {
+    if (path.startsWith("/cliente/rewards")) return 0;
+    if (path.startsWith("/cliente/profile")) return 266;
+    return 133; // home
+  };
+
+  const getInitialItem = (path: string) => {
+    if (path.startsWith("/cliente/rewards")) return "rewards";
+    if (path.startsWith("/cliente/profile")) return "profile";
+    return "home";
+  };
+
+  const [prevPosition, setPrevPosition] = useState(getInitialPosition(pathname));
+  const [lastValidPosition, setLastValidPosition] = useState(getInitialItem(pathname));
   const [animationKey, setAnimationKey] = useState(0);
+  const [mounted, setMounted] = useState(false);
 
-  // guardamos también la posición previa
-  const [prevPosition, setPrevPosition] = useState(133);
+  useEffect(() => setMounted(true), []);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Posiciones fijas simples para el navbar
   const getPosition = useCallback((item: string) => {
     switch (item) {
       case "rewards":
@@ -33,62 +42,39 @@ const ClientNavbar = memo(() => {
     }
   }, []);
 
-  // Rastrear la última posición válida
+  // Actualizar posición cuando cambia el pathname
   useLayoutEffect(() => {
-    let newPosition = "home";
-    if (pathname === "/cliente") {
-      newPosition = "home";
-    } else if (pathname.startsWith("/cliente/rewards")) {
-      newPosition = "rewards";
-    } else if (pathname.startsWith("/cliente/profile")) {
-      newPosition = "profile";
-    } else if (pathname.startsWith("/cliente")) {
-      newPosition = "home";
-    }
+    const newItem = pathname.startsWith("/cliente/rewards")
+      ? "rewards"
+      : pathname.startsWith("/cliente/profile")
+      ? "profile"
+      : "home";
 
-    // <-- guardamos la posición previa basada en el lastValidPosition actual
-    setPrevPosition(getPosition(lastValidPosition));
-    setLastValidPosition(newPosition);
-    setAnimationKey((prev) => prev + 1);
-  }, [pathname, getPosition, lastValidPosition]);
+    if (newItem !== lastValidPosition) {
+      setPrevPosition(getPosition(lastValidPosition));
+      setLastValidPosition(newItem);
+      setAnimationKey((prev) => prev + 1);
+    }
+  }, [pathname, lastValidPosition, getPosition]);
 
   const isActive = useCallback(
     (path: string) => {
-      if (path === "/cliente") {
-        return pathname === "/cliente";
-      }
-      if (path === "/cliente/rewards") {
-        return pathname.startsWith("/cliente/rewards");
-      }
-      if (path === "/cliente/profile") {
-        return pathname.startsWith("/cliente/profile");
-      }
+      if (path === "/cliente") return pathname === "/cliente";
+      if (path === "/cliente/rewards") return pathname.startsWith("/cliente/rewards");
+      if (path === "/cliente/profile") return pathname.startsWith("/cliente/profile");
       return false;
     },
     [pathname]
   );
 
   const handleButtonClick = useCallback(
-    (path: string) => {
-      router.push(path);
-    },
+    (path: string) => router.push(path),
     [router]
   );
 
-  const getActiveItem = () => {
-    if (isActive("/cliente/rewards")) return "rewards";
-    if (isActive("/cliente/profile")) return "profile";
-    if (isActive("/cliente")) return "home";
-    return "home";
-  };
+  const activeItem = lastValidPosition;
+  const currentPosition = useMemo(() => getPosition(lastValidPosition), [lastValidPosition, getPosition]);
 
-  const activeItem = getActiveItem();
-
-  const currentPosition = useMemo(() => {
-    return getPosition(lastValidPosition);
-  }, [lastValidPosition, getPosition]);
-
-  // Configuración de transición
   const sharedTransition = {
     type: "spring" as const,
     stiffness: 400,
@@ -97,83 +83,46 @@ const ClientNavbar = memo(() => {
   };
 
   const navItems = [
-    {
-      id: "rewards",
-      icon: <GiftCardIcon className="w-6 h-6" />,
-      path: "/cliente/rewards",
-    },
-    {
-      id: "home",
-      icon: <HomeIcon className="w-6 h-6" />,
-      path: "/cliente",
-    },
-    {
-      id: "profile",
-      icon: <UserIcon className="w-6 h-6" />,
-      path: "/cliente/profile",
-    },
+    { id: "rewards", icon: <GiftCardIcon className="w-6 h-6" />, path: "/cliente/rewards" },
+    { id: "home", icon: <HomeIcon className="w-6 h-6" />, path: "/cliente" },
+    { id: "profile", icon: <UserIcon className="w-6 h-6" />, path: "/cliente/profile" },
   ];
 
-  // DEBUG (temporal): ver posiciones en consola
-  // console.log("prevPosition", prevPosition, "currentPosition", currentPosition);
-
   return (
-    // <-- quité layoutRoot aquí (no cambia estilos visuales)
-    <motion.div
-      className="client-navbar-floating fixed bottom-4 left-1/2 -translate-x-1/2 z-50"
-    >
+    <motion.div className="client-navbar-floating fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
       <div className="relative w-[380px] h-[50px]">
-       {/* Círculo flotante */}
+        {/* Círculo flotante */}
         <motion.div
           className="navbar-circle absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
-          initial={{x: prevPosition - 163, y: 0}}
+          initial={mounted ? { x: prevPosition - 163, y: 0 } : false}
           animate={{ x: currentPosition - 163, y: 0 }}
           transition={sharedTransition}
-          style={{
-            left: "50%",
-            transform: "translateX(-50%)",
-            willChange: "transform",
-          }}
+          style={{ left: "50%", transform: "translateX(-50%)", willChange: "transform" }}
         >
           <div className="navbar-icon">
-            {activeItem === "rewards" && (
-              <GiftCardIcon className="w-6 h-6 text-[#F15A25]" />
-            )}
-            {activeItem === "home" && (
-              <HomeIcon className="w-6 h-6 text-[#F15A25]" />
-            )}
-            {activeItem === "profile" && (
-              <UserIcon className="w-6 h-6 text-[#F15A25]" />
-            )}
+            {activeItem === "rewards" && <GiftCardIcon className="w-6 h-6 text-[#F15A25]" />}
+            {activeItem === "home" && <HomeIcon className="w-6 h-6 text-[#F15A25]" />}
+            {activeItem === "profile" && <UserIcon className="w-6 h-6 text-[#F15A25]" />}
           </div>
         </motion.div>
 
         {/* Línea negra */}
         <motion.div
           className="navbar-line absolute top-11 w-16 h-1 bg-black rounded-full z-10"
-          initial={{x: prevPosition - 163, y: 0}}
+          initial={mounted ? { x: prevPosition - 163, y: 0 } : false}
           animate={{ x: currentPosition - 165, y: 0 }}
           transition={sharedTransition}
-          style={{
-            left: "50%",
-            transform: "translateX(-50%)",
-            willChange: "transform",
-          }}
+          style={{ left: "50%", transform: "translateX(-50%)", willChange: "transform" }}
         />
 
         {/* Barra con corte dinámico */}
         <div className="relative w-full h-full rounded-full shadow-lg overflow-hidden">
-          <svg
-            className="absolute inset-0 w-full h-full"
-            viewBox="0 0 380 50"
-            xmlns="http://www.w3.org/2000/svg"
-          >
+          <svg className="absolute inset-0 w-full h-full" viewBox="0 0 380 50" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <mask id={`bar-mask-${pathname.replace("/", "-")}`}>
                 <rect width="380" height="50" fill="white" rx="25" />
-
                 <motion.g
-                  initial={{ x: prevPosition, y: -30 }}
+                  initial={mounted ? { x: prevPosition, y: -30 } : false}
                   animate={{ x: currentPosition, y: -30 }}
                   transition={sharedTransition}
                 >
@@ -184,13 +133,7 @@ const ClientNavbar = memo(() => {
                 </motion.g>
               </mask>
             </defs>
-            <rect
-              width="380"
-              height="50"
-              rx="25"
-              fill="#fbe3cf"
-              mask={`url(#bar-mask-${pathname.replace("/", "-")})`}
-            />
+            <rect width="380" height="50" rx="25" fill="#fbe3cf" mask={`url(#bar-mask-${pathname.replace("/", "-")})`} />
           </svg>
 
           {/* Botones */}
@@ -201,13 +144,7 @@ const ClientNavbar = memo(() => {
                 onClick={() => handleButtonClick(item.path)}
                 className="z-20 p-4 -m-4 flex items-center justify-center min-w-[60px] min-h-[60px]"
               >
-                <div
-                  className={`transition-all duration-300 ${
-                    activeItem !== item.id
-                      ? "text-gray-600 opacity-100"
-                      : "text-[#F15A25] opacity-0"
-                  }`}
-                >
+                <div className={`transition-all duration-300 ${activeItem !== item.id ? "text-gray-600 opacity-100" : "text-[#F15A25] opacity-0"}`}>
                   {item.icon}
                 </div>
               </button>
@@ -222,3 +159,4 @@ const ClientNavbar = memo(() => {
 ClientNavbar.displayName = "ClientNavbar";
 
 export default ClientNavbar;
+
