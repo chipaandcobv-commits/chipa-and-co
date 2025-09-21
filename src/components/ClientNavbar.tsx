@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, memo, useMemo, useState, useLayoutEffect, useEffect } from "react";
+import { useCallback, memo, useMemo, useState, useLayoutEffect, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { GiftCardIcon, HomeIcon, UserIcon } from "./icons/Icons";
@@ -12,8 +12,8 @@ const ClientNavbar = memo(() => {
   const [lastValidPosition, setLastValidPosition] = useState("home");
   const [animationKey, setAnimationKey] = useState(0);
 
-  // guardamos también la posición previa
-  const [prevPosition, setPrevPosition] = useState(133);
+  // Cambio 1: Usar useRef para prevPosition para evitar re-renders
+  const prevPositionRef = useRef(133);
 
   useEffect(() => {
     setMounted(true);
@@ -46,10 +46,12 @@ const ClientNavbar = memo(() => {
       newPosition = "home";
     }
 
-    // <-- guardamos la posición previa basada en el lastValidPosition actual
-    setPrevPosition(getPosition(lastValidPosition));
-    setLastValidPosition(newPosition);
-    setAnimationKey((prev) => prev + 1);
+    // Cambio 2: Solo actualizar si realmente cambió la posición
+    if (newPosition !== lastValidPosition) {
+      prevPositionRef.current = getPosition(lastValidPosition);
+      setLastValidPosition(newPosition);
+      setAnimationKey((prev) => prev + 1);
+    }
   }, [pathname, getPosition, lastValidPosition]);
 
   const isActive = useCallback(
@@ -114,19 +116,16 @@ const ClientNavbar = memo(() => {
     },
   ];
 
-  // DEBUG (temporal): ver posiciones en consola
-  // console.log("prevPosition", prevPosition, "currentPosition", currentPosition);
-
   return (
-    // <-- quité layoutRoot aquí (no cambia estilos visuales)
     <motion.div
       className="client-navbar-floating fixed bottom-4 left-1/2 -translate-x-1/2 z-50"
     >
       <div className="relative w-[380px] h-[50px]">
-       {/* Círculo flotante */}
+       {/* Círculo flotante - Cambio 3: Usar key único para forzar re-animación */}
         <motion.div
+          key={`circle-${animationKey}`}
           className="navbar-circle absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
-          initial={{x: prevPosition - 163, y: 0}}
+          initial={{x: prevPositionRef.current - 163, y: 0}}
           animate={{ x: currentPosition - 163, y: 0 }}
           transition={sharedTransition}
           style={{
@@ -148,10 +147,11 @@ const ClientNavbar = memo(() => {
           </div>
         </motion.div>
 
-        {/* Línea negra */}
+        {/* Línea negra - Cambio 4: Usar key único para forzar re-animación */}
         <motion.div
+          key={`line-${animationKey}`}
           className="navbar-line absolute top-11 w-16 h-1 bg-black rounded-full z-10"
-          initial={{x: prevPosition - 163, y: 0}}
+          initial={{x: prevPositionRef.current - 163, y: 0}}
           animate={{ x: currentPosition - 165, y: 0 }}
           transition={sharedTransition}
           style={{
@@ -169,11 +169,13 @@ const ClientNavbar = memo(() => {
             xmlns="http://www.w3.org/2000/svg"
           >
             <defs>
-              <mask id={`bar-mask-${pathname.replace("/", "-")}`}>
+              {/* Cambio 5: Usar animationKey en lugar de pathname para el ID */}
+              <mask id={`bar-mask-${animationKey}`}>
                 <rect width="380" height="50" fill="white" rx="25" />
 
                 <motion.g
-                  initial={{ x: prevPosition, y: -30 }}
+                  key={`mask-${animationKey}`}
+                  initial={{ x: prevPositionRef.current, y: -30 }}
                   animate={{ x: currentPosition, y: -30 }}
                   transition={sharedTransition}
                 >
@@ -189,7 +191,7 @@ const ClientNavbar = memo(() => {
               height="50"
               rx="25"
               fill="#fbe3cf"
-              mask={`url(#bar-mask-${pathname.replace("/", "-")})`}
+              mask={`url(#bar-mask-${animationKey})`}
             />
           </svg>
 
