@@ -61,23 +61,18 @@ export async function POST(request: NextRequest) {
         throw new Error("Premio agotado");
       }
 
-      // Verificar si el usuario ya tiene un premio pendiente o vencido del mismo tipo
-      const existingClaim = await tx.rewardClaim.findFirst({
+      // Verificar si el usuario ya tiene un premio pendiente del mismo tipo
+      // Permitimos canjear premios expirados, solo impedimos si hay uno pendiente
+      const existingPendingClaim = await tx.rewardClaim.findFirst({
         where: {
           rewardId,
           userId: currentUser.userId,
-          status: {
-            in: ["PENDING", "EXPIRED"],
-          },
+          status: "PENDING",
         },
       });
 
-      if (existingClaim) {
-        if (existingClaim.status === "PENDING") {
-          throw new Error("Ya tienes un premio pendiente de este tipo");
-        } else {
-          throw new Error("Ya tienes un premio vencido de este tipo");
-        }
+      if (existingPendingClaim) {
+        throw new Error("Ya tienes un premio pendiente de este tipo. Debes esperar a que sea validado o expire antes de canjear otro del mismo tipo");
       }
 
       // Crear canje con fecha de vencimiento (24 horas desde ahora)
