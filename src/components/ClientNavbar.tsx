@@ -173,7 +173,6 @@ const ClientNavbar = memo(() => {
                 <rect width="380" height="50" fill="white" rx="25" />
 
                 <motion.g
-                  key={`hole-${animationKey}`}
                   initial={{ x: prevPosition, y: -30 }}
                   animate={{ x: currentPosition, y: -30 }}
                   transition={sharedTransition}
