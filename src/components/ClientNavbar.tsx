@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, memo, useMemo, useState, useLayoutEffect, useEffect, useRef } from "react";
+import { useCallback, memo, useMemo, useState, useLayoutEffect, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { GiftCardIcon, HomeIcon, UserIcon } from "./icons/Icons";
@@ -12,8 +12,11 @@ const ClientNavbar = memo(() => {
   const [lastValidPosition, setLastValidPosition] = useState("home");
   const [animationKey, setAnimationKey] = useState(0);
 
-  // Cambio 1: Usar useRef para prevPosition para evitar re-renders
-  const prevPositionRef = useRef(133);
+  // guardamos también la posición previa
+  const [prevPosition, setPrevPosition] = useState(133);
+  
+  // Estado adicional para forzar re-render en transiciones al centro
+  const [forceRerender, setForceRerender] = useState(0);
 
   useEffect(() => {
     setMounted(true);
@@ -46,12 +49,16 @@ const ClientNavbar = memo(() => {
       newPosition = "home";
     }
 
-    // Cambio 2: Solo actualizar si realmente cambió la posición
-    if (newPosition !== lastValidPosition) {
-      prevPositionRef.current = getPosition(lastValidPosition);
-      setLastValidPosition(newPosition);
-      setAnimationKey((prev) => prev + 1);
+    // <-- guardamos la posición previa basada en el lastValidPosition actual
+    setPrevPosition(getPosition(lastValidPosition));
+    
+    // FIX ESPECÍFICO: Si vamos al centro desde cualquier lado, forzar re-render
+    if (newPosition === "home" && lastValidPosition !== "home") {
+      setForceRerender(prev => prev + 1);
     }
+    
+    setLastValidPosition(newPosition);
+    setAnimationKey((prev) => prev + 1);
   }, [pathname, getPosition, lastValidPosition]);
 
   const isActive = useCallback(
@@ -90,12 +97,26 @@ const ClientNavbar = memo(() => {
     return getPosition(lastValidPosition);
   }, [lastValidPosition, getPosition]);
 
-  // Configuración de transición
-  const sharedTransition = {
-    type: "spring" as const,
-    stiffness: 400,
-    damping: 35,
-    duration: 0.5,
+  // Configuración de transición - MODIFICADA para el caso específico del centro
+  const getTransitionConfig = (isGoingToCenter: boolean) => {
+    if (isGoingToCenter) {
+      return {
+        type: "spring" as const,
+        stiffness: 300,
+        damping: 25,
+        duration: 0.6,
+        // Forzar que la animación siempre se ejecute
+        restSpeed: 0.01,
+        restDelta: 0.01
+      };
+    }
+    
+    return {
+      type: "spring" as const,
+      stiffness: 400,
+      damping: 35,
+      duration: 0.5,
+    };
   };
 
   const navItems = [
@@ -116,18 +137,25 @@ const ClientNavbar = memo(() => {
     },
   ];
 
+  // Determinar si estamos yendo al centro
+  const isGoingToCenter = lastValidPosition === "home" && prevPosition !== 133;
+  const transitionConfig = getTransitionConfig(isGoingToCenter);
+
+  // DEBUG (temporal): ver posiciones en consola
+  // console.log("prevPosition", prevPosition, "currentPosition", currentPosition, "isGoingToCenter", isGoingToCenter);
+
   return (
     <motion.div
       className="client-navbar-floating fixed bottom-4 left-1/2 -translate-x-1/2 z-50"
     >
       <div className="relative w-[380px] h-[50px]">
-       {/* Círculo flotante - Cambio 3: Usar key único para forzar re-animación */}
+       {/* Círculo flotante - CLAVE: layoutId único cuando va al centro */}
         <motion.div
-          key={`circle-${animationKey}`}
+          layoutId={isGoingToCenter ? `circle-center-${forceRerender}` : "navbar-circle"}
           className="navbar-circle absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
-          initial={{x: prevPositionRef.current - 163, y: 0}}
+          initial={{x: prevPosition - 163, y: 0}}
           animate={{ x: currentPosition - 163, y: 0 }}
-          transition={sharedTransition}
+          transition={transitionConfig}
           style={{
             left: "50%",
             transform: "translateX(-50%)",
@@ -147,13 +175,13 @@ const ClientNavbar = memo(() => {
           </div>
         </motion.div>
 
-        {/* Línea negra - Cambio 4: Usar key único para forzar re-animación */}
+        {/* Línea negra - CLAVE: layoutId único cuando va al centro */}
         <motion.div
-          key={`line-${animationKey}`}
+          layoutId={isGoingToCenter ? `line-center-${forceRerender}` : "navbar-line"}
           className="navbar-line absolute top-11 w-16 h-1 bg-black rounded-full z-10"
-          initial={{x: prevPositionRef.current - 163, y: 0}}
+          initial={{x: prevPosition - 163, y: 0}}
           animate={{ x: currentPosition - 165, y: 0 }}
-          transition={sharedTransition}
+          transition={transitionConfig}
           style={{
             left: "50%",
             transform: "translateX(-50%)",
@@ -169,15 +197,13 @@ const ClientNavbar = memo(() => {
             xmlns="http://www.w3.org/2000/svg"
           >
             <defs>
-              {/* Cambio 5: Usar animationKey en lugar de pathname para el ID */}
-              <mask id={`bar-mask-${animationKey}`}>
+              <mask id={`bar-mask-${pathname.replace("/", "-")}-${forceRerender}`}>
                 <rect width="380" height="50" fill="white" rx="25" />
 
                 <motion.g
-                  key={`mask-${animationKey}`}
-                  initial={{ x: prevPositionRef.current, y: -30 }}
+                  initial={{ x: prevPosition, y: -30 }}
                   animate={{ x: currentPosition, y: -30 }}
-                  transition={sharedTransition}
+                  transition={transitionConfig}
                 >
                   <path
                     d="M110 30C85 30 85.5 70 55 70C24.5 70 25 30 0 30C0 10 35 0 55 0C75 0 110 13 110 30Z"
@@ -191,7 +217,7 @@ const ClientNavbar = memo(() => {
               height="50"
               rx="25"
               fill="#fbe3cf"
-              mask={`url(#bar-mask-${animationKey})`}
+              mask={`url(#bar-mask-${pathname.replace("/", "-")}-${forceRerender})`}
             />
           </svg>
 
