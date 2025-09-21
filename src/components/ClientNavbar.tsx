@@ -126,6 +126,7 @@ const ClientNavbar = memo(() => {
        {/* Círculo flotante */}
         <motion.div
           className="navbar-circle absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
+          initial={{x: prevPosition - 163, y: 0}}
           animate={{ x: currentPosition - 163, y: 0 }}
           transition={sharedTransition}
           style={{
@@ -150,6 +151,7 @@ const ClientNavbar = memo(() => {
         {/* Línea negra */}
         <motion.div
           className="navbar-line absolute top-11 w-16 h-1 bg-black rounded-full z-10"
+          initial={{x: prevPosition - 163, y: 0}}
           animate={{ x: currentPosition - 165, y: 0 }}
           transition={sharedTransition}
           style={{
