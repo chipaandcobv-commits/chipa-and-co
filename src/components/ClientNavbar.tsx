@@ -12,24 +12,45 @@ const ClientNavbar = memo(() => {
   const [lastValidPosition, setLastValidPosition] = useState("home");
   const [animationKey, setAnimationKey] = useState(0);
 
+  // guardamos también la posición previa
+  const [prevPosition, setPrevPosition] = useState(133);
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  // Posiciones fijas simples para el navbar
+  const getPosition = useCallback((item: string) => {
+    switch (item) {
+      case "rewards":
+        return 0;
+      case "home":
+        return 133;
+      case "profile":
+        return 266;
+      default:
+        return 133;
+    }
+  }, []);
+
   // Rastrear la última posición válida
   useLayoutEffect(() => {
+    let newPosition = "home";
     if (pathname === "/cliente") {
-      setLastValidPosition("home");
+      newPosition = "home";
     } else if (pathname.startsWith("/cliente/rewards")) {
-      setLastValidPosition("rewards");
+      newPosition = "rewards";
     } else if (pathname.startsWith("/cliente/profile")) {
-      setLastValidPosition("profile");
+      newPosition = "profile";
     } else if (pathname.startsWith("/cliente")) {
-      setLastValidPosition("home");
+      newPosition = "home";
     }
-    // Forzar nueva animación incrementando la key
+
+    // <-- guardamos la posición previa basada en el lastValidPosition actual
+    setPrevPosition(getPosition(lastValidPosition));
+    setLastValidPosition(newPosition);
     setAnimationKey((prev) => prev + 1);
-  }, [pathname]);
+  }, [pathname, getPosition, lastValidPosition]);
 
   const isActive = useCallback(
     (path: string) => {
@@ -63,20 +84,6 @@ const ClientNavbar = memo(() => {
 
   const activeItem = getActiveItem();
 
-  // Posiciones fijas simples para el navbar
-  const getPosition = useCallback((item: string) => {
-    switch (item) {
-      case "rewards":
-        return 0;
-      case "home":
-        return 133;
-      case "profile":
-        return 266;
-      default:
-        return 133;
-    }
-  }, []);
-
   const currentPosition = useMemo(() => {
     return getPosition(lastValidPosition);
   }, [lastValidPosition, getPosition]);
@@ -107,29 +114,24 @@ const ClientNavbar = memo(() => {
     },
   ];
 
+  // DEBUG (temporal): ver posiciones en consola
+  // console.log("prevPosition", prevPosition, "currentPosition", currentPosition);
+
   return (
+    // <-- quité layoutRoot aquí (no cambia estilos visuales)
     <motion.div
       className="client-navbar-floating fixed bottom-4 left-1/2 -translate-x-1/2 z-50"
-      layoutRoot
     >
       <div className="relative w-[380px] h-[50px]">
-        {/* Círculo flotante */}
+       {/* Círculo flotante */}
         <motion.div
-          key={`circle-${animationKey}`}
           className="navbar-circle absolute -top-7 w-14 h-14 bg-peach-200 rounded-full flex items-center justify-center shadow-md z-20"
-          layoutId="navbar-circle"
-          initial={false}
-          animate={
-            mounted
-              ? {
-                  x: currentPosition - 163,
-                }
-              : false
-          }
+          animate={{ x: currentPosition - 163, y: 0 }}
           transition={sharedTransition}
           style={{
             left: "50%",
             transform: "translateX(-50%)",
+            willChange: "transform",
           }}
         >
           <div className="navbar-icon">
@@ -147,21 +149,13 @@ const ClientNavbar = memo(() => {
 
         {/* Línea negra */}
         <motion.div
-          key={`line-${animationKey}`}
           className="navbar-line absolute top-11 w-16 h-1 bg-black rounded-full z-10"
-          layoutId="navbar-line"
-          initial={false}
-          animate={
-            mounted
-              ? {
-                  x: currentPosition - 165,
-                }
-              : false
-          }
+          animate={{ x: currentPosition - 165, y: 0 }}
           transition={sharedTransition}
           style={{
             left: "50%",
             transform: "translateX(-50%)",
+            willChange: "transform",
           }}
         />
 
@@ -178,11 +172,8 @@ const ClientNavbar = memo(() => {
 
                 <motion.g
                   key={`hole-${animationKey}`}
-                  initial={false}
-                  animate={{
-                    x: currentPosition,
-                    y: -30,
-                  }}
+                  initial={{ x: prevPosition, y: -30 }}
+                  animate={{ x: currentPosition, y: -30 }}
                   transition={sharedTransition}
                 >
                   <path
