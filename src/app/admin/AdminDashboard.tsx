@@ -59,6 +59,11 @@ export default function AdminDashboard() {
     fetchAnalytics();
   }, [selectedProductId]);
 
+  // Scroll automático al inicio de página cuando se carga el dashboard
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   const fetchAnalytics = async () => {
     try {
       const url = selectedProductId 

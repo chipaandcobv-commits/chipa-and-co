@@ -151,7 +151,7 @@ export default function OrdersManagement() {
         // Crear elemento de descarga
         const a = document.createElement('a');
         a.href = url;
-        a.download = `backup-ordenes-${new Date().toISOString().split('T')[0]}.xlsx`;
+        a.download = `backup-completo-${new Date().toISOString().split('T')[0]}.xlsx`;
         document.body.appendChild(a);
         a.click();
         
@@ -159,7 +159,7 @@ export default function OrdersManagement() {
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
         
-        setMessage(`Backup completado: Se descargó el archivo Excel con ${orders.length} órdenes`);
+        setMessage(`Backup completado: Se descargó el archivo Excel con ${orders.length} órdenes y premios canjeados`);
         fetchData(); // Refresh data
         setTimeout(() => setMessage(""), 5000);
       } else {
