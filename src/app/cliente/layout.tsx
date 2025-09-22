@@ -5,6 +5,7 @@ import ClientNavbar from "../../components/ClientNavbar";
 export const metadata: Metadata = {
   title: "Chipa&Co - Cliente",
   description: "Panel del cliente - Chipa&Co",
+
 };
 
 export default function ClienteLayout({

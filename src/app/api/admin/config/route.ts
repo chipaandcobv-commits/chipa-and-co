@@ -15,7 +15,7 @@ export async function GET() {
     const defaultConfigs = {
       pointsPerPeso: "1", // 1 peso = 1 punto por defecto
       pointsLimit: "10000", // Límite de puntos por defecto
-      systemName: "Chipa&Co - Sistema de Fidelización",
+      systemName: "Chipa&Co",
       welcomeMessage: "¡Bienvenido a Chipa&Co! Presenta tu DNI para ganar puntos.",
     };
 

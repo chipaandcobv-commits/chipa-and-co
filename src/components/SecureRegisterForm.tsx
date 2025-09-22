@@ -251,7 +251,7 @@ export default function SecureRegisterForm() {
             Crear Cuenta
           </h2>
           <p className="mt-2 text-sm text-gray-600 text-center">
-            Únete a nuestro sistema de fidelización
+            Únete a nuestra web de Chipa&Co!
           </p>
         </div>
 

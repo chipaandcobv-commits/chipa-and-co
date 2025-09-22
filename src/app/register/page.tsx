@@ -103,7 +103,7 @@ export default function RegisterPage() {
           </div>
           <h2 className="text-3xl font-bold text-black">Crear Cuenta</h2>
           <p className="mt-2 text-sm text-gray-600">
-            Únete al programa de fidelización de Chipa&Co
+            Únete a nuestra web de Chipa&Co!
           </p>
         </div>
 

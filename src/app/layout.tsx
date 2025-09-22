@@ -28,7 +28,7 @@ const delaGothicOne = Dela_Gothic_One({
 });
 
 export const metadata: Metadata = {
-  title: "Chipa&Co - Sistema de Fidelización",
+  title: "Chipa&Co",
   description: "Sistema de fidelización de Chipa&Co - Gana puntos y canjea premios",
 };
 

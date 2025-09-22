@@ -266,7 +266,7 @@ export default function CompleteProfilePage() {
           {/* Footer */}
           <div className="text-center space-y-4">
             <p className="text-sm text-gray-600">
-              Al completar tu perfil, podrás acceder a todos los beneficios del programa de fidelización.
+              Al completar tu perfil, podrás acceder a todos los beneficios de la aplicación.
             </p>
             <div className="pt-4 border-t border-gray-300">
               <p className="text-sm text-gray-600 mb-3">
