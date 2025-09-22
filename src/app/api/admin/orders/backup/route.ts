@@ -174,7 +174,7 @@ export async function POST(request: NextRequest) {
     const approvedClaims = rewardClaims.filter(claim => claim.status === 'APPROVED').length;
     const rejectedClaims = rewardClaims.filter(claim => claim.status === 'REJECTED').length;
     const expiredClaims = rewardClaims.filter(claim => claim.status === 'EXPIRED').length;
-    const uniqueRewardClients = new Set(rewardClaims.map(claim => claim.clientDni)).size;
+    const uniqueRewardClients = new Set(rewardClaims.map(claim => claim.user.dni)).size;
 
     const statsData = [
       // Estadísticas de órdenes
