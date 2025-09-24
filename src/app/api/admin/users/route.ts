@@ -13,11 +13,14 @@ export async function GET(request: NextRequest) {
     const role = url.searchParams.get("role");
     const search = url.searchParams.get("search");
 
-    const where: any = {};
+    const where: any = {
+      role: "USER", // Solo mostrar usuarios normales, no administradores
+    };
 
-    if (role && ["USER", "ADMIN"].includes(role)) {
-      where.role = role;
-    }
+    // Remover el filtro de rol ya que siempre filtramos por USER
+    // if (role && ["USER", "ADMIN"].includes(role)) {
+    //   where.role = role;
+    // }
 
     if (search) {
       where.OR = [

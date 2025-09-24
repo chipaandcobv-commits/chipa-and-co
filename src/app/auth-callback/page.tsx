@@ -31,20 +31,42 @@ export default function AuthCallback() {
             const user = userData.user;
 
             if (user.needsProfileCompletion) {
-              // Usuario necesita completar perfil
+              // Usuario necesita completar perfil - redirigir directamente sin verificar sesión
+              console.log("🔄 [AUTH-CALLBACK] User needs profile completion, redirecting to complete-profile");
               router.push("/complete-profile");
             } else {
               // Usuario completo, redirigir según rol
               const target = user.role === "ADMIN" ? "/admin" : "/cliente";
+              console.log("✅ [AUTH-CALLBACK] User complete, redirecting to:", target);
               router.push(target);
             }
           } else {
-            // Error al obtener datos del usuario
-            console.error("Error getting user data:", userData.error);
-            router.push("/login");
+            // Usuario no encontrado en BD pero tiene sesión de Google - crear usuario
+            console.log("🆕 [AUTH-CALLBACK] User not found in DB but has Google session, creating user");
+            
+            // Crear usuario automáticamente
+            const createResponse = await fetch("/api/auth/google-complete", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+            });
+
+            if (createResponse.ok) {
+              const createData = await createResponse.json();
+              if (createData.success) {
+                // Usuario creado exitosamente, redirigir a completar perfil
+                console.log("✅ [AUTH-CALLBACK] User created successfully, redirecting to complete-profile");
+                router.push("/complete-profile");
+              } else {
+                console.error("❌ [AUTH-CALLBACK] Error creating user:", createData.error);
+                router.push("/login");
+              }
+            } else {
+              console.error("❌ [AUTH-CALLBACK] Error creating user");
+              router.push("/login");
+            }
           }
         } catch (error) {
-          console.error("Error in auth callback:", error);
+          console.error("❌ [AUTH-CALLBACK] Error in auth callback:", error);
           router.push("/login");
         }
       }

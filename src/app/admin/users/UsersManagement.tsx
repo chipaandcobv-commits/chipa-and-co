@@ -27,7 +27,6 @@ export default function UsersManagement() {
   const [loading, setLoading] = useState(true);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [roleFilter, setRoleFilter] = useState<"ALL" | "USER" | "ADMIN">("ALL");
   const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
   const [resettingPasswordUserId, setResettingPasswordUserId] = useState<string | null>(null);
   const [showConfirmResetModal, setShowConfirmResetModal] = useState(false);
@@ -47,7 +46,6 @@ export default function UsersManagement() {
     
     try {
       const params = new URLSearchParams();
-      if (roleFilter !== "ALL") params.append("role", roleFilter);
       if (searchTerm) params.append("search", searchTerm);
 
       const response = await fetch(`/api/admin/users?${params}`);
@@ -166,8 +164,7 @@ export default function UsersManagement() {
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (user.dni || '').toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = roleFilter === "ALL" || user.role === roleFilter;
-    return matchesSearch && matchesRole;
+    return matchesSearch;
   });
 
   return (

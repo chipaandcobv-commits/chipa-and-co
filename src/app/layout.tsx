@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Urbanist, Dela_Gothic_One } from "next/font/google";
+import { Geist, Geist_Mono, Urbanist, Dela_Gothic_One, Dancing_Script } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth";
 import ConditionalNavbar from "@/components/ConditionalNavbar";
@@ -27,6 +27,12 @@ const delaGothicOne = Dela_Gothic_One({
   weight: "400",
 });
 
+const dancingScript = Dancing_Script({
+  variable: "--dancing-script",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
 export const metadata: Metadata = {
   title: "Chipa&Co",
   description: "Sistema de fidelización de Chipa&Co - Gana puntos y canjea premios",
@@ -40,7 +46,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${urbanist.variable} ${delaGothicOne.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${urbanist.variable} ${delaGothicOne.variable} ${dancingScript.variable} antialiased`}
       >
         <NextAuthSessionProvider>
           <AuthProvider>

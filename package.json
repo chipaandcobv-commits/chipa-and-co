@@ -17,6 +17,7 @@
     "create-admin-quick": "tsx src/scripts/create-admin-secure.ts --quick",
     "create-sample-rewards": "tsx src/scripts/create-sample-rewards.ts",
     "create-test-user": "tsx src/scripts/create-test-user.ts",
+    "init-system-config": "tsx src/scripts/init-system-config.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

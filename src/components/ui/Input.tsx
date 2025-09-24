@@ -9,7 +9,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, icon, rightIcon, className = "", placeholder, value, ...props }, ref) => {
+  ({ label, error, icon, rightIcon, className = "", placeholder, value, style, ...props }, ref) => {
     const inputClasses = `
       w-full px-4 py-3 text-gray-900 bg-[#FFE4CC] border border-gray-400 rounded-lg
       focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent
@@ -43,11 +43,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             value={value}
             {...props}
             className={inputClasses}
-            style={{
-              ...props.style,
-            }}
+            style={style}
           />
-
 
           {rightIcon && (
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">

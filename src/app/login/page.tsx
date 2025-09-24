@@ -87,7 +87,7 @@ export default function LoginPage() {
       <div className="max-w-md lg:max-w-7xl w-full space-y-8">
         {/* Header */}
         <div className="text-center lg:max-w-md lg:mx-auto">
-          <div className="mx-auto mb-4 flex justify-center">
+          <div className="mx-auto mb-0 flex justify-center">
             <Image
               src="/chipa-logo.png"
               alt="Chipa&Co Logo"
@@ -97,6 +97,30 @@ export default function LoginPage() {
               priority
               style={{ width: "auto", height: "auto" }}
             />
+          </div>
+          <div className="mb-10 relative">
+            <h1 
+              className="text-4xl text-[#F15A25] font-dancing-script font-extrabold tracking-wide"
+              style={{ 
+                fontFamily: 'var(--dancing-script)',
+                fontWeight: '700',
+                WebkitTextStroke: '10px rgb(243, 243, 243)',
+                color: '#F15A25',
+                textShadow: '8px 8px 10px rgba(0,0,0,0.7)'
+              }}
+            >
+              Boulevard
+            </h1>
+            <h1 
+              className="text-4xl text-[#F15A25] font-dancing-script font-light tracking-wide absolute top-0 left-0 w-full"
+                style={{ 
+                  fontFamily: 'var(--dancing-script)',
+                  fontWeight: '400',
+                  WebkitTextStroke: '2px #F15A25'
+                }}
+            >
+              Boulevard
+            </h1>
           </div>
           <h2 className="text-3xl font-bold text-black">Iniciar Sesión</h2>
           <p className="mt-2 text-sm text-gray-600">
@@ -171,8 +195,9 @@ export default function LoginPage() {
             {/* Forgot Password Link */}
             <div className="text-center">
               <button
+                type="button"
                 onClick={() => setShowForgotPasswordModal(true)}
-                className="text-sm text-[#F15A25] hover:text-[#E55A1A] underline transition-colors"
+                className="text-sm text-[#F15A25] hover:text-[#FF6B3A] underline transition-colors duration-150"
               >
                 ¿Olvidaste tu contraseña?
               </button>

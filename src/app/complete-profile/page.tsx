@@ -26,13 +26,29 @@ export default function CompleteProfilePage() {
     if (status === "loading") return; // Aún cargando
 
     if (!session) {
-      router.replace("/login");
+      // Solo redirigir a login si no es un usuario de Google
+      console.log("🔄 [COMPLETE-PROFILE] No session, checking if Google user...");
+      
+      // Verificar si hay parámetros de Google OAuth en la URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const isGoogleCallback = urlParams.get('callbackUrl')?.includes('auth-callback') || 
+                              window.location.pathname === '/complete-profile';
+      
+      if (!isGoogleCallback) {
+        console.log("🔄 [COMPLETE-PROFILE] Not Google callback, redirecting to login");
+        router.replace("/login");
+        return;
+      }
+      
+      // Si es callback de Google, esperar un poco más para que la sesión se establezca
+      console.log("⏳ [COMPLETE-PROFILE] Google callback detected, waiting for session...");
       return;
     }
 
     // Verificar si el usuario ya completó su perfil
     if (session.user && !session.user.needsProfileCompletion) {
       const target = session.user.role === "ADMIN" ? "/admin" : "/cliente";
+      console.log("✅ [COMPLETE-PROFILE] Profile already complete, redirecting to:", target);
       router.replace(target);
     }
   }, [session, status, router]);

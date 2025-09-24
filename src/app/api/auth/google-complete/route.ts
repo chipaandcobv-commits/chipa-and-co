@@ -37,10 +37,49 @@ export async function POST(request: NextRequest) {
     });
 
     if (!user) {
-      return NextResponse.json(
-        { success: false, error: "Usuario no encontrado" },
-        { status: 404 }
-      );
+      // Usuario no encontrado - crear usuario automáticamente para Google OAuth
+      console.log("🆕 [GOOGLE-COMPLETE] User not found, creating new Google user");
+      
+      try {
+        const newUser = await prisma.user.create({
+          data: {
+            name: session.user.name || "Usuario",
+            email: session.user.email,
+            isGoogleUser: true,
+            needsProfileCompletion: true,
+            emailVerified: new Date(),
+            role: "USER",
+            image: session.user.image,
+          },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            dni: true,
+            puntos: true,
+            puntosHistoricos: true,
+            role: true,
+            isGoogleUser: true,
+            needsProfileCompletion: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        });
+
+        console.log("✅ [GOOGLE-COMPLETE] New Google user created:", newUser.id);
+        
+        return NextResponse.json({
+          success: true,
+          user: newUser,
+          isNewUser: true,
+        });
+      } catch (error) {
+        console.error("❌ [GOOGLE-COMPLETE] Error creating user:", error);
+        return NextResponse.json(
+          { success: false, error: "Error creando usuario" },
+          { status: 500 }
+        );
+      }
     }
 
     // OBLIGATORIO: Si el usuario necesita completar perfil, no generar token

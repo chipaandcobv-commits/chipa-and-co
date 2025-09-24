@@ -24,7 +24,7 @@ interface Reward {
 interface RewardForm {
   name: string;
   description: string;
-  pointsCost: number;
+  pointsCost: number | null;
   stock: number | null;
   imageUrl: string;
 }
@@ -45,7 +45,7 @@ export default function RewardsManagement() {
   const [form, setForm] = useState<RewardForm>({
     name: "",
     description: "",
-    pointsCost: 0,
+    pointsCost: null,
     stock: null,
     imageUrl: "",
   });
@@ -74,7 +74,7 @@ export default function RewardsManagement() {
     setForm({
       name: "",
       description: "",
-      pointsCost: 0,
+      pointsCost: null,
       stock: null,
       imageUrl: "",
     });
@@ -99,7 +99,7 @@ export default function RewardsManagement() {
   };
 
   const handleSubmit = async () => {
-    if (!form.name || form.pointsCost <= 0) {
+    if (!form.name || !form.pointsCost || form.pointsCost <= 0) {
       setMessage("Nombre y costo en puntos son requeridos");
       return;
     }
@@ -251,14 +251,14 @@ export default function RewardsManagement() {
                   <Input
                     label="Costo en Puntos"
                     type="number"
-                    value={form.pointsCost}
+                    value={form.pointsCost || ""}
                     onChange={(e) =>
                       setForm({
                         ...form,
-                        pointsCost: parseInt(e.target.value) || 0,
+                        pointsCost: e.target.value ? parseInt(e.target.value) : null,
                       })
                     }
-                    placeholder="100"
+                    placeholder="25000 por ejemplo "
                     min="1"
                   />
 
