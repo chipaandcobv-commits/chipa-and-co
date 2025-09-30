@@ -30,17 +30,17 @@
     "@upstash/redis": "^1.35.3",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.7.0",
+    "exceljs": "^4.4.0",
     "framer-motion": "^12.23.12",
     "jose": "^5.2.0",
     "lucide-react": "^0.540.0",
     "multer": "^2.0.2",
-    "next": "15.4.2",
-    "next-auth": "^4.24.11",
+    "next": "^15.5.4",
+    "next-auth": "^4.24.7",
     "next-cloudinary": "^6.16.0",
     "qrcode": "^1.5.4",
     "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "xlsx": "^0.18.5"
+    "react-dom": "19.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
