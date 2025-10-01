@@ -173,3 +173,15 @@ input:-webkit-autofill {
     will-change: transform !important;
   }
 }
+
+/* Fix para sombra del título Boulevard en iOS */
+.boulevard-title {
+  text-shadow: 8px 8px 12px rgba(0,0,0,0.7);
+}
+
+/* Reducir sombra específicamente en iOS */
+@supports (-webkit-touch-callout: none) {
+  .boulevard-title {
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3) !important;
+  }
+}

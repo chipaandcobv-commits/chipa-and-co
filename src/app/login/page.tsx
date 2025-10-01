@@ -83,20 +83,7 @@ export default function LoginPage() {
   };
 
   return (
-    <>
-      <style jsx>{`
-        .boulevard-title {
-          text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
-        }
-        
-        /* Reducir sombra específicamente en iOS */
-        @supports (-webkit-touch-callout: none) {
-          .boulevard-title {
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-          }
-        }
-      `}</style>
-      <div className="min-h-screen w-full bg-[#F7EFE7] text-gray-900 font-urbanist flex items-center justify-center p-4">
+    <div className="min-h-screen w-full bg-[#F7EFE7] text-gray-900 font-urbanist flex items-center justify-center p-4">
       <div className="max-w-md lg:max-w-7xl w-full space-y-8">
         {/* Header */}
         <div className="text-center lg:max-w-md lg:mx-auto">
@@ -118,8 +105,7 @@ export default function LoginPage() {
                 fontFamily: 'var(--dancing-script)',
                 fontWeight: '700',
                 WebkitTextStroke: '10px rgb(243, 243, 243)',
-                color: '#F15A25',
-                textShadow: '8px 8px 12px rgba(0,0,0,0.7)'
+                color: '#F15A25'
               }}
             >
               Boulevard
@@ -374,7 +360,6 @@ export default function LoginPage() {
           </div>
         </div>
       )}
-      </div>
-    </>
+    </div>
   );
 }
