@@ -106,7 +106,7 @@ export default function LoginPage() {
                 fontWeight: '700',
                 WebkitTextStroke: '10px rgb(243, 243, 243)',
                 color: '#F15A25',
-                textShadow: '8px 8px 10px rgba(0,0,0,0.7)'
+                textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
               }}
             >
               Boulevard
