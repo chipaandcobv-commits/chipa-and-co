@@ -1,5 +1,5 @@
 # 🏪 Contexto Completo - Sistema de Fidelización Chipa&Co
-
+v3
 ## 📋 RESUMEN EJECUTIVO
 Sistema de fidelización basado en DNI para comercios físicos. Los clientes presentan su DNI al comprar, acumulan puntos automáticamente según el monto gastado, y pueden canjear premios con confirmación modal y sistema de vencimiento automático. Los administradores gestionan todo el sistema desde un panel web con funcionalidades completas de gestión.
 
