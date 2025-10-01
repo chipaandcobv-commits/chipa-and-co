@@ -182,6 +182,6 @@ input:-webkit-autofill {
 /* Reducir sombra específicamente en iOS */
 @supports (-webkit-touch-callout: none) {
   .boulevard-title {
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3) !important;
+    text-shadow: 8px 8px 12px rgba(0,0,0,0.2) !important;
   }
 }
